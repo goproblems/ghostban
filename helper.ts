@@ -16,7 +16,14 @@ import {
   SgfPropBase,
   NodeAnnotationProp,
 } from './core/props';
-import {Analysis, GhostBanOptions, Ki, MoveInfo, RootInfo} from './types';
+import {
+  Analysis,
+  GhostBanOptions,
+  Ki,
+  MoveInfo,
+  ProblemAnswerType as PAT,
+  RootInfo,
+} from './types';
 import sha256 from 'crypto-js/sha256';
 
 import {Center} from './types';
@@ -126,8 +133,8 @@ export const getDeduplicatedProps = (targetProps: SgfPropBase[]) => {
       findLastIndex(
         targetProps,
         (lastPro: SgfPropBase) =>
-          prop.token === lastPro.token && prop.value === lastPro.value,
-      ),
+          prop.token === lastPro.token && prop.value === lastPro.value
+      )
   );
 };
 
@@ -143,17 +150,23 @@ export const isSetupNode = (n: TreeModel.Node<SgfNode>) => {
   return n.model.setupProps.length > 0;
 };
 
-export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: string) => {
+export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
   const pai = n.model.customProps?.find((p: CustomProp) => p.token === 'PAI');
-  if (!pai) return false;
-  const data = JSON.parse(pai.value);
-
-  return data.kind === kind;
+  const pat = n.model.customProps?.find((p: CustomProp) => p.token === 'PAT');
+  if (!pai && !pat) return false;
+  if (pai) {
+    const data = JSON.parse(pai.value);
+    const paiMap = {[PAT.Right]: 'r', [PAT.Variant]: 'v', [PAT.Wrong]: 'w'};
+    return data?.kind === paiMap[kind];
+  } else {
+    console.log('vvv', pat.value, kind);
+    return pat?.value === kind;
+  }
 };
 
 export const getNodeNumber = (
   n: TreeModel.Node<SgfNode>,
-  parent?: TreeModel.Node<SgfNode>,
+  parent?: TreeModel.Node<SgfNode>
 ) => {
   const path = n.getPath();
   let movesCount = path.filter(n => isMoveNode(n)).length;
@@ -166,7 +179,7 @@ export const getNodeNumber = (
 export const calcSHA = (
   node: TreeModel.Node<SgfNode> | null | undefined,
   moveProps: any = [],
-  setupProps: any = [],
+  setupProps: any = []
 ) => {
   let nodeType = 'r';
   if (moveProps.length > 0) nodeType = 'm';
@@ -219,25 +232,27 @@ export const pathToIndexes = (path: TreeModel.Node<SgfNode>[]): number[] => {
 export const pathToInitialStones = (
   path: TreeModel.Node<SgfNode>[],
   xOffset = 0,
-  yOffset = 0,
+  yOffset = 0
 ): string[][] => {
   const inits = path
     .filter(n => n.model.setupProps.length > 0)
     .map(n => {
       return n.model.setupProps.map((setup: SetupProp) => {
-        const a = A1_LETTERS[SGF_LETTERS.indexOf(setup.value[0]) + xOffset];
-        const b = A1_NUMBERS[SGF_LETTERS.indexOf(setup.value[1]) + yOffset];
-        const token = setup.token === 'AB' ? 'B' : 'W';
-        return [token, a + b];
+        return setup.values.map((v: string) => {
+          const a = A1_LETTERS[SGF_LETTERS.indexOf(v[0]) + xOffset];
+          const b = A1_NUMBERS[SGF_LETTERS.indexOf(v[1]) + yOffset];
+          const token = setup.token === 'AB' ? 'B' : 'W';
+          return [token, a + b];
+        });
       });
     });
-  return flattenDepth(inits[0], 0);
+  return flattenDepth(inits[0], 1);
 };
 
 export const pathToAiMoves = (
   path: TreeModel.Node<SgfNode>[],
   xOffset = 0,
-  yOffset = 0,
+  yOffset = 0
 ) => {
   const moves = path
     .filter(n => n.model.moveProps.length > 0)
@@ -333,7 +348,7 @@ export const matToPosition = (mat: number[][], xOffset = 0, yOffset = 0) => {
 export const matToListOfTuples = (
   mat: number[][],
   xOffset = 0,
-  yOffset = 0,
+  yOffset = 0
 ) => {
   const results = [];
   for (let i = 0; i < mat.length; i++) {
@@ -378,7 +393,7 @@ export const convertStepsForAI = (steps: any, offset = 0) => {
 export const reverseOffsetA1Move = (
   move: string,
   mat: number[][],
-  analysis: Analysis,
+  analysis: Analysis
 ) => {
   if (move === 'pass') return move;
   const idObj = JSON.parse(analysis.id);
@@ -392,7 +407,7 @@ export const calcScoreDiffText = (
   prev?: RootInfo | null,
   curr?: MoveInfo | RootInfo | null,
   fixed = 1,
-  reverse = false,
+  reverse = false
 ) => {
   if (!prev || !curr) return '';
   let score = calcScoreDiff(prev, curr);
@@ -406,7 +421,7 @@ export const calcWinrateDiffText = (
   prev?: RootInfo | null,
   curr?: MoveInfo | RootInfo | null,
   fixed = 1,
-  reverse = false,
+  reverse = false
 ) => {
   if (!prev || !curr) return '';
   let winrate = calcWinrateDiff(prev, curr);
@@ -418,7 +433,7 @@ export const calcWinrateDiffText = (
 
 export const calcScoreDiff = (
   prevInfo: RootInfo,
-  currInfo: MoveInfo | RootInfo,
+  currInfo: MoveInfo | RootInfo
 ) => {
   const sign = prevInfo.currentPlayer === 'B' ? 1 : -1;
   const score =
@@ -429,7 +444,7 @@ export const calcScoreDiff = (
 
 export const calcWinrateDiff = (
   prevInfo: RootInfo,
-  currInfo: MoveInfo | RootInfo,
+  currInfo: MoveInfo | RootInfo
 ) => {
   const sign = prevInfo.currentPlayer === 'B' ? 1 : -1;
   const score =
@@ -467,6 +482,19 @@ export const extractPAI = (n: TreeModel.Node<SgfNode>) => {
   return data;
 };
 
+export const extractAnswerKind = (
+  n: TreeModel.Node<SgfNode>
+): PAT | undefined => {
+  const pat = n.model.customProps.find((p: CustomProp) => p.token === 'PAT');
+  const pai = n.model.customProps.find((p: CustomProp) => p.token === 'PAI');
+  if (pai) {
+    const data = JSON.parse(pai.value);
+    const paiMap = {r: PAT.Right, v: PAT.Variant, w: PAT.Wrong};
+    return paiMap[data.kind as 'r' | 'v' | 'w'];
+  }
+  return pat?.value;
+};
+
 export const extractPI = (n: TreeModel.Node<SgfNode>) => {
   const pi = n.model.customProps.find((p: CustomProp) => p.token === 'PI');
   if (!pi) return;
@@ -494,7 +522,7 @@ export const initNodeData = (sha: string, number?: number): SgfNode => {
 export const buildMoveNode = (
   move: string,
   parentNode?: TreeModel.Node<SgfNode>,
-  props?: SgfNodeOptions,
+  props?: SgfNodeOptions
 ) => {
   const tree: TreeModel = new TreeModel();
   const moveProp = MoveProp.from(move);
@@ -524,7 +552,7 @@ export const getLastIndex = (root: TreeModel.Node<SgfNode>) => {
 
 export const cutMoveNodes = (
   root: TreeModel.Node<SgfNode>,
-  returnRoot?: boolean,
+  returnRoot?: boolean
 ) => {
   let node = cloneDeep(root);
   while (node && node.hasChildren() && node.model.moveProps.length === 0) {
@@ -544,7 +572,7 @@ export const cutMoveNodes = (
 export const calcSpaceAndScaledPadding = (
   size: number,
   padding: number,
-  boardSize: number,
+  boardSize: number
 ) => {
   const newSpace = (size - padding * 2) / boardSize;
   return {space: newSpace, scaledPadding: padding + newSpace / 2};
@@ -593,7 +621,7 @@ export const calcCenter = (mat: number[][], boardSize = 19) => {
 export const calcBoardSize = (
   mat: number[][],
   boardSize = 19,
-  extend = 2,
+  extend = 2
 ): number[] => {
   const result = [19, 19];
   const center = calcCenter(mat);
@@ -616,6 +644,23 @@ export const calcBoardSize = (
   }
 
   return result;
+};
+
+export const calcPartialArea = (
+  mat: number[][],
+  extend = 2
+): [[number, number], [number, number]] => {
+  const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat);
+
+  const x1 = leftMost - extend < 0 ? 0 : leftMost - extend;
+  const y1 = topMost - extend < 0 ? 0 : topMost - extend;
+  const x2 = rightMost + extend > 18 ? 18 : rightMost + extend;
+  const y2 = bottomMost + extend > 18 ? 18 : bottomMost + extend;
+
+  return [
+    [x1, y1],
+    [x2, y2],
+  ];
 };
 
 export const calcOffset = (mat: number[][]) => {
@@ -686,7 +731,7 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
 export const calcVisibleArea = (
   mat: number[][],
   boardSize = 19,
-  extend = 2,
+  extend = 2
 ) => {
   const center = calcCenter(mat);
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat, boardSize);
@@ -698,7 +743,7 @@ export const calcVisibleArea = (
   if (center === Center.TopLeft) {
     visibleSize = Math.min(
       Math.max(rightMost, bottomMost) + extend,
-      boardSize - 1,
+      boardSize - 1
     );
     visibleArea = [
       [0, visibleSize],
@@ -707,7 +752,7 @@ export const calcVisibleArea = (
   } else if (center === Center.TopRight) {
     visibleSize = Math.min(
       Math.max(bottomMost + extend, boardSize - 1 - (leftMost - extend)),
-      boardSize - 1,
+      boardSize - 1
     );
     visibleArea = [
       [boardSize - 1 - visibleSize, 18],
@@ -716,7 +761,7 @@ export const calcVisibleArea = (
   } else if (center === Center.BottomLeft) {
     visibleSize = Math.min(
       Math.max(boardSize - 1 - (topMost - extend), rightMost + extend),
-      boardSize - 1,
+      boardSize - 1
     );
     visibleArea = [
       [0, visibleSize],
@@ -726,9 +771,9 @@ export const calcVisibleArea = (
     visibleSize = Math.min(
       Math.max(
         boardSize - 1 - (topMost - extend),
-        boardSize - 1 - (leftMost - extend),
+        boardSize - 1 - (leftMost - extend)
       ),
-      boardSize - 1,
+      boardSize - 1
     );
     visibleArea = [
       [boardSize - 1 - visibleSize, 18],
@@ -782,19 +827,19 @@ function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
     mat,
     i,
     j - 1,
-    ki,
+    ki
   );
   const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
     mat,
     i,
     j + 1,
-    ki,
+    ki
   );
   const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
     mat,
     i - 1,
     j,
-    ki,
+    ki
   );
   const {liberty: libertyRight, recursionPath: recursionPathRight} =
     calcLiberty(mat, i + 1, j, ki);
@@ -830,19 +875,19 @@ function canPonnuki(mat: number[][], i: number, j: number, ki: number) {
     mat,
     i,
     j - 1,
-    ki,
+    ki
   );
   const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
     mat,
     i,
     j + 1,
-    ki,
+    ki
   );
   const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
     mat,
     i - 1,
     j,
-    ki,
+    ki
   );
   const {liberty: libertyRight, recursionPath: recursionPathRight} =
     calcLiberty(mat, i + 1, j, ki);
@@ -924,13 +969,13 @@ export function showKi(mat: number[][], steps: string[], isPonnuki = true) {
 export const calcTransform = (
   size: number,
   mat: number[][],
-  options: GhostBanOptions,
+  options: GhostBanOptions
 ) => {
   const {boardSize, extend, padding, zoom} = options;
   const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
     mat,
     boardSize,
-    extend,
+    extend
   );
   const va = zoom
     ? zoomedVisibleArea
@@ -940,8 +985,9 @@ export const calcTransform = (
       ];
 
   const zoomedBoardSize = va[0][1] - va[0][0] + 1;
-  const scale = 1 / (zoomedBoardSize / boardSize);
   const {space} = calcSpaceAndScaledPadding(size, padding, boardSize);
+  // const scale = 1 / (zoomedBoardSize / boardSize);
+  const scale = size / (zoomedBoardSize * space + padding);
   const clip = {x: 0, y: 0, width: size / scale, height: size / scale};
   const transform: any = [];
 
@@ -953,6 +999,10 @@ export const calcTransform = (
     let offsetY = 0;
     // const offset = this.options.padding;
     const offset = padding * scale;
+
+    // This offset formula is not accurate, just try many time
+    // const offset = (padding * scale - (space * scale) / 2.5) * scale;
+
     switch (center) {
       case Center.TopLeft:
         break;
@@ -981,7 +1031,17 @@ export const calcTransform = (
       clip,
       space,
       // transform: [{translateX: -offsetX, translateY: -offsetY}, {scale}],
-      transform: [{translateX: -offsetX}, {translateY: -offsetY}, {scale}],
+      transform: [
+        {
+          translateX: -offsetX,
+          // translateX: 0,
+        },
+        {
+          translateY: -offsetY,
+          // translateY: 0,
+        },
+        {scale},
+      ],
     };
   } else {
     return {
@@ -1003,7 +1063,7 @@ export const handleMove = (
   j: number,
   turn: Ki,
   currentNode: TreeModel.Node<SgfNode>,
-  onAfterMove: (node: TreeModel.Node<SgfNode>, isMoved: boolean) => void,
+  onAfterMove: (node: TreeModel.Node<SgfNode>, isMoved: boolean) => void
 ) => {
   if (turn === Ki.Empty) return;
   if (canMove(mat, i, j, turn)) {
@@ -1012,7 +1072,7 @@ export const handleMove = (
     const token = turn === Ki.Black ? 'B' : 'W';
     const sha = calcSHA(currentNode, [MoveProp.from(`${token}[${value}]`)]);
     const filtered = currentNode.children.filter(
-      (n: any) => n.model.id === sha,
+      (n: any) => n.model.id === sha
     );
     let node;
     if (filtered.length > 0) {

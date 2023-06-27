@@ -50,19 +50,19 @@ function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
     mat,
     i,
     j - 1,
-    ki,
+    ki
   );
   const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
     mat,
     i,
     j + 1,
-    ki,
+    ki
   );
   const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
     mat,
     i - 1,
     j,
-    ki,
+    ki
   );
   const {liberty: libertyRight, recursionPath: recursionPathRight} =
     calcLiberty(mat, i + 1, j, ki);
@@ -98,19 +98,19 @@ function canPonnuki(mat: number[][], i: number, j: number, ki: number) {
     mat,
     i,
     j - 1,
-    ki,
+    ki
   );
   const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
     mat,
     i,
     j + 1,
-    ki,
+    ki
   );
   const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
     mat,
     i - 1,
     j,
-    ki,
+    ki
   );
   const {liberty: libertyRight, recursionPath: recursionPathRight} =
     calcLiberty(mat, i + 1, j, ki);

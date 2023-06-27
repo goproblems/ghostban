@@ -74,7 +74,7 @@ export const GAME_INFO_PROP_LIST = [
 export const TIMING_PROP_LIST = ['BL', 'OB', 'OW', 'WL'];
 export const MISCELLANEOUS_PROP_LIST = ['FG', 'PM', 'VW'];
 
-export const CUSTOM_PROP_LIST = ['PI', 'PAI', 'NID'];
+export const CUSTOM_PROP_LIST = ['PI', 'PAI', 'NID', 'PAT'];
 
 export const LIST_OF_POINTS_PROP = ['AB', 'AE', 'AW'];
 
@@ -122,17 +122,12 @@ export class SetupProp extends SgfPropBase {
   }
 
   static from(str: string) {
-    // console.log('str', str);
     const tokenMatch = str.match(TOKEN_REGEX);
     const valMatches = matchAll(str, /\[([\s\S]*?)\]/g);
 
     let token = '';
     const vals = [...valMatches].map(m => m[1]);
-    // console.log('valMatches', [...valMatches]);
-    // console.log('vals', vals);
-    if (tokenMatch) {
-      token = tokenMatch[1];
-    }
+    if (tokenMatch) token = tokenMatch[1];
     return new SetupProp(token, vals.join(','), vals);
   }
 }

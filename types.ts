@@ -97,7 +97,7 @@ export enum Theme {
   Subdued = 'subdued',
   ShellStone = 'shell',
   SlateAndShell = 'slate-and-shell',
-  Walnut = 'walnet',
+  Walnut = 'walnut',
   Photorealistic = 'photorealistic',
 }
 
@@ -118,4 +118,10 @@ export enum Markup {
   Number = 'num',
   Letter = 'le',
   None = '',
+}
+
+export enum ProblemAnswerType {
+  Right = '1',
+  Wrong = '2',
+  Variant = '3',
 }
