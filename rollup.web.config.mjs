@@ -12,7 +12,7 @@ import {fileURLToPath} from 'node:url';
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 const moduleName = pkg.name.replace(/^@.*\//, '');
-const inputFileName = 'index.ts';
+const inputFileName = 'index-with-web.ts';
 const author = pkg.author;
 const banner = `
   /**
