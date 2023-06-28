@@ -1,4 +1,4 @@
-import {compact, replace} from 'lodash';
+import {compact, replace} from 'lodash-es';
 import matchAll from 'string.prototype.matchall';
 
 import TreeModel from 'tree-model';

@@ -6,7 +6,7 @@ import {
   sum,
   filter,
   findLastIndex,
-} from 'lodash';
+} from 'lodash-es';
 import {SgfNode, SgfNodeOptions} from './core/types';
 import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS} from './const';
 import {
