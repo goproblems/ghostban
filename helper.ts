@@ -159,7 +159,6 @@ export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
     const paiMap = {[PAT.Right]: 'r', [PAT.Variant]: 'v', [PAT.Wrong]: 'w'};
     return data?.kind === paiMap[kind];
   } else {
-    console.log('vvv', pat.value, kind);
     return pat?.value === kind;
   }
 };
