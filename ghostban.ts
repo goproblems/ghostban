@@ -314,43 +314,59 @@ export class GhostBan {
     if (zoom) {
       const {space} = this.calcSpaceAndPadding();
       const zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
-      const scale = 1 / (zoomedBoardSize / boardSize);
+      if (zoomedBoardSize < boardSize) {
+        const scale = 1 / (zoomedBoardSize / boardSize);
 
-      let offsetX = 0;
-      let offsetY = 0;
+        let offsetX = 0;
+        let offsetY = 0;
 
-      // const offset = this.options.padding;
-      const offset = this.options.padding * scale;
-      switch (center) {
-        case Center.TopLeft:
-          break;
-        case Center.TopRight:
-          offsetX = visibleArea[0][0] * space * scale + offset;
-          break;
-        case Center.BottomLeft:
-          offsetY = visibleArea[1][0] * space * scale + offset;
-          break;
-        case Center.BottomRight:
-          offsetX = visibleArea[0][0] * space * scale + offset;
-          offsetY = visibleArea[1][0] * space * scale + offset;
-          break;
+        // const offset = this.options.padding;
+        const offset = this.options.padding * scale;
+        switch (center) {
+          case Center.TopLeft:
+            break;
+          case Center.TopRight:
+            offsetX = visibleArea[0][0] * space * scale + offset;
+            break;
+          case Center.BottomLeft:
+            offsetY = visibleArea[1][0] * space * scale + offset;
+            break;
+          case Center.BottomRight:
+            offsetX = visibleArea[0][0] * space * scale + offset;
+            offsetY = visibleArea[1][0] * space * scale + offset;
+            break;
+        }
+        this.transMat = new DOMMatrix();
+        this.transMat.translateSelf(-offsetX, -offsetY);
+        this.transMat.scaleSelf(scale, scale);
+        ctx?.setTransform(this.transMat);
+        boardCtx?.setTransform(this.transMat);
+        analysisCtx?.setTransform(this.transMat);
+        cursorCtx?.setTransform(this.transMat);
+        markupCtx?.setTransform(this.transMat);
+      } else {
+        this.resetTransform();
       }
-      this.transMat = new DOMMatrix();
-      this.transMat.translateSelf(-offsetX, -offsetY);
-      this.transMat.scaleSelf(scale, scale);
-      ctx?.setTransform(this.transMat);
-      boardCtx?.setTransform(this.transMat);
-      analysisCtx?.setTransform(this.transMat);
-      cursorCtx?.setTransform(this.transMat);
-      markupCtx?.setTransform(this.transMat);
     } else {
-      ctx?.resetTransform();
-      boardCtx?.resetTransform();
-      analysisCtx?.resetTransform();
-      cursorCtx?.resetTransform();
-      markupCtx?.resetTransform();
+      this.resetTransform();
     }
   }
+
+  resetTransform() {
+    const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
+    const ctx = canvas?.getContext('2d');
+    const boardCtx = board?.getContext('2d');
+    const cursorCtx = cursorCanvas?.getContext('2d');
+    const markupCtx = markupCanvas?.getContext('2d');
+    const analysisCtx = analysisCanvas?.getContext('2d');
+    this.transMat = new DOMMatrix();
+    ctx?.resetTransform();
+    boardCtx?.resetTransform();
+    analysisCtx?.resetTransform();
+    cursorCtx?.resetTransform();
+    markupCtx?.resetTransform();
+  }
+
   render() {
     this.clearAllCanvas();
     this.drawBoard();

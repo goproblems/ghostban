@@ -641,6 +641,8 @@ export const calcBoardSize = (
     result[0] = boardSize - leftMost + extend;
     result[1] = boardSize - topMost + extend;
   }
+  result[0] = Math.min(result[0], boardSize);
+  result[1] = Math.min(result[1], boardSize);
 
   return result;
 };
