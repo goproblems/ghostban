@@ -69,6 +69,7 @@ export class GhostBan {
     coordinate: true,
     theme: Theme.BlackAndWhite,
     background: false,
+    showAnalysis: false,
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -273,9 +274,7 @@ export class GhostBan {
   setAnalysis(analysis: Analysis | null) {
     if (!analysis) return;
     this.analysis = analysis;
-    setTimeout(() => {
-      this.drawAnalysis(analysis);
-    }, 0);
+    if (this.options.showAnalysis) this.drawAnalysis(analysis);
   }
 
   setTheme(theme: Theme) {
@@ -357,6 +356,7 @@ export class GhostBan {
     this.drawBoard();
     this.drawStones();
     this.drawMarkup();
+    if (this.options.showAnalysis) this.drawAnalysis();
   }
 
   renderInOneCanvas(canvas = this.canvas) {
@@ -435,7 +435,7 @@ export class GhostBan {
     }
   };
 
-  drawAnalysis = (analysis: Analysis) => {
+  drawAnalysis = (analysis = this.analysis) => {
     const canvas = this.analysisCanvas;
     const {theme = Theme.BlackAndWhite} = this.options;
     if (!canvas || !analysis) return;
@@ -443,17 +443,6 @@ export class GhostBan {
     if (!ctx) return;
     this.clearAnalysisCanvas();
     const {rootInfo} = analysis;
-
-    // const uts = analysis.moveInfos.map(m => m.utility);
-    // const utsZ = uts.map(v => {
-    //   return (v - mean(uts)) / std(...uts);
-    // });
-
-    // const utsNorm = utsZ.map(v => {
-    //   const max = Math.max(...uts);
-    //   const min = Math.min(...uts);
-    //   return (v - min) / (max - min);
-    // });
 
     analysis.moveInfos.forEach(m => {
       if (m.move === 'pass') return;
@@ -483,72 +472,10 @@ export class GhostBan {
         ctx.shadowColor = '#fff';
         ctx.shadowBlur = 0;
       }
-      const stone = new AnalysisPoint(
-        ctx,
-        x,
-        y,
-        space * ratio,
-        rootInfo,
-        m
-        // utsNorm[index],
-        // true
-      );
-      stone.draw();
+      const point = new AnalysisPoint(ctx, x, y, space * ratio, rootInfo, m);
+      point.draw();
       ctx.restore();
     });
-
-    // for (let i = 0; i < matrix.length; i++) {
-    //   for (let j = 0; j < matrix[i].length; j++) {
-    //     const value = matrix[i][j];
-    //     if (value !== 0) {
-    //       const ctx = canvas.getContext('2d');
-    //       if (ctx) {
-    //         const {space, scaledPadding} = this.calcSpaceAndPadding();
-    //         const x = scaledPadding + i * space;
-    //         const y = scaledPadding + j * space;
-
-    //         const ratio = 0.46;
-    //         ctx.save();
-    //         if (
-    //           theme !== Theme.Subdued &&
-    //           theme !== Theme.BlackAndWhite &&
-    //           theme !== Theme.Flat
-    //         ) {
-    //           ctx.shadowOffsetX = 3;
-    //           ctx.shadowOffsetY = 3;
-    //           ctx.shadowColor = '#555';
-    //           ctx.shadowBlur = 8;
-    //         }
-    //         let stone;
-    //         switch (theme) {
-    //           case Theme.BlackAndWhite:
-    //           case Theme.Flat: {
-    //             stone = new BwStone(ctx, x, y, space * ratio, value);
-    //             break;
-    //           }
-    //           default: {
-    //             const blacks = RESOURCES[theme].blacks.map(i => images[i]);
-    //             const whites = RESOURCES[theme].whites.map(i => images[i]);
-    //             const r = space * ratio;
-    //             const mod = i + 10 + j;
-    //             stone = new ImageStone(
-    //               ctx,
-    //               x,
-    //               y,
-    //               r,
-    //               value,
-    //               mod,
-    //               blacks,
-    //               whites
-    //             );
-    //           }
-    //         }
-    //         stone.draw();
-    //         ctx.restore();
-    //       }
-    //     }
-    //   }
-    // }
   };
 
   drawMarkup = (

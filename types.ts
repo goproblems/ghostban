@@ -8,6 +8,7 @@ export type GhostBanOptions = {
   coordinate: boolean;
   interactive: boolean;
   background: boolean;
+  showAnalysis: boolean;
 };
 
 export type GhostBanOptionsParams = {
@@ -20,6 +21,7 @@ export type GhostBanOptionsParams = {
   coordinate?: boolean;
   interactive?: boolean;
   background?: boolean;
+  showAnalysis?: boolean;
 };
 
 export type ConsumedAnalysis = {
