@@ -151,16 +151,8 @@ export const isSetupNode = (n: TreeModel.Node<SgfNode>) => {
 };
 
 export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
-  const pai = n.model.customProps?.find((p: CustomProp) => p.token === 'PAI');
   const pat = n.model.customProps?.find((p: CustomProp) => p.token === 'PAT');
-  if (!pai && !pat) return false;
-  if (pai) {
-    const data = JSON.parse(pai.value);
-    const paiMap = {[PAT.Right]: 'r', [PAT.Variant]: 'v', [PAT.Wrong]: 'w'};
-    return data?.kind === paiMap[kind];
-  } else {
-    return pat?.value === kind;
-  }
+  return pat?.value === kind;
 };
 
 export const getNodeNumber = (
