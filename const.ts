@@ -85,6 +85,7 @@ export const DEFAULT_OPTIONS = {
   theme: Theme.Flat,
   background: false,
   zoom: true,
+  showAnalysis: false,
 };
 
 export const RESOURCES: {

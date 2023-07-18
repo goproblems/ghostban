@@ -477,12 +477,6 @@ export const extractAnswerKind = (
   n: TreeModel.Node<SgfNode>
 ): PAT | undefined => {
   const pat = n.model.customProps.find((p: CustomProp) => p.token === 'PAT');
-  const pai = n.model.customProps.find((p: CustomProp) => p.token === 'PAI');
-  if (pai) {
-    const data = JSON.parse(pai.value);
-    const paiMap = {r: PAT.Right, v: PAT.Variant, w: PAT.Wrong};
-    return paiMap[data.kind as 'r' | 'v' | 'w'];
-  }
   return pat?.value;
 };
 
