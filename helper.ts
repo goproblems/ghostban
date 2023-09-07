@@ -975,7 +975,12 @@ export const calcTransform = (
   const {space} = calcSpaceAndScaledPadding(size, padding, boardSize);
   // const scale = 1 / (zoomedBoardSize / boardSize);
   const scale = size / (zoomedBoardSize * space + padding);
-  const clip = {x: 0, y: 0, width: size / scale, height: size / scale};
+  const clip = {
+    x: 0,
+    y: 0,
+    width: zoom ? size / scale : size,
+    height: zoom ? size / scale : size,
+  };
   const transform: any = [];
 
   if (

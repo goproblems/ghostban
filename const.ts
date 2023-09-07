@@ -80,11 +80,11 @@ export const DEFAULT_OPTIONS = {
   boardSize: 19,
   padding: 15,
   extend: 2,
-  interactive: true,
+  interactive: false,
   coordinate: true,
   theme: Theme.Flat,
   background: false,
-  zoom: true,
+  zoom: false,
   showAnalysis: false,
 };
 

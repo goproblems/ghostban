@@ -94,11 +94,11 @@ export enum Ki {
 }
 
 export enum Theme {
-  BlackAndWhite = 'black-and-white',
+  BlackAndWhite = 'black_and_white',
   Flat = 'flat',
   Subdued = 'subdued',
-  ShellStone = 'shell',
-  SlateAndShell = 'slate-and-shell',
+  ShellStone = 'shell_stone',
+  SlateAndShell = 'slate_and_shell',
   Walnut = 'walnut',
   Photorealistic = 'photorealistic',
 }
