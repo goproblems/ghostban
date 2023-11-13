@@ -808,7 +808,7 @@ function calcLiberty(mat: number[][], x: number, y: number, ki: number) {
   };
 }
 
-function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
+function execCapture(mat: number[][], i: number, j: number, ki: number) {
   const newMat = cloneDeep(mat);
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
@@ -857,7 +857,7 @@ function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
   return newMat;
 }
 
-function canPonnuki(mat: number[][], i: number, j: number, ki: number) {
+function canCapture(mat: number[][], i: number, j: number, ki: number) {
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
     i,
@@ -903,10 +903,10 @@ export function canMove(mat: number[][], i: number, j: number, ki: number) {
 
   newMat[i][j] = ki;
   const {liberty} = calcLiberty(newMat, i, j, ki);
-  if (canPonnuki(newMat, i, j, -ki)) {
+  if (canCapture(newMat, i, j, -ki)) {
     return true;
   }
-  if (canPonnuki(newMat, i, j, ki)) {
+  if (canCapture(newMat, i, j, ki)) {
     return false;
   }
   if (liberty === 0) {
@@ -919,10 +919,10 @@ export function move(mat: number[][], i: number, j: number, ki: number) {
   if (i < 0 || j < 0) return mat;
   const newMat = cloneDeep(mat);
   newMat[i][j] = ki;
-  return execPonnuki(newMat, i, j, -ki);
+  return execCapture(newMat, i, j, -ki);
 }
 
-export function showKi(mat: number[][], steps: string[], isPonnuki = true) {
+export function showKi(mat: number[][], steps: string[], isCaptured = true) {
   let newMat = cloneDeep(mat);
   let hasMoved = false;
   steps.forEach(str => {
@@ -935,10 +935,10 @@ export function showKi(mat: number[][], steps: string[], isPonnuki = true) {
       y: number;
       ki: number;
     } = sgfToPos(str);
-    if (isPonnuki) {
+    if (isCaptured) {
       if (canMove(newMat, x, y, ki)) {
         newMat[x][y] = ki;
-        newMat = execPonnuki(newMat, x, y, -ki);
+        newMat = execCapture(newMat, x, y, -ki);
         hasMoved = true;
       }
     } else {

@@ -44,7 +44,7 @@ function calcLiberty(mat: number[][], x: number, y: number, ki: number) {
   };
 }
 
-function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
+function execCapture(mat: number[][], i: number, j: number, ki: number) {
   const newArray = mat;
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
@@ -93,7 +93,7 @@ function execPonnuki(mat: number[][], i: number, j: number, ki: number) {
   return newArray;
 }
 
-function canPonnuki(mat: number[][], i: number, j: number, ki: number) {
+function canCapture(mat: number[][], i: number, j: number, ki: number) {
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
     i,
@@ -137,10 +137,10 @@ export function canMove(mat: number[][], i: number, j: number, ki: number) {
 
   newArray[i][j] = ki;
   const {liberty} = calcLiberty(newArray, i, j, ki);
-  if (canPonnuki(newArray, i, j, -ki)) {
+  if (canCapture(newArray, i, j, -ki)) {
     return true;
   }
-  if (canPonnuki(newArray, i, j, ki)) {
+  if (canCapture(newArray, i, j, ki)) {
     return false;
   }
   if (liberty === 0) {
@@ -149,7 +149,7 @@ export function canMove(mat: number[][], i: number, j: number, ki: number) {
   return true;
 }
 
-export function showKi(array: number[][], steps: string[], isPonnuki = true) {
+export function showKi(array: number[][], steps: string[], isCaptured = true) {
   let newMat = cloneDeep(array);
   let hasMoved = false;
   steps.forEach(str => {
@@ -162,10 +162,10 @@ export function showKi(array: number[][], steps: string[], isPonnuki = true) {
       y: number;
       ki: number;
     } = sgfToPos(str);
-    if (isPonnuki) {
+    if (isCaptured) {
       if (canMove(newMat, x, y, ki)) {
         newMat[x][y] = ki;
-        newMat = execPonnuki(newMat, x, y, -ki);
+        newMat = execCapture(newMat, x, y, -ki);
         hasMoved = true;
       }
     } else {
