@@ -108,9 +108,7 @@ export class Sgf {
   }
 
   parse(sgf: string) {
-    if (!sgf) {
-      return;
-    }
+    if (!sgf) return;
     // sgf = sgf.replace(/(\r\n|\n|\r)/gm, '');
     let nodeStart = 0;
     let counter = 0;

@@ -6,6 +6,8 @@ import {
   sum,
   filter,
   findLastIndex,
+  compact,
+  sample,
 } from 'lodash-es';
 import {SgfNode, SgfNodeOptions} from './core/types';
 import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS} from './const';
@@ -154,6 +156,46 @@ export const isSetupNode = (n: TreeModel.Node<SgfNode>) => {
 export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
   const pat = n.model.customProps?.find((p: CustomProp) => p.token === 'PAT');
   return pat?.value === kind;
+};
+
+export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return c?.value.includes('RIGHT');
+};
+
+export const isVariantLeaf = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return c?.value.includes('VARIANT');
+};
+
+export const isWrongLeaf = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return (!c?.value.includes('VARIANT') && !c?.value.includes('RIGHT')) || !c;
+};
+
+export const inRightPath = (node: TreeModel.Node<SgfNode>) => {
+  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) => isRightLeaf(n));
+  return rightLeaves.length > 0;
+};
+
+export const inVariantPath = (node: TreeModel.Node<SgfNode>) => {
+  const variantLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
+    isVariantLeaf(n)
+  );
+  return variantLeaves.length > 0;
+};
+
+export const inWrongPath = (node: TreeModel.Node<SgfNode>) => {
+  const variantLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
+    isVariantLeaf(n)
+  );
+  return variantLeaves.length > 0;
 };
 
 export const getNodeNumber = (
@@ -474,7 +516,7 @@ export const extractPAI = (n: TreeModel.Node<SgfNode>) => {
   return data;
 };
 
-export const extractAnswerKind = (
+export const extractAnswerType = (
   n: TreeModel.Node<SgfNode>
 ): PAT | undefined => {
   const pat = n.model.customProps.find((p: CustomProp) => p.token === 'PAT');
@@ -1157,4 +1199,63 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   }
 
   return {mat, markup};
+};
+
+export const genMove = (
+  node: TreeModel.Node<SgfNode>,
+  onRight: (path: string) => void,
+  onWrong: (path: string) => void,
+  onVariant: (path: string) => void,
+  onOffPath: (path: string) => void
+): TreeModel.Node<SgfNode> => {
+  let nextNode;
+  const getPath = (node: TreeModel.Node<SgfNode>) => {
+    const newPath = compact(
+      node.getPath().map(n => n.model.moveProps[0]?.toString())
+    ).join(';');
+    return newPath;
+  };
+
+  const checkResult = (node: TreeModel.Node<SgfNode>) => {
+    if (node.hasChildren()) return;
+
+    const path = getPath(node);
+    if (isRightLeaf(node)) {
+      if (onRight) onRight(path);
+    } else if (isVariantLeaf(node)) {
+      if (onVariant) onVariant(path);
+    } else {
+      if (onWrong) onWrong(path);
+    }
+  };
+
+  if (node.hasChildren()) {
+    const rightNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
+      inRightPath(n)
+    );
+    const wrongNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
+      inWrongPath(n)
+    );
+    const variantNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
+      inVariantPath(n)
+    );
+
+    nextNode = node;
+
+    if (inRightPath(node) && rightNodes.length > 0) {
+      nextNode = sample(rightNodes);
+    } else if (inWrongPath(node) && wrongNodes.length > 0) {
+      nextNode = sample(wrongNodes);
+    } else if (inVariantPath(variantNodes) && variantNodes.length > 0) {
+      nextNode = sample(variantNodes);
+    } else if (isRightLeaf(node)) {
+      onRight(getPath(nextNode));
+    } else {
+      onWrong(getPath(nextNode));
+    }
+    checkResult(nextNode);
+  } else {
+    checkResult(node);
+  }
+  return nextNode;
 };

@@ -12,20 +12,78 @@
 
   <script>
     let GB = window.ghostban;
+    const { GhostBan, Sgf, Ki, SGF_LETTERS, canMove, MoveProp, calcSHA, genMove, buildMoveNode, calcMatAndMarkup } = GB;
     let dom = document.getElementById('root');
-    let sgf = new GB.Sgf()
-    let g = new GB.GhostBan({ padding: 100, interactive: true });
-    g.init(dom);
-
-    const c = `(;AW[pe]AW[pf]AW[qg]AW[qh]AW[oi]AW[ri]AW[oj]AW[pj]AW[rj]AW[sk]AW[rl]AW[sl]AW[rm]AB[pg]AB[ph]AB[rh]AB[pi]AB[qi]AB[qj]AB[pk]AB[qk]AB[rk]AB[pl]C[black to do something effective on the side]SZ[19]GM[1]FF[3]RU[Japanese]HA[0]KM[5.5]PW[White]PB[Black]GN[White (W) vs. Black (B)]DT[1999-07-27]SY[Cgoban 1.9.2]TM[30:00(5x1:00)] (;B[sh] (;W[sj] (;B[qf];W[rg];B[rf]C[RIGHT]) (;B[rg];W[qf])) (;W[rg];B[sj];W[si];B[sj]C[snapbackRIGHT])) (;B[sj];W[si] (;B[sh];W[sj] (;B[qf];W[rg]) (;B[rg];W[qf])) (;B[qf];W[rg]) (;B[rg];W[qf])) (;B[rg];W[qf]C[black has nothing now]) (;B[qf];W[rg] (;B[sh];W[sg]) (;B[rf];W[sh])) (;B[sj]) (;B[qn];W[rg]) (;B[qm];W[rg]) (;B[rn];W[rg]) (;B[rf];W[rg]) (;B[sg];W[rg]))`
+    let sgf = new Sgf()
+    const c = `(;AW[hh]AW[lh]AW[hi]AW[ji]AW[li]AW[lj]AB[kg]AB[lg]AB[mg]AB[mh]AB[mi]AB[mj]AB[kk]AB[lk]AB[mk]C[Black to play and catch the three stones.]SZ[19]GM[1]FF[4]CA[UTF-8]AP[CGoban:2]ST[2]RU[Japanese]KM[0.00]TM[]DT[1999-07-28]SY[Cgoban 1.9.2] (;B[ki] (;W[kh] (;B[jh];W[kj];B[jj];W[ki];B[ii]C[CHOICERIGHT]) (;B[kj];W[jh])) (;W[kj] (;B[kh];W[jj]) (;B[jj];W[kh];B[jh]))) (;B[jh];W[jj]) (;B[jj];W[jh]) (;B[ii];W[jj]))`
     sgf.parse(c);
+    console.log(sgf.toSgf());
     let root = sgf.root;
+    let currentNode = root;
+    let turn = Ki.Black;
 
-    const { mat, markup } = GB.calcMatAndMarkup(root)
-
+    let { mat, markup } = calcMatAndMarkup(root)
+    let g = new GhostBan({ padding: 30, interactive: true, zoom: true, extend: 3 });
+    g.init(dom);
     g.setMat(mat);
     g.setMarkup(markup);
+    g.calcBoardVisibleArea(true);
+
     g.render();
+
+    dom.onclick = () => {
+      i = g.cursor[0]
+      j = g.cursor[1]
+      const value = SGF_LETTERS[i] + SGF_LETTERS[j];
+      let turn = Ki.Black;
+      if (canMove(mat, i, j, turn)) {
+        g.setTurn(-turn)
+        const token = turn === Ki.Black ? 'B' : 'W';
+        if (turn !== 0) {
+          const sha = calcSHA(currentNode, [
+            MoveProp.from(`${token}[${value}]`),
+          ]);
+          const filtered = currentNode.children.filter(
+            (n) => n.model.id === sha
+          );
+          console.log(currentNode.getPath())
+          console.log(sha)
+          let node;
+          if (filtered.length > 0) {
+            node = filtered[0];
+          } else {
+            node = buildMoveNode(`${token}[${value}]`, currentNode);
+            currentNode.addChild(node);
+          }
+          currentNode = node
+        }
+      }
+
+      let res = calcMatAndMarkup(currentNode)
+      g.setMat(res.mat);
+      g.setMarkup(res.markup);
+
+      g.render();
+      g.renderInteractive();
+
+      let nextNode = genMove(currentNode, (path) => {
+        alert('right', path);
+      }, (path) => {
+        alert('wrong', path);
+      }, (path) => { alert('variant', path); });
+      // console.log(nextNode);
+      if (nextNode) {
+        currentNode = nextNode;
+        console.log('next', currentNode)
+        console.log('next', currentNode.model.id)
+        let res = GB.calcMatAndMarkup(currentNode);
+        g.setMat(res.mat);
+        g.setMarkup(res.markup);
+        g.render();
+        g.renderInteractive();
+      }
+    }
+
 
   </script>
 </body>
