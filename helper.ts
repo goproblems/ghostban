@@ -192,10 +192,8 @@ export const inVariantPath = (node: TreeModel.Node<SgfNode>) => {
 };
 
 export const inWrongPath = (node: TreeModel.Node<SgfNode>) => {
-  const variantLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
-    isVariantLeaf(n)
-  );
-  return variantLeaves.length > 0;
+  const wrongLeaves = node.all((n: TreeModel.Node<SgfNode>) => isWrongLeaf(n));
+  return wrongLeaves.length > 0;
 };
 
 export const getNodeNumber = (
