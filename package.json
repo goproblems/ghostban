@@ -48,7 +48,6 @@
   "dependencies": {
     "crypto-js": "^4.1.1",
     "lodash-es": "^4.17.21",
-    "mathjs": "^11.8.2",
     "string.prototype.matchall": "^4.0.8",
     "tree-model": "^1.0.7"
   },
