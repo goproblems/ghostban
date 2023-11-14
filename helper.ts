@@ -23,6 +23,7 @@ import {
   MoveInfo,
   ProblemAnswerType as PAT,
   RootInfo,
+  Markup,
 } from './types';
 import sha256 from 'crypto-js/sha256';
 
@@ -1077,4 +1078,83 @@ export const handleMove = (
   } else {
     if (onAfterMove) onAfterMove(currentNode, false);
   }
+};
+
+export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
+  const path = currentNode.getPath();
+  let mat = zeros([19, 19]);
+  let li, lj;
+  const markup = empty([19, 19]);
+  const numMarkup = empty([19, 19]);
+  let setupCount = 0;
+  path.forEach((node, index) => {
+    const {moveProps, setupProps} = node.model;
+    if (setupProps.length > 0) setupCount += 1;
+    moveProps.forEach((m: MoveProp) => {
+      const i = SGF_LETTERS.indexOf(m.value[0]);
+      const j = SGF_LETTERS.indexOf(m.value[1]);
+      if (i < 0 || j < 0) return;
+      li = i;
+      lj = j;
+      mat = move(mat, i, j, m.token === 'B' ? Ki.Black : Ki.White);
+
+      if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
+        numMarkup[li][lj] = node.model.number || index - setupCount;
+      }
+    });
+
+    for (let i = 0; i < 19; i++) {
+      for (let j = 0; j < 19; j++) {
+        if (mat[i][j] === 0) numMarkup[i][j] = '';
+      }
+    }
+
+    setupProps.forEach((setup: any) => {
+      setup.values.forEach((value: any) => {
+        const i = SGF_LETTERS.indexOf(value[0]);
+        const j = SGF_LETTERS.indexOf(value[1]);
+        li = i;
+        lj = j;
+        mat[i][j] = setup.token === 'AB' ? 1 : -1;
+      });
+    });
+  });
+  const markupProps = currentNode.model.markupProps;
+  markupProps.forEach((m: any) => {
+    const token = m.token;
+    const i = SGF_LETTERS.indexOf(m.value[0]);
+    const j = SGF_LETTERS.indexOf(m.value[1]);
+    if (i < 0 || j < 0) return;
+    let mark;
+    switch (token) {
+      case 'CR':
+        mark = Markup.Circle;
+        break;
+      case 'SQ':
+        mark = Markup.Square;
+        break;
+      case 'TR':
+        mark = Markup.Triangle;
+        break;
+      case 'MA':
+        mark = Markup.Cross;
+        break;
+      default: {
+        mark = m.value.split(':')[1];
+      }
+    }
+    markup[i][j] = mark;
+  });
+
+  if (
+    li !== undefined &&
+    lj !== undefined &&
+    li >= 0 &&
+    lj >= 0 &&
+    !markup[li][lj]
+  ) {
+    markup[li][lj] = Markup.Current;
+  }
+
+  return {mat, markup};
 };
