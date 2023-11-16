@@ -29,55 +29,22 @@ export const initialRoot = () =>
     customProps: [],
   });
 
-export const isCharacterSurroundedBySquareBrackets = (
-  str: string,
-  position: number
-): boolean => {
-  if (position < 0 || position >= str.length) {
-    return false;
-  }
+export function checkInTextNode(
+  sgf: string,
+  n: number,
+  nodes = ['C', 'TM', 'GN']
+) {
+  const res = nodes.map(node => {
+    const indexOf = sgf.indexOf(node);
+    if (indexOf === -1) return false;
 
-  let openBracketIndex = -1;
-  let closeBracketIndex = -1;
+    const startIndex = indexOf + node.length;
+    const endIndex = sgf.indexOf(']', startIndex);
 
-  for (let i = position; i >= 0; i--) {
-    if (str[i] === '[') {
-      openBracketIndex = i;
-      break;
-    }
-  }
+    if (endIndex === -1) return false;
 
-  for (let i = position; i < str.length; i++) {
-    if (str[i] === ']') {
-      closeBracketIndex = i;
-      break;
-    }
-  }
+    return n >= startIndex && n <= endIndex;
+  });
 
-  if (
-    openBracketIndex !== -1 &&
-    closeBracketIndex !== -1 &&
-    openBracketIndex < closeBracketIndex
-  ) {
-    console.log(str[position]);
-    return true;
-  }
-
-  return false;
-};
-
-export function checkInComment(sgf: string, n: number) {
-  const indexOfC = sgf.indexOf('C[');
-  if (indexOfC === -1) {
-    return false;
-  }
-
-  const commentStartIndex = indexOfC + 2;
-  const commentEndIndex = sgf.indexOf(']', commentStartIndex);
-
-  if (commentEndIndex === -1) {
-    return false;
-  }
-
-  return n >= commentStartIndex && n <= commentEndIndex;
+  return res.includes(true);
 }
