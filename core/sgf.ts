@@ -1,4 +1,5 @@
 import {compact, replace} from 'lodash-es';
+import {checkInComment} from './helpers';
 import matchAll from 'string.prototype.matchall';
 
 import TreeModel from 'tree-model';
@@ -116,7 +117,7 @@ export class Sgf {
 
     for (let i = 0; i < sgf.length; i++) {
       const c = sgf[i];
-      if (this.NODE_DELIMITERS.includes(c)) {
+      if (this.NODE_DELIMITERS.includes(c) && !checkInComment(sgf, i)) {
         const content = sgf.slice(nodeStart, i);
         if (content !== '') {
           const moveProps: MoveProp[] = [];
@@ -201,17 +202,18 @@ export class Sgf {
           }
         }
       }
-      if (c === '(' && this.currentNode) {
+      if (c === '(' && this.currentNode && !checkInComment(sgf, i)) {
+        console.log(`${sgf[i]}${sgf[i + 1]}${sgf[i + 2]}`);
         stack.push(this.currentNode);
       }
-      if (c === ')' && stack.length > 0) {
+      if (c === ')' && !checkInComment(sgf, i) && stack.length > 0) {
         const node = stack.pop();
         if (node) {
           this.currentNode = node;
         }
       }
 
-      if (this.NODE_DELIMITERS.includes(c)) {
+      if (this.NODE_DELIMITERS.includes(c) && !checkInComment(sgf, i)) {
         nodeStart = i;
       }
     }
