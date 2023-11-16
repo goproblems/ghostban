@@ -1156,6 +1156,7 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
         li = i;
         lj = j;
         mat[i][j] = setup.token === 'AB' ? 1 : -1;
+        if (setup.token === 'AE') mat[i][j] = 0;
       });
     });
   });

@@ -29,7 +29,7 @@ export const initialRoot = () =>
     customProps: [],
   });
 
-export function checkInTextNode(
+export function isCharacterInNode(
   sgf: string,
   n: number,
   nodes = ['C', 'TM', 'GN']
