@@ -272,11 +272,11 @@ export class GhostBan {
   }
 
   setAnalysis(analysis: Analysis | null) {
+    this.analysis = analysis;
     if (!analysis) {
       this.clearAnalysisCanvas();
       return;
     }
-    this.analysis = analysis;
     if (this.options.showAnalysis) this.drawAnalysis(analysis);
   }
 
