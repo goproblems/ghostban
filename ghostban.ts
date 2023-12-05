@@ -78,7 +78,7 @@ export class GhostBan {
   analysisCanvas?: HTMLCanvasElement;
   cursorCanvas?: HTMLCanvasElement;
   markupCanvas?: HTMLCanvasElement;
-  private _turn: Ki;
+  turn: Ki;
   cursor: [number, number];
   cursorPos: DOMPoint;
   mat: number[][];
@@ -95,7 +95,7 @@ export class GhostBan {
     };
     this.mat = zeros([19, 19]);
     this.markup = empty([19, 19]);
-    this._turn = Ki.Black;
+    this.turn = Ki.Black;
     this.cursor = [18, 0];
     this.cursorPos = new DOMPoint();
     this.maxhv = this.options.boardSize;
@@ -108,7 +108,7 @@ export class GhostBan {
   }
 
   setTurn(turn: Ki) {
-    this._turn = turn;
+    this.turn = turn;
   }
 
   resize() {
@@ -736,10 +736,10 @@ export class GhostBan {
           ctx.arc(x, y, size, 0, 2 * Math.PI, true);
           ctx.lineWidth = 1;
           ctx.globalAlpha = 0.6;
-          if (this._turn === Ki.Black) {
+          if (this.turn === Ki.Black) {
             ctx.strokeStyle = '#000';
             ctx.fillStyle = '#000';
-          } else if (this._turn === Ki.White) {
+          } else if (this.turn === Ki.White) {
             ctx.strokeStyle = '#FFF';
             ctx.fillStyle = '#FFF';
           }
