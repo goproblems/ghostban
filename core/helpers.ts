@@ -1,6 +1,6 @@
 import TreeModel from 'tree-model';
-import { RootProp } from './props';
-import { SgfNode } from './types';
+import {RootProp} from './props';
+import {SgfNode} from './types';
 
 const tree: TreeModel = new TreeModel();
 

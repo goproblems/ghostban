@@ -1,5 +1,5 @@
-import { compact, replace } from 'lodash-es';
-import { isCharacterInNode } from './helpers';
+import {compact, replace} from 'lodash-es';
+import {isCharacterInNode} from './helpers';
 import matchAll from 'string.prototype.matchall';
 
 import TreeModel from 'tree-model';
@@ -22,9 +22,9 @@ import {
   GAME_INFO_PROP_LIST,
   CUSTOM_PROP_LIST,
 } from './props';
-import type { SgfNode } from './types';
-import { getDeduplicatedProps, getNodeNumber } from '../helper';
-import { calcSHA } from '../helper';
+import type {SgfNode} from './types';
+import {getDeduplicatedProps, getNodeNumber} from '../helper';
+import {calcSHA} from '../helper';
 
 export class Sgf {
   NEW_NODE = ';';

@@ -9,6 +9,7 @@ export type GhostBanOptions = {
   interactive: boolean;
   background: boolean;
   showAnalysis: boolean;
+  themeFlatBoardColor: string;
 };
 
 export type GhostBanOptionsParams = {

@@ -70,6 +70,7 @@ export class GhostBan {
     theme: Theme.BlackAndWhite,
     background: false,
     showAnalysis: false,
+    themeFlatBoardColor: '#ECB55A',
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -280,10 +281,15 @@ export class GhostBan {
     if (this.options.showAnalysis) this.drawAnalysis(analysis);
   }
 
-  setTheme(theme: Theme) {
+  setTheme(theme: Theme, options = {}) {
     if (!RESOURCES[theme]) return;
     const {board, blacks, whites} = RESOURCES[theme];
     this.options.theme = theme;
+    this.options = {
+      ...this.options,
+      theme,
+      ...options,
+    };
     preload(compact([board, ...blacks, ...whites]), () => {
       this.drawBoard();
       this.render();
@@ -571,7 +577,7 @@ export class GhostBan {
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, board.width, board.height);
         } else if (theme === Theme.Flat) {
-          ctx.fillStyle = '#ECB55A';
+          ctx.fillStyle = this.options.themeFlatBoardColor;
           ctx.fillRect(0, 0, board.width, board.height);
         } else if (
           theme === Theme.Walnut &&
