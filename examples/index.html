@@ -17,7 +17,43 @@
     let sgf = new Sgf()
     // const c = `(;AW[hh]AW[lh]AW[hi]AW[ji]AW[li]AW[lj]AB[kg]AB[lg]AB[mg]AB[mh]AB[mi]AB[mj]AB[kk]AB[lk]AB[mk]C[Black to play and catch the three (ddfsdfsdf)) stones.]SZ[19]GM[1]FF[4]CA[UTF-8]AP[CGoban:2]ST[2]RU[Japanese]KM[0.00]TM[]DT[1999-07-28]SY[Cgoban 1.9.2] (;B[ki] (;W[kh] (;B[jh];W[kj];B[jj];W[ki];B[ii]C[CHOICERIGHT]) (;B[kj];W[jh])) (;W[kj] (;B[kh];W[jj]) (;B[jj];W[kh];B[jh]))) (;B[jh];W[jj]) (;B[jj];W[jh]) (;B[ii];W[jj]))`
     // const c = `(;AW[pe]AW[pf]AW[qg]AW[qh]AW[oi]AW[ri]AW[oj]AW[pj]AW[rj]AW[sk]AW[rl]AW[sl]AW[rm]AB[pg]AB[ph]AB[rh]AB[pi]AB[qi]AB[qj]AB[pk]AB[qk]AB[rk]AB[pl]C[black to do something effective (on) the side]SZ[19]GM[1]FF[3]RU[Japanese]HA[0]KM[5.5]PW[White]PB[Black]GN[White (W) vs. Black (B)]DT[1999-07-27]SY[Cgoban 1.9.2]TM[30:00(5x1:00)] (;B[sh] (;W[sj] (;B[qf];W[rg];B[rf]C[RIGHT]) (;B[rg];W[qf])) (;W[rg];B[sj];W[si];B[sj]C[snapbackRIGHT])) (;B[sj];W[si] (;B[sh];W[sj] (;B[qf];W[rg]) (;B[rg];W[qf])) (;B[qf];W[rg]) (;B[rg];W[qf])) (;B[rg];W[qf]C[black has nothing now]) (;B[qf];W[rg] (;B[sh];W[sg]) (;B[rf];W[sh])) (;B[sj]) (;B[qn];W[rg]) (;B[qm];W[rg]) (;B[rn];W[rg]) (;B[rf];W[rg]) (;B[sg];W[rg]))`;
-    const c = `(;GM[1]FF[4]CA[UTF-8]AP[Sabaki:0.52.0]KM[6.5]SZ[19]DT[2022-11-10]AE[cq][dp]AB[cp][bo][bq][ap][dq][ep][fp][go][ho][hp][hq]AW[gp][gq][fq][fo][gm][el][cl][co][bn][hr][ir][iq]TR[fo](;B[fn];W[eo](;B[dn](;W[do]C[CHOICE](;B[cn];W[en];B[em]C[RIGHT])(;B[en];W[cn]))(;W[en]C[CHOICE](;B[em];W[do];B[cn]C[RIGHT\r\n])(;B[do];W[em])))(;B[en];W[do](;B[dn];W[cn])(;B[cn];W[dn]))(;B[cn];W[en]))(;B[en];W[fn])(;B[eo];W[fn])(;B[fm];W[en](;B[em];W[dn])(;B[fn];W[eo])(;B[eo];W[fn]))(;B[em];W[fn])(;B[dn];W[fn])(;B[do];W[fn])(;B[gn];W[fn])(;B[dm];W[fn])(;B[cn];W[fn]))`;
+    // const c = `(;GM[1]FF[4]CA[UTF-8]AP[Sabaki:0.52.0]KM[6.5]SZ[19]DT[2022-11-10]AE[cq][dp]AB[cp][bo][bq][ap][dq][ep][fp][go][ho][hp][hq]AW[gp][gq][fq][fo][gm][el][cl][co][bn][hr][ir][iq]TR[fo](;B[fn];W[eo](;B[dn](;W[do]C[CHOICE](;B[cn];W[en];B[em]C[RIGHT])(;B[en];W[cn]))(;W[en]C[CHOICE](;B[em];W[do];B[cn]C[RIGHT\r\n])(;B[do];W[em])))(;B[en];W[do](;B[dn];W[cn])(;B[cn];W[dn]))(;B[cn];W[en]))(;B[en];W[fn])(;B[eo];W[fn])(;B[fm];W[en](;B[em];W[dn])(;B[fn];W[eo])(;B[eo];W[fn]))(;B[em];W[fn])(;B[dn];W[fn])(;B[do];W[fn])(;B[gn];W[fn])(;B[dm];W[fn])(;B[cn];W[fn]C[aaaaa:)]))`;
+    const c = `
+(;AW[bp]AW[cp]AW[cr]AW[dr]AB[er]AB[fs]AB[fq]AB[ep]AB[eo]AW[dp]AB[do]AW[co]AB[bo]AB[bn]AB[cn]AB[dm]AB[dq]TR[dq]C[Black has just played the marked move. White to live.]AW[ao]AP[goproblems]
+(;W[bs];B[ar]
+(;W[ds];B[bq];W[cq];B[ap]
+(;W[aq];B[iq]LB[ip:A]C[Please answer the black ko threat at AFORCE];W[ip];B[ap];W[br];B[an];W[as];B[ao];W[aq]C[Nicely done. :)RIGHT])
+(;W[br];B[an];W[as];B[ao];W[aq]C[nice :)RIGHT])
+(;W[as]C[NOTTHIS]))
+(;W[cq];B[ds];W[aq];B[br]C[oww])
+(;W[aq];B[ds]TR[cq]TR[br]C[Dieeeeeed.]))
+(;W[cq];B[ds]C[this shape is dead :(])
+(;W[ds];B[cq];W[bq];B[bs]C[];W[eq];B[dq]
+(;W[br];B[ap]C[dead])
+(;W[ap]
+(;B[ar]C[CHOICE];W[br]C[Dead in gote. FAIL! (Bent 4 in corner)])
+(;B[br]C[CHOICE];W[ar];B[es];W[cq];B[eq]MA[cs]C[No libs :(])))
+(;W[ar];B[bs]
+(;W[br];B[ap]
+(;W[aq];B[cq]C[Nope...])
+(;W[cq];B[aq]C[Nuh uh.]))
+(;W[cq];B[ds];W[cs];B[ap]C[Why did the chicken cross the road? Because he wanted death by car after his corner died :(])
+(;W[ap];B[br]
+(;W[bq];B[ds]C[woops])
+(;W[cq];B[ds];W[cs];B[bq]C[Life? Seki? no. Just dead.])))
+(;W[ap];B[br]
+(;W[bs];B[ar]
+(;W[ds];B[cq];W[bq];B[eq]MA[aq]C[Uh oh, can't approach ])
+(;W[cq];B[ds]C[No good!]))
+(;W[ar];B[bs]
+(;W[bq];B[ds]C[Dieeeeeeee])
+(;W[cq];B[ds];W[cs];B[bq]C[It's not seki. You're still dead. Accept it!]))
+(;W[cq];B[ds]C[dead])
+(;W[ds];B[cq];W[bq];B[eq]
+(;W[bs];B[ar]MA[aq]C[]MA[as])
+(;W[ar];B[bs]MA[cs]MA[as]C[:(])))
+(;W[br];B[cq];W[bq];B[ds];W[cs];B[ap]C[nope.:)]))
+    `;
     sgf.parse(c);
     console.log(sgf.toSgf());
     let root = sgf.root;
@@ -85,8 +121,6 @@
         g.renderInteractive();
       }
     }
-
-
   </script>
 </body>
 
