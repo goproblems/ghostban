@@ -17,6 +17,7 @@ import {
   CustomProp,
   SgfPropBase,
   NodeAnnotationProp,
+  RootProp,
 } from './core/props';
 import {
   Analysis,
@@ -1120,6 +1121,32 @@ export const handleMove = (
   }
 };
 
+export const addMove = (
+  mat: number[][],
+  currentNode: TreeModel.Node<SgfNode>,
+  i: number,
+  j: number,
+  ki: Ki
+) => {
+  if (ki === Ki.Empty) return;
+  let node;
+  if (canMove(mat, i, j, ki)) {
+    const value = SGF_LETTERS[i] + SGF_LETTERS[j];
+    const token = ki === Ki.Black ? 'B' : 'W';
+    const sha = calcSHA(currentNode, [MoveProp.from(`${token}[${value}]`)]);
+    const filtered = currentNode.children.filter(
+      (n: any) => n.model.id === sha
+    );
+    if (filtered.length > 0) {
+      node = filtered[0];
+    } else {
+      node = buildMoveNode(`${token}[${value}]`, currentNode);
+      currentNode.addChild(node);
+    }
+  }
+  return node;
+};
+
 export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   const path = currentNode.getPath();
   let mat = zeros([19, 19]);
@@ -1128,8 +1155,48 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   const numMarkup = empty([19, 19]);
   let setupCount = 0;
   path.forEach((node, index) => {
-    const {moveProps, setupProps} = node.model;
+    const {moveProps, setupProps, rootProps} = node.model;
     if (setupProps.length > 0) setupCount += 1;
+
+    // const st = rootProps.find((p: RootProp) => p.token === 'ST');
+    // let showVariationsMarkup = false;
+    // let showChildrenMarkup = false;
+    // let showSiblingsMarkup = false;
+
+    // if (st) {
+    //   if (st.value === '0') {
+    //     showSiblingsMarkup = false;
+    //     showChildrenMarkup = true;
+    //     showVariationsMarkup = true;
+    //   } else if (st.value === '1') {
+    //     showSiblingsMarkup = true;
+    //     showChildrenMarkup = false;
+    //     showVariationsMarkup = true;
+    //   } else if (st.value === '2') {
+    //     showSiblingsMarkup = false;
+    //     showChildrenMarkup = true;
+    //     showVariationsMarkup = false;
+    //   } else if (st.value === '3') {
+    //     showSiblingsMarkup = true;
+    //     showChildrenMarkup = false;
+    //     showVariationsMarkup = false;
+    //   }
+    // }
+
+    // if (showVariationsMarkup && showChildrenMarkup) {
+    //   if (currentNode.hasChildren()) {
+    //     console.log('has children');
+    //     currentNode.children.forEach((n: TreeModel.Node<SgfNode>) => {
+    //       n.model.moveProps.forEach((m: MoveProp) => {
+    //         console.log('aaaaaaaaaaaaaaaaaa');
+    //         const i = SGF_LETTERS.indexOf(m.value[0]);
+    //         const j = SGF_LETTERS.indexOf(m.value[1]);
+    //         markup[i][j] = Markup.Node;
+    //       });
+    //     });
+    //   }
+    // }
+
     moveProps.forEach((m: MoveProp) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
