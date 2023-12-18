@@ -1,26 +1,25 @@
 export default class Markup {
-  ctx: CanvasRenderingContext2D;
-  x: number;
-  y: number;
-  s: number;
-  ki: number;
-  val: string | number;
+  protected globalAlpha = 1;
+  protected color = '';
+
   constructor(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    s: number,
-    ki: number,
-    val: string | number = ''
-  ) {
-    this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.s = s;
-    this.ki = ki;
-    this.val = val;
-  }
+    protected ctx: CanvasRenderingContext2D,
+    protected x: number,
+    protected y: number,
+    protected s: number,
+    protected ki: number,
+    protected val: string | number = ''
+  ) {}
+
   draw() {
     console.log('TBD');
+  }
+
+  setGlobalAlpha(alpha: number) {
+    this.globalAlpha = alpha;
+  }
+
+  setColor(color: string) {
+    this.color = color;
   }
 }

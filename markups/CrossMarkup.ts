@@ -2,11 +2,12 @@ import Markup from './MarkupBase';
 
 export class CrossMarkup extends Markup {
   draw() {
-    const {ctx, x, y, s, ki} = this;
+    const {ctx, x, y, s, ki, globalAlpha} = this;
     const radius = s * 0.5;
     let size = radius * 0.5;
     ctx.save();
     ctx.beginPath();
+    ctx.globalAlpha = globalAlpha;
     ctx.moveTo(x - size, y - size);
     ctx.lineTo(x + size, y + size);
     ctx.moveTo(x + size, y - size);

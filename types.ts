@@ -120,7 +120,24 @@ export enum Markup {
   Cross = 'cr',
   Number = 'num',
   Letter = 'le',
+  PositiveNode = 'pos',
+  NegativeNode = 'neg',
+  NeutralNode = 'neu',
+  Node = 'node',
+
   None = '',
+}
+
+export enum Cursor {
+  None = '',
+  BlackStone = 'b',
+  WhiteStone = 'w',
+  Circle = 'c',
+  Square = 's',
+  Triangle = 'tri',
+  Cross = 'cr',
+  Clear = 'cl',
+  Text = 't',
 }
 
 export enum ProblemAnswerType {

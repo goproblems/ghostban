@@ -1,2 +1,2 @@
-export * from './bwStone';
-export * from './imageStone';
+export * from './ColorStone';
+export * from './ImageStone';

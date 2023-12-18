@@ -2,18 +2,20 @@ import Markup from './MarkupBase';
 
 export class TextMarkup extends Markup {
   draw() {
-    const {ctx, x, y, s, ki, val} = this;
+    const {ctx, x, y, s, ki, val, globalAlpha} = this;
     const size = s * 0.8;
     let fontSize = size / 1.5;
     ctx.save();
+    ctx.globalAlpha = globalAlpha;
 
     if (ki === 1) {
       ctx.fillStyle = '#fff';
     } else if (ki === -1) {
       ctx.fillStyle = '#000';
-    } else {
-      ctx.clearRect(x - size / 2, y - size / 2, size, size);
     }
+    // else {
+    //   ctx.clearRect(x - size / 2, y - size / 2, size, size);
+    // }
     if (val.toString().length === 1) {
       fontSize = size / 1.5;
     } else if (val.toString().length === 2) {

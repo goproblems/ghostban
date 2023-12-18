@@ -3,6 +3,7 @@ import {calcVisibleArea, reverseOffset, zeros, empty, a1ToPos} from './helper';
 import {A1_LETTERS, A1_NUMBERS, RESOURCES} from './const';
 import {
   Center,
+  Cursor,
   Markup,
   Theme,
   Ki,
@@ -11,8 +12,7 @@ import {
   GhostBanOptionsParams,
 } from './types';
 
-import {ImageStone} from './stones';
-import BwStone from './stones/bwStone';
+import {ImageStone, ColorStone} from './stones';
 import AnalysisPoint from './stones/AnalysisPoint';
 // import {create, meanDependencies, stdDependencies} from 'mathjs';
 
@@ -25,6 +25,8 @@ import {
   TextMarkup,
   SquareMarkup,
   TriangleMarkup,
+  NodeMarkup,
+  PositiveNodeMarkup,
 } from './markups';
 
 // const devicePixelRatio = window.devicePixelRatio;
@@ -80,10 +82,12 @@ export class GhostBan {
   cursorCanvas?: HTMLCanvasElement;
   markupCanvas?: HTMLCanvasElement;
   turn: Ki;
-  cursor: [number, number];
-  cursorPos: DOMPoint;
-  mat: number[][];
-  markup: (string | number)[][];
+  private cursor: Cursor = Cursor.None;
+  private cursorValue: string = '';
+  private cursorPosition: [number, number];
+  private cursorPoint: DOMPoint = new DOMPoint();
+  private mat: number[][];
+  private markup: string[][];
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
@@ -97,8 +101,7 @@ export class GhostBan {
     this.mat = zeros([19, 19]);
     this.markup = empty([19, 19]);
     this.turn = Ki.Black;
-    this.cursor = [18, 0];
-    this.cursorPos = new DOMPoint();
+    this.cursorPosition = [18, 0];
     this.maxhv = this.options.boardSize;
     this.transMat = new DOMMatrix();
     this.analysis = null;
@@ -224,6 +227,11 @@ export class GhostBan {
     this.markup = markup;
   }
 
+  setCursor(cursor: Cursor, value = '') {
+    this.cursor = cursor;
+    this.cursorValue = value;
+  }
+
   renderInteractive() {
     const canvas = this.cursorCanvas;
     if (!canvas) return;
@@ -238,8 +246,8 @@ export class GhostBan {
       const xx = idx * space;
       const yy = idy * space;
       const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
-      this.cursorPos = p;
-      this.cursor = [idx - 1, idy - 1];
+      this.cursorPoint = p;
+      this.cursorPosition = [idx - 1, idy - 1];
       this.drawCursor();
     };
     const onTouchMove = (e: TouchEvent) => {
@@ -504,8 +512,8 @@ export class GhostBan {
   };
 
   drawMarkup = (
-    mat: number[][] = this.mat,
-    markup: (string | number)[][] = this.markup,
+    mat = this.mat,
+    markup = this.markup,
     markupCanvas = this.markupCanvas,
     clear = true
   ) => {
@@ -514,43 +522,79 @@ export class GhostBan {
       if (clear) this.clearCanvas(canvas);
       for (let i = 0; i < markup.length; i++) {
         for (let j = 0; j < markup[i].length; j++) {
-          const value = markup[i][j];
-          if (value !== null && value !== '') {
-            const {space, scaledPadding} = this.calcSpaceAndPadding();
-            const x = scaledPadding + i * space;
-            const y = scaledPadding + j * space;
-            const ki = mat[i][j];
-            let markup;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-              switch (value) {
-                case Markup.Circle:
-                case Markup.Current: {
-                  markup = new CircleMarkup(ctx, x, y, space, ki);
-                  break;
-                }
-                case Markup.Square: {
-                  markup = new SquareMarkup(ctx, x, y, space, ki);
-                  break;
-                }
-                case Markup.Triangle: {
-                  markup = new TriangleMarkup(ctx, x, y, space, ki);
-                  break;
-                }
-                case Markup.Cross: {
-                  markup = new CrossMarkup(ctx, x, y, space, ki);
-                  break;
-                }
-                default: {
-                  if (value !== '') {
-                    markup = new TextMarkup(ctx, x, y, space, ki, value);
+          const values = markup[i][j];
+          values.split('|').forEach(value => {
+            if (value !== null && value !== '') {
+              const {space, scaledPadding} = this.calcSpaceAndPadding();
+              const x = scaledPadding + i * space;
+              const y = scaledPadding + j * space;
+              const ki = mat[i][j];
+              let markup;
+              const ctx = canvas.getContext('2d');
+
+              if (ctx) {
+                switch (value) {
+                  case Markup.Circle:
+                  case Markup.Current: {
+                    markup = new CircleMarkup(ctx, x, y, space, ki);
+                    break;
                   }
-                  break;
+                  case Markup.PositiveNode: {
+                    markup = new PositiveNodeMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      Markup.Circle
+                    );
+                    markup.setColor('#00ff00');
+                    break;
+                  }
+                  case Markup.NegativeNode:
+                  case Markup.NeutralNode:
+                  case Markup.Node: {
+                    let color = '#666666';
+                    if (value === Markup.NegativeNode) {
+                      color = '#ff0000';
+                    } else if (value === Markup.NeutralNode) {
+                      color = '#ffff00';
+                    }
+
+                    markup = new NodeMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      Markup.Circle
+                    );
+                    markup.setColor(color);
+                    break;
+                  }
+                  case Markup.Square: {
+                    markup = new SquareMarkup(ctx, x, y, space, ki);
+                    break;
+                  }
+                  case Markup.Triangle: {
+                    markup = new TriangleMarkup(ctx, x, y, space, ki);
+                    break;
+                  }
+                  case Markup.Cross: {
+                    markup = new CrossMarkup(ctx, x, y, space, ki);
+                    break;
+                  }
+                  default: {
+                    if (value !== '') {
+                      markup = new TextMarkup(ctx, x, y, space, ki, value);
+                    }
+                    break;
+                  }
                 }
+                markup?.draw();
               }
-              markup?.draw();
             }
-          }
+          });
         }
       }
     }
@@ -722,38 +766,51 @@ export class GhostBan {
     const canvas = this.cursorCanvas;
     if (canvas) {
       this.clearCursorCanvas();
+      if (this.cursor === Cursor.None) return;
       const {padding} = this.options;
       const ctx = canvas.getContext('2d');
       const {space} = this.calcSpaceAndPadding();
-      const {visibleArea} = this;
+      const {visibleArea, cursor, cursorValue} = this;
 
-      const [idx, idy] = this.cursor;
+      const [idx, idy] = this.cursorPosition;
       if (idx < visibleArea[0][0] || idx > visibleArea[0][1]) return;
       if (idy < visibleArea[1][0] || idy > visibleArea[1][1]) return;
-      if (this.mat[idx][idy] !== Ki.Empty) return;
+      // if (this.mat[idx][idy] !== Ki.Empty) return;
       const x = idx * space + space / 2 + padding;
       const y = idy * space + space / 2 + padding;
+      const ki = this.mat[idx][idy];
 
       if (ctx) {
-        const size = space * 0.4;
-        if (size > 0) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(x, y, size, 0, 2 * Math.PI, true);
-          ctx.lineWidth = 1;
-          ctx.globalAlpha = 0.6;
-          if (this.turn === Ki.Black) {
-            ctx.strokeStyle = '#000';
-            ctx.fillStyle = '#000';
-          } else if (this.turn === Ki.White) {
-            ctx.strokeStyle = '#FFF';
-            ctx.fillStyle = '#FFF';
-          }
-          ctx.fill();
-          ctx.stroke();
-          ctx.globalAlpha = 1;
-          ctx.restore();
+        let cur;
+        const size = space * 0.8;
+        if (cursor === Cursor.Circle) {
+          cur = new CircleMarkup(ctx, x, y, space, ki);
+          cur.setGlobalAlpha(0.8);
+        } else if (cursor === Cursor.Square) {
+          cur = new SquareMarkup(ctx, x, y, space, ki);
+          cur.setGlobalAlpha(0.8);
+        } else if (cursor === Cursor.Triangle) {
+          cur = new TriangleMarkup(ctx, x, y, space, ki);
+          cur.setGlobalAlpha(0.8);
+        } else if (cursor === Cursor.Cross) {
+          cur = new CrossMarkup(ctx, x, y, space, ki);
+          cur.setGlobalAlpha(0.8);
+        } else if (cursor === Cursor.Text) {
+          cur = new TextMarkup(ctx, x, y, space, ki, cursorValue);
+          cur.setGlobalAlpha(0.8);
+        } else if (ki === Ki.Empty && cursor === Cursor.BlackStone) {
+          cur = new ColorStone(ctx, x, y, Ki.Black);
+          cur.setSize(size);
+          cur.setGlobalAlpha(0.5);
+        } else if (ki === Ki.Empty && cursor === Cursor.WhiteStone) {
+          cur = new ColorStone(ctx, x, y, Ki.White);
+          cur.setSize(size);
+          cur.setGlobalAlpha(0.5);
+        } else if (cursor === Cursor.Clear) {
+          cur = new ColorStone(ctx, x, y, Ki.Empty);
+          cur.setSize(size);
         }
+        cur?.draw();
       }
     }
   };
@@ -796,24 +853,16 @@ export class GhostBan {
               switch (theme) {
                 case Theme.BlackAndWhite:
                 case Theme.Flat: {
-                  stone = new BwStone(ctx, x, y, space * ratio, value);
+                  stone = new ColorStone(ctx, x, y, value);
+                  stone.setSize(space * ratio * 2);
                   break;
                 }
                 default: {
                   const blacks = RESOURCES[theme].blacks.map(i => images[i]);
                   const whites = RESOURCES[theme].whites.map(i => images[i]);
-                  const r = space * ratio;
                   const mod = i + 10 + j;
-                  stone = new ImageStone(
-                    ctx,
-                    x,
-                    y,
-                    r,
-                    value,
-                    mod,
-                    blacks,
-                    whites
-                  );
+                  stone = new ImageStone(ctx, x, y, value, mod, blacks, whites);
+                  stone.setSize(space * ratio * 2);
                 }
               }
               stone.draw();

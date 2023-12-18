@@ -1,23 +1,22 @@
 export default class Stone {
-  ctx: CanvasRenderingContext2D;
-  x: number;
-  y: number;
-  r: number;
-  ki: number;
+  protected globalAlpha = 1;
+  protected size = 0;
+
   constructor(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    r: number,
-    ki: number
-  ) {
-    this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.ki = ki;
-  }
+    protected ctx: CanvasRenderingContext2D,
+    protected x: number,
+    protected y: number,
+    protected ki: number
+  ) {}
   draw() {
     console.log('TBD');
+  }
+
+  setGlobalAlpha(alpha: number) {
+    this.globalAlpha = alpha;
+  }
+
+  setSize(size: number) {
+    this.size = size;
   }
 }
