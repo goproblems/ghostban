@@ -84,10 +84,10 @@ export class GhostBan {
   turn: Ki;
   private cursor: Cursor = Cursor.None;
   private cursorValue: string = '';
-  private cursorPosition: [number, number];
-  private cursorPoint: DOMPoint = new DOMPoint();
-  private mat: number[][];
-  private markup: string[][];
+  public cursorPosition: [number, number];
+  public cursorPoint: DOMPoint = new DOMPoint();
+  public mat: number[][];
+  public markup: string[][];
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
