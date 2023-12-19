@@ -558,7 +558,8 @@ export const buildMoveNode = (
   if (parentNode) number = getNodeNumber(parentNode) + 1;
   const nodeData = initNodeData(sha, number);
   nodeData.moveProps = [moveProp];
-  nodeData.nodeAnnotationProps = [NodeAnnotationProp.from(`N[${sha}]`)];
+  // TODO: Should I add this?
+  // nodeData.nodeAnnotationProps = [NodeAnnotationProp.from(`N[${sha}]`)];
 
   const node = tree.parse({
     ...nodeData,
@@ -1121,6 +1122,17 @@ export const handleMove = (
   }
 };
 
+/**
+ * Adds a move to the given matrix and returns the corresponding node in the tree.
+ * If the ki is empty, no move is added and null is returned.
+ *
+ * @param mat - The matrix representing the game board.
+ * @param currentNode - The current node in the tree.
+ * @param i - The row index of the move.
+ * @param j - The column index of the move.
+ * @param ki - The type of move (Ki).
+ * @returns The corresponding node in the tree, or null if no move is added.
+ */
 export const addMove = (
   mat: number[][],
   currentNode: TreeModel.Node<SgfNode>,
