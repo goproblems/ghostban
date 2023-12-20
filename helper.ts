@@ -232,6 +232,7 @@ export const calcSHA = (
       n;
   }
 
+  console.log('fullname', fullname);
   const sha = sha256(fullname).toString().slice(0, 6);
   return sha;
 };
