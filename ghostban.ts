@@ -73,10 +73,10 @@ export class GhostBan {
     background: false,
     showAnalysis: false,
     themeFlatBoardColor: '#ECB55A',
-    positiveNodeColor: '#28a745',
-    negativeNodeColor: '#dc3545',
-    neutralNodeColor: '#ffc107',
-    defaultNodeColor: '#6c757d',
+    positiveNodeColor: '#4d7c0f',
+    negativeNodeColor: '#b91c1c',
+    neutralNodeColor: '#a16207',
+    defaultNodeColor: '#404040',
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
