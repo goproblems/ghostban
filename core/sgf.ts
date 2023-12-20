@@ -26,6 +26,9 @@ import type {SgfNode} from './types';
 import {getDeduplicatedProps, getNodeNumber} from '../helper';
 import {calcSHA} from '../helper';
 
+/**
+ * Represents an SGF (Smart Game Format) file.
+ */
 export class Sgf {
   NEW_NODE = ';';
   BRANCHING = ['(', ')'];
@@ -55,59 +58,59 @@ export class Sgf {
   currentNode: TreeModel.Node<SgfNode> | null = null;
   parentNode: TreeModel.Node<SgfNode> | null = null;
   nodeProps: Map<string, string> = new Map();
-  sgf = '';
 
-  fromRoot(root: TreeModel.Node<SgfNode>) {
+  /**
+   * Constructs a new instance of the Sgf class.
+   * @param content The content of the Sgf, either as a string or as a TreeModel.Node<SgfNode>(Root node).
+   * @param parseOptions The options for parsing the Sgf content.
+   */
+  constructor(
+    private content?: string | TreeModel.Node<SgfNode>,
+    private parseOptions = {
+      ignorePropList: [],
+    }
+  ) {
+    if (typeof content === 'string') {
+      this.parse(content);
+    } else if (typeof content === 'object') {
+      this.setRoot(content);
+    }
+  }
+
+  /**
+   * Sets the root node of the SGF tree.
+   *
+   * @param root The root node to set.
+   * @returns The updated SGF instance.
+   */
+  setRoot(root: TreeModel.Node<SgfNode>) {
     this.root = root;
     return this;
   }
 
-  nodeToString(node: any) {
-    let content = '';
-    node.walk((n: TreeModel.Node<SgfNode>) => {
-      const {
-        rootProps,
-        moveProps,
-        customProps,
-        setupProps,
-        markupProps,
-        nodeAnnotationProps,
-        moveAnnotationProps,
-        gameInfoProps,
-      } = n.model;
-      const nodes = compact([
-        ...rootProps,
-        ...customProps,
-        ...moveProps,
-        ...getDeduplicatedProps(setupProps),
-        ...getDeduplicatedProps(markupProps),
-        ...gameInfoProps,
-        ...nodeAnnotationProps,
-        ...moveAnnotationProps,
-      ]);
-      content += ';';
-      nodes.forEach((n: SgfPropBase) => {
-        content += n.toString();
-      });
-      if (n.children.length > 1) {
-        n.children.forEach((child: SgfPropBase) => {
-          content += `(${this.nodeToString(child)})`;
-        });
-      }
-      return n.children.length < 2;
-    });
-    return content;
-  }
-
+  /**
+   * Converts the current SGF tree to an SGF string representation.
+   * @returns The SGF string representation of the tree.
+   */
   toSgf() {
     return `(${this.nodeToString(this.root)})`;
   }
 
+  /**
+   * Converts the game tree to SGF format without including analysis data.
+   *
+   * @returns The SGF representation of the game tree.
+   */
   toSgfWithoutAnalysis() {
     const sgf = `(${this.nodeToString(this.root)})`;
     return replace(sgf, /](A\[.*?\])/g, ']');
   }
 
+  /**
+   * Parses the given SGF (Smart Game Format) string.
+   *
+   * @param sgf - The SGF string to parse.
+   */
   parse(sgf: string) {
     if (!sgf) return;
     // sgf = sgf.replace(/(\r\n|\n|\r)/gm, '');
@@ -217,5 +220,48 @@ export class Sgf {
         nodeStart = i;
       }
     }
+  }
+
+  /**
+   * Converts a node to a string representation.
+   *
+   * @param node - The node to convert.
+   * @returns The string representation of the node.
+   */
+  private nodeToString(node: any) {
+    let content = '';
+    node.walk((n: TreeModel.Node<SgfNode>) => {
+      const {
+        rootProps,
+        moveProps,
+        customProps,
+        setupProps,
+        markupProps,
+        nodeAnnotationProps,
+        moveAnnotationProps,
+        gameInfoProps,
+      } = n.model;
+      const nodes = compact([
+        ...rootProps,
+        ...customProps,
+        ...moveProps,
+        ...getDeduplicatedProps(setupProps),
+        ...getDeduplicatedProps(markupProps),
+        ...gameInfoProps,
+        ...nodeAnnotationProps,
+        ...moveAnnotationProps,
+      ]);
+      content += ';';
+      nodes.forEach((n: SgfPropBase) => {
+        content += n.toString();
+      });
+      if (n.children.length > 1) {
+        n.children.forEach((child: SgfPropBase) => {
+          content += `(${this.nodeToString(child)})`;
+        });
+      }
+      return n.children.length < 2;
+    });
+    return content;
   }
 }

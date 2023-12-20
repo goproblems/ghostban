@@ -4,32 +4,6 @@ import {SgfNode} from './types';
 
 const tree: TreeModel = new TreeModel();
 
-export const initialRoot = (
-  rootProps = [
-    'FF[4]',
-    'GM[1]',
-    'CA[UTF-8]',
-    'AP[ghostgo:0.1.0]',
-    'SZ[19]',
-    'ST[0]',
-  ]
-) => {
-  return tree.parse({
-    id: 'root',
-    name: 0,
-    index: 0,
-    number: 0,
-    rootProps: rootProps.map(p => RootProp.from(p)),
-    moveProps: [],
-    setupProps: [],
-    markupProps: [],
-    gameInfoProps: [],
-    nodeAnnotationProps: [],
-    moveAnnotationProps: [],
-    customProps: [],
-  });
-};
-
 export function isCharacterInNode(
   sgf: string,
   n: number,

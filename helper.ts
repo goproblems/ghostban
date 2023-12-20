@@ -546,6 +546,50 @@ export const initNodeData = (sha: string, number?: number): SgfNode => {
   };
 };
 
+/**
+ * Creates the initial root node of the tree.
+ *
+ * @param rootProps - The root properties.
+ * @returns The initial root node.
+ */
+export const initialRootNode = (
+  rootProps = [
+    'FF[4]',
+    'GM[1]',
+    'CA[UTF-8]',
+    'AP[ghostgo:0.1.0]',
+    'SZ[19]',
+    'ST[0]',
+  ]
+) => {
+  const tree: TreeModel = new TreeModel();
+  const root = tree.parse({
+    id: '',
+    name: 0,
+    index: 0,
+    number: 0,
+    rootProps: rootProps.map(p => RootProp.from(p)),
+    moveProps: [],
+    setupProps: [],
+    markupProps: [],
+    gameInfoProps: [],
+    nodeAnnotationProps: [],
+    moveAnnotationProps: [],
+    customProps: [],
+  });
+  const sha = calcSHA(root);
+  root.model.id = sha;
+  return root;
+};
+
+/**
+ * Builds a new tree node with the given move, parent node, and additional properties.
+ *
+ * @param move - The move to be added to the node.
+ * @param parentNode - The parent node of the new node. Optional.
+ * @param props - Additional properties to be added to the new node. Optional.
+ * @returns The newly created tree node.
+ */
 export const buildMoveNode = (
   move: string,
   parentNode?: TreeModel.Node<SgfNode>,
