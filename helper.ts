@@ -214,10 +214,7 @@ export const calcSHA = (
   moveProps: MoveProp[] = [],
   setupProps: SetupProp[] = []
 ) => {
-  const nodeType =
-    moveProps.length > 0 ? 'm' : setupProps.length > 0 ? 's' : 'r';
-
-  let fullname = nodeType;
+  let fullname = 'r';
   if (moveProps.length > 0) {
     fullname += `${moveProps[0].token}${moveProps[0].value}`;
   }
