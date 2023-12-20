@@ -209,17 +209,29 @@ export const getNodeNumber = (
   return movesCount;
 };
 
+/**
+ * Calculates the SHA hash for a given node, move properties, and setup properties.
+ *
+ * @param node - The node to calculate the SHA hash for.
+ * @param moveProps - An array of move properties.
+ * @param setupProps - An array of setup properties.
+ * @returns The SHA hash as a string.
+ */
 export const calcSHA = (
   node: TreeModel.Node<SgfNode> | null | undefined,
   moveProps: any = [],
   setupProps: any = []
 ) => {
-  let nodeType = 'r';
-  if (moveProps.length > 0) nodeType = 'm';
-  if (setupProps.length > 0) nodeType = 's';
+  let nodeType = '';
+  if (moveProps.length > 0) nodeType += 'm';
+  if (setupProps.length > 0) nodeType += 's';
+  nodeType += '|';
 
   let n = `${nodeType}`;
-  if (moveProps.length > 0) n += `${moveProps[0].token}${moveProps[0].value}`;
+  if (moveProps.length > 0)
+    n += moveProps.map(() => moveProps.toString()).join('');
+  if (setupProps.length > 0)
+    n += setupProps.map((s: SetupProp) => s.toString()).join('');
 
   let fullname = n;
   if (node) {

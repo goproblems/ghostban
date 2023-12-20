@@ -206,7 +206,6 @@ export class Sgf {
         }
       }
       if (c === '(' && this.currentNode && !isCharacterInNode(sgf, i)) {
-        // console.log(`${sgf[i]}${sgf[i + 1]}${sgf[i + 2]}`);
         stack.push(this.currentNode);
       }
       if (c === ')' && !isCharacterInNode(sgf, i) && stack.length > 0) {
