@@ -211,6 +211,33 @@ export const getNodeNumber = (
 
 export const calcSHA = (
   node: TreeModel.Node<SgfNode> | null | undefined,
+  moveProps: MoveProp[] = [],
+  setupProps: SetupProp[] = []
+) => {
+  const nodeType =
+    moveProps.length > 0 ? 'm' : setupProps.length > 0 ? 's' : 'r';
+
+  let fullname = nodeType;
+  if (moveProps.length > 0) {
+    fullname += `${moveProps[0].token}${moveProps[0].value}`;
+  }
+
+  if (node) {
+    const path = node.getPath().slice(0, -1);
+    if (path.length > 0) {
+      fullname =
+        path.map((n: TreeModel.Node<SgfNode>) => n.model.id).join('=>') +
+        `=>${fullname}`;
+    }
+  }
+
+  const sha = sha256(fullname).toString().slice(0, 6);
+  console.log('fullname', fullname, sha);
+  return sha;
+};
+
+export const __calcSHA_Deprecated = (
+  node: TreeModel.Node<SgfNode> | null | undefined,
   moveProps: any = [],
   setupProps: any = []
 ) => {
@@ -565,7 +592,7 @@ export const initialRootNode = (
 ) => {
   const tree: TreeModel = new TreeModel();
   const root = tree.parse({
-    id: '',
+    id: 'root',
     name: 0,
     index: 0,
     number: 0,
