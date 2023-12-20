@@ -10,6 +10,10 @@ export type GhostBanOptions = {
   background: boolean;
   showAnalysis: boolean;
   themeFlatBoardColor: string;
+  positiveNodeColor: string;
+  negativeNodeColor: string;
+  neutralNodeColor: string;
+  defaultNodeColor: string;
 };
 
 export type GhostBanOptionsParams = {
@@ -23,6 +27,11 @@ export type GhostBanOptionsParams = {
   interactive?: boolean;
   background?: boolean;
   showAnalysis?: boolean;
+  themeFlatBoardColor?: string;
+  positiveNodeColor?: string;
+  negativeNodeColor?: string;
+  neutralNodeColor?: string;
+  defaultNodeColor?: string;
 };
 
 export type ConsumedAnalysis = {

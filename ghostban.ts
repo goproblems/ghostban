@@ -73,6 +73,10 @@ export class GhostBan {
     background: false,
     showAnalysis: false,
     themeFlatBoardColor: '#ECB55A',
+    positiveNodeColor: '#28a745',
+    negativeNodeColor: '#dc3545',
+    neutralNodeColor: '#ffc107',
+    defaultNodeColor: '#6c757d',
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -548,17 +552,17 @@ export class GhostBan {
                       ki,
                       Markup.Circle
                     );
-                    markup.setColor('#00ff00');
+                    markup.setColor(this.options.positiveNodeColor);
                     break;
                   }
                   case Markup.NegativeNode:
                   case Markup.NeutralNode:
                   case Markup.Node: {
-                    let color = '#666666';
+                    let color = this.options.defaultNodeColor;
                     if (value === Markup.NegativeNode) {
-                      color = '#ff0000';
+                      color = this.options.negativeNodeColor;
                     } else if (value === Markup.NeutralNode) {
-                      color = '#ffff00';
+                      color = this.options.neutralNodeColor;
                     }
 
                     markup = new NodeMarkup(

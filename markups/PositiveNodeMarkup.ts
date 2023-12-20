@@ -4,11 +4,11 @@ export class PositiveNodeMarkup extends Markup {
   draw() {
     const {ctx, x, y, s, ki, color, globalAlpha} = this;
     const radius = s * 0.5;
-    let size = radius * 0.4;
+    let size = radius * 0.6;
     ctx.save();
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 4;
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
     if (size > 0) {
@@ -21,7 +21,7 @@ export class PositiveNodeMarkup extends Markup {
     ctx.beginPath();
     ctx.fillStyle = color;
     if (size > 0) {
-      ctx.arc(x, y, size * 0.5, 0, 2 * Math.PI, true);
+      ctx.arc(x, y, size * 0.3, 0, 2 * Math.PI, true);
       ctx.fill();
     }
     ctx.restore();
