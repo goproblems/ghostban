@@ -166,18 +166,18 @@ export class MoveAnnotationProp extends SgfPropBase {
 
 export class AnnotationProp extends SgfPropBase {}
 export class MarkupProp extends SgfPropBase {
-  constructor(token: string, value: string) {
-    super(token, value);
+  constructor(token: string, value: string, values?: string[]) {
+    super(token, value, values);
     this.type = 'markup';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
-    if (match) {
-      const token = match[1];
-      const val = match[2];
-      return new MarkupProp(token, val);
-    }
-    return new MarkupProp('', '');
+    const tokenMatch = str.match(TOKEN_REGEX);
+    const valMatches = matchAll(str, /\[([\s\S]*?)\]/g);
+
+    let token = '';
+    const vals = [...valMatches].map(m => m[1]);
+    if (tokenMatch) token = tokenMatch[1];
+    return new MarkupProp(token, vals.join(','), vals);
   }
 }
 

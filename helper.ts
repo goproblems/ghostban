@@ -18,6 +18,7 @@ import {
   SgfPropBase,
   NodeAnnotationProp,
   RootProp,
+  MarkupProp,
 } from './core/props';
 import {
   Analysis,
@@ -229,7 +230,6 @@ export const calcSHA = (
   }
 
   const sha = sha256(fullname).toString().slice(0, 6);
-  console.log('fullname', fullname, sha);
   return sha;
 };
 
@@ -256,7 +256,6 @@ export const __calcSHA_Deprecated = (
       n;
   }
 
-  console.log('fullname', fullname);
   const sha = sha256(fullname).toString().slice(0, 6);
   return sha;
 };
@@ -1239,45 +1238,6 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
     const {moveProps, setupProps, rootProps} = node.model;
     if (setupProps.length > 0) setupCount += 1;
 
-    // const st = rootProps.find((p: RootProp) => p.token === 'ST');
-    // let showVariationsMarkup = false;
-    // let showChildrenMarkup = false;
-    // let showSiblingsMarkup = false;
-
-    // if (st) {
-    //   if (st.value === '0') {
-    //     showSiblingsMarkup = false;
-    //     showChildrenMarkup = true;
-    //     showVariationsMarkup = true;
-    //   } else if (st.value === '1') {
-    //     showSiblingsMarkup = true;
-    //     showChildrenMarkup = false;
-    //     showVariationsMarkup = true;
-    //   } else if (st.value === '2') {
-    //     showSiblingsMarkup = false;
-    //     showChildrenMarkup = true;
-    //     showVariationsMarkup = false;
-    //   } else if (st.value === '3') {
-    //     showSiblingsMarkup = true;
-    //     showChildrenMarkup = false;
-    //     showVariationsMarkup = false;
-    //   }
-    // }
-
-    // if (showVariationsMarkup && showChildrenMarkup) {
-    //   if (currentNode.hasChildren()) {
-    //     console.log('has children');
-    //     currentNode.children.forEach((n: TreeModel.Node<SgfNode>) => {
-    //       n.model.moveProps.forEach((m: MoveProp) => {
-    //         console.log('aaaaaaaaaaaaaaaaaa');
-    //         const i = SGF_LETTERS.indexOf(m.value[0]);
-    //         const j = SGF_LETTERS.indexOf(m.value[1]);
-    //         markup[i][j] = Markup.Node;
-    //       });
-    //     });
-    //   }
-    // }
-
     moveProps.forEach((m: MoveProp) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1309,30 +1269,33 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
     });
   });
   const markupProps = currentNode.model.markupProps;
-  markupProps.forEach((m: any) => {
+  markupProps.forEach((m: MarkupProp) => {
     const token = m.token;
-    const i = SGF_LETTERS.indexOf(m.value[0]);
-    const j = SGF_LETTERS.indexOf(m.value[1]);
-    if (i < 0 || j < 0) return;
-    let mark;
-    switch (token) {
-      case 'CR':
-        mark = Markup.Circle;
-        break;
-      case 'SQ':
-        mark = Markup.Square;
-        break;
-      case 'TR':
-        mark = Markup.Triangle;
-        break;
-      case 'MA':
-        mark = Markup.Cross;
-        break;
-      default: {
-        mark = m.value.split(':')[1];
+    const values = m.values;
+    values.forEach(value => {
+      const i = SGF_LETTERS.indexOf(value[0]);
+      const j = SGF_LETTERS.indexOf(value[1]);
+      if (i < 0 || j < 0) return;
+      let mark;
+      switch (token) {
+        case 'CR':
+          mark = Markup.Circle;
+          break;
+        case 'SQ':
+          mark = Markup.Square;
+          break;
+        case 'TR':
+          mark = Markup.Triangle;
+          break;
+        case 'MA':
+          mark = Markup.Cross;
+          break;
+        default: {
+          mark = value.split(':')[1];
+        }
       }
-    }
-    markup[i][j] = mark;
+      markup[i][j] = mark;
+    });
   });
 
   if (
