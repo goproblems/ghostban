@@ -13,7 +13,6 @@ export class SquareMarkup extends Markup {
     } else if (ki === -1) {
       ctx.strokeStyle = '#000';
     } else {
-      size = s * 0.7;
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 3;
     }

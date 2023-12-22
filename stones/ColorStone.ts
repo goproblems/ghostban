@@ -8,6 +8,7 @@ export class ColorStone extends Stone {
   draw() {
     const {ctx, x, y, size, ki, globalAlpha} = this;
     if (size <= 0) return;
+    ctx.save();
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
     ctx.arc(x, y, size / 2, 0, 2 * Math.PI, true);
@@ -20,5 +21,6 @@ export class ColorStone extends Stone {
     }
     ctx.fill();
     ctx.stroke();
+    ctx.restore();
   }
 }

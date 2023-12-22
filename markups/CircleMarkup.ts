@@ -15,7 +15,6 @@ export class CircleMarkup extends Markup {
       ctx.strokeStyle = '#000';
     } else {
       ctx.lineWidth = 3;
-      size = radius * 0.7;
     }
     if (color) ctx.strokeStyle = color;
     if (size > 0) {

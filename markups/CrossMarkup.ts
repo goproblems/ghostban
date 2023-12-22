@@ -7,21 +7,20 @@ export class CrossMarkup extends Markup {
     let size = radius * 0.5;
     ctx.save();
     ctx.beginPath();
-    ctx.globalAlpha = globalAlpha;
-    ctx.moveTo(x - size, y - size);
-    ctx.lineTo(x + size, y + size);
-    ctx.moveTo(x + size, y - size);
-    ctx.lineTo(x - size, y + size);
-
     ctx.lineWidth = 3;
+    ctx.globalAlpha = globalAlpha;
     if (ki === 1) {
       ctx.strokeStyle = '#fff';
     } else if (ki === -1) {
       ctx.strokeStyle = '#000';
     } else {
-      ctx.lineWidth = 3;
-      size = radius * 0.7;
+      size = radius * 0.58;
     }
+    ctx.moveTo(x - size, y - size);
+    ctx.lineTo(x + size, y + size);
+    ctx.moveTo(x + size, y - size);
+    ctx.lineTo(x - size, y + size);
+
     ctx.closePath();
     ctx.stroke();
     ctx.restore();
