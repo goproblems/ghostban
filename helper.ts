@@ -212,16 +212,16 @@ export const getNodeNumber = (
 
 export const calcSHA = (
   node: TreeModel.Node<SgfNode> | null | undefined,
-  moveProps: MoveProp[] = [],
-  setupProps: SetupProp[] = []
+  moveProps: MoveProp[] = []
 ) => {
-  let fullname = 'r';
+  let fullname = 'n';
   if (moveProps.length > 0) {
     fullname += `${moveProps[0].token}${moveProps[0].value}`;
   }
 
   if (node) {
-    const path = node.getPath().slice(0, -1);
+    const path = node.getPath();
+
     if (path.length > 0) {
       fullname =
         path.map((n: TreeModel.Node<SgfNode>) => n.model.id).join('=>') +
@@ -230,6 +230,7 @@ export const calcSHA = (
   }
 
   const sha = sha256(fullname).toString().slice(0, 6);
+  console.log(fullname, sha);
   return sha;
 };
 
