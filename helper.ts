@@ -1277,12 +1277,8 @@ export const calcVariationsMarkup = (
           const i = SGF_LETTERS.indexOf(m.value[0]);
           const j = SGF_LETTERS.indexOf(m.value[1]);
           let mark = Markup.NeutralNode;
-          if (inRightPath(n)) {
-            mark = Markup.PositiveNode;
-          }
-          if (inWrongPath(node)) {
-            mark = Markup.NegativeNode;
-          }
+          if (inWrongPath(n)) mark = Markup.NegativeNode;
+          if (inRightPath(n)) mark = Markup.PositiveNode;
           if (mat[i][j] === Ki.Empty) {
             switch (policy) {
               case 'prepend':
