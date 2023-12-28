@@ -147,7 +147,7 @@ export const isMoveNode = (n: TreeModel.Node<SgfNode>) => {
   return n.model.moveProps.length > 0;
 };
 
-export const isRooNode = (n: TreeModel.Node<SgfNode>) => {
+export const isRootNode = (n: TreeModel.Node<SgfNode>) => {
   return n.model.moveProps.length > 0;
 };
 
@@ -718,26 +718,26 @@ export const calcCenter = (mat: number[][], boardSize = 19) => {
 export const calcBoardSize = (
   mat: number[][],
   boardSize = 19,
-  extend = 2
+  extent = 2
 ): number[] => {
   const result = [19, 19];
   const center = calcCenter(mat);
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat, boardSize);
   if (center === Center.TopLeft) {
-    result[0] = rightMost + extend + 1;
-    result[1] = bottomMost + extend + 1;
+    result[0] = rightMost + extent + 1;
+    result[1] = bottomMost + extent + 1;
   }
   if (center === Center.TopRight) {
-    result[0] = boardSize - leftMost + extend;
-    result[1] = bottomMost + extend + 1;
+    result[0] = boardSize - leftMost + extent;
+    result[1] = bottomMost + extent + 1;
   }
   if (center === Center.BottomLeft) {
-    result[0] = rightMost + extend + 1;
-    result[1] = boardSize - topMost + extend;
+    result[0] = rightMost + extent + 1;
+    result[1] = boardSize - topMost + extent;
   }
   if (center === Center.BottomRight) {
-    result[0] = boardSize - leftMost + extend;
-    result[1] = boardSize - topMost + extend;
+    result[0] = boardSize - leftMost + extent;
+    result[1] = boardSize - topMost + extent;
   }
   result[0] = Math.min(result[0], boardSize);
   result[1] = Math.min(result[1], boardSize);
@@ -747,14 +747,14 @@ export const calcBoardSize = (
 
 export const calcPartialArea = (
   mat: number[][],
-  extend = 2
+  extent = 2
 ): [[number, number], [number, number]] => {
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat);
 
-  const x1 = leftMost - extend < 0 ? 0 : leftMost - extend;
-  const y1 = topMost - extend < 0 ? 0 : topMost - extend;
-  const x2 = rightMost + extend > 18 ? 18 : rightMost + extend;
-  const y2 = bottomMost + extend > 18 ? 18 : bottomMost + extend;
+  const x1 = leftMost - extent < 0 ? 0 : leftMost - extent;
+  const y1 = topMost - extent < 0 ? 0 : topMost - extent;
+  const x2 = rightMost + extent > 18 ? 18 : rightMost + extent;
+  const y2 = bottomMost + extent > 18 ? 18 : bottomMost + extent;
 
   return [
     [x1, y1],
@@ -830,7 +830,7 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
 export const calcVisibleArea = (
   mat: number[][],
   boardSize = 19,
-  extend = 2
+  extent = 2
 ) => {
   const center = calcCenter(mat);
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat, boardSize);
@@ -841,7 +841,7 @@ export const calcVisibleArea = (
   let visibleSize = boardSize - 1;
   if (center === Center.TopLeft) {
     visibleSize = Math.min(
-      Math.max(rightMost, bottomMost) + extend,
+      Math.max(rightMost, bottomMost) + extent,
       boardSize - 1
     );
     visibleArea = [
@@ -850,7 +850,7 @@ export const calcVisibleArea = (
     ];
   } else if (center === Center.TopRight) {
     visibleSize = Math.min(
-      Math.max(bottomMost + extend, boardSize - 1 - (leftMost - extend)),
+      Math.max(bottomMost + extent, boardSize - 1 - (leftMost - extent)),
       boardSize - 1
     );
     visibleArea = [
@@ -859,7 +859,7 @@ export const calcVisibleArea = (
     ];
   } else if (center === Center.BottomLeft) {
     visibleSize = Math.min(
-      Math.max(boardSize - 1 - (topMost - extend), rightMost + extend),
+      Math.max(boardSize - 1 - (topMost - extent), rightMost + extent),
       boardSize - 1
     );
     visibleArea = [
@@ -869,8 +869,8 @@ export const calcVisibleArea = (
   } else if (center === Center.BottomRight) {
     visibleSize = Math.min(
       Math.max(
-        boardSize - 1 - (topMost - extend),
-        boardSize - 1 - (leftMost - extend)
+        boardSize - 1 - (topMost - extent),
+        boardSize - 1 - (leftMost - extent)
       ),
       boardSize - 1
     );
@@ -1070,11 +1070,11 @@ export const calcTransform = (
   mat: number[][],
   options: GhostBanOptions
 ) => {
-  const {boardSize, extend, padding, zoom} = options;
+  const {boardSize, extent, padding, zoom} = options;
   const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
     mat,
     boardSize,
-    extend
+    extent
   );
   const va = zoom
     ? zoomedVisibleArea

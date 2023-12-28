@@ -66,7 +66,7 @@ export class GhostBan {
   defaultOptions: GhostBanOptions = {
     boardSize: 19,
     padding: 10,
-    extend: 3,
+    extent: 3,
     interactive: false,
     coordinate: true,
     theme: Theme.BlackAndWhite,
@@ -312,11 +312,11 @@ export class GhostBan {
 
   calcBoardVisibleArea(zoom: boolean) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
-    const {boardSize, extend} = this.options;
+    const {boardSize, extent} = this.options;
     const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
       this.mat,
       boardSize,
-      extend
+      extent
     );
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');

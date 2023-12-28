@@ -79,7 +79,7 @@ export const RESPONSE_TIME = 100;
 export const DEFAULT_OPTIONS = {
   boardSize: 19,
   padding: 15,
-  extend: 2,
+  extent: 2,
   interactive: false,
   coordinate: true,
   theme: Theme.Flat,

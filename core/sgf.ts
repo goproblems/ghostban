@@ -175,7 +175,7 @@ export class Sgf {
           });
 
           if (matches.length > 0) {
-            const sha = calcSHA(this.currentNode, moveProps, setupProps);
+            const sha = calcSHA(this.currentNode, moveProps);
             const node = this.tree.parse<SgfNode>({
               id: sha,
               name: sha,

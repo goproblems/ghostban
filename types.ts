@@ -3,7 +3,7 @@ export type GhostBanOptions = {
   size?: number;
   padding: number;
   zoom?: boolean;
-  extend: number;
+  extent: number;
   theme: Theme;
   coordinate: boolean;
   interactive: boolean;
@@ -21,7 +21,7 @@ export type GhostBanOptionsParams = {
   size?: number;
   padding?: number;
   zoom?: boolean;
-  extend?: number;
+  extent?: number;
   theme?: Theme;
   coordinate?: boolean;
   interactive?: boolean;
