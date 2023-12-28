@@ -1228,9 +1228,91 @@ export const addMove = (
   return node;
 };
 
+/**
+ * Calculates the markup matrix for variations in a given SGF node.
+ *
+ * @param node - The SGF node to calculate the markup for.
+ * @param policy - The policy for handling the markup. Defaults to 'append'.
+ * @returns The calculated markup for the variations.
+ */
+export const calcVariationsMarkup = (
+  node: TreeModel.Node<SgfNode>,
+  policy: 'append' | 'prepend' | 'replace' = 'append'
+) => {
+  let res = calcMatAndMarkup(node);
+  const {mat, markup} = res;
+
+  // Reference: https://www.red-bean.com/sgf/properties.html#ST
+  const root = node.getPath()[0];
+  const stProp = root.model.rootProps.find((p: RootProp) => p.token === 'ST');
+  let showVariationsMarkup = false;
+  let showChildrenMarkup = false;
+  let showSiblingsMarkup = false;
+
+  let st = stProp?.value || '0';
+  if (st) {
+    if (st === '0') {
+      showSiblingsMarkup = false;
+      showChildrenMarkup = true;
+      showVariationsMarkup = true;
+    } else if (st === '1') {
+      showSiblingsMarkup = true;
+      showChildrenMarkup = false;
+      showVariationsMarkup = true;
+    } else if (st === '2') {
+      showSiblingsMarkup = false;
+      showChildrenMarkup = true;
+      showVariationsMarkup = false;
+    } else if (st === '3') {
+      showSiblingsMarkup = true;
+      showChildrenMarkup = false;
+      showVariationsMarkup = false;
+    }
+  }
+
+  if (showVariationsMarkup && showChildrenMarkup) {
+    if (node.hasChildren()) {
+      node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+        n.model.moveProps.forEach((m: MoveProp) => {
+          const i = SGF_LETTERS.indexOf(m.value[0]);
+          const j = SGF_LETTERS.indexOf(m.value[1]);
+          let mark = Markup.NeutralNode;
+          if (inRightPath(n)) {
+            mark = Markup.PositiveNode;
+          }
+          if (inWrongPath(node)) {
+            mark = Markup.NegativeNode;
+          }
+          if (mat[i][j] === Ki.Empty) {
+            switch (policy) {
+              case 'prepend':
+                markup[i][j] = mark + '|' + markup[i][j];
+                break;
+              case 'replace':
+                markup[i][j] = mark;
+                break;
+              case 'append':
+              default:
+                markup[i][j] += '|' + mark;
+            }
+          }
+        });
+      });
+    }
+  }
+  return markup;
+};
+
+/**
+ * Calculates the matrix and markup matrix based on the given currentNode.
+ *
+ * @param currentNode The current node in the tree.
+ * @returns An object containing the calculated matrix and markup.
+ */
 export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   const path = currentNode.getPath();
   let mat = zeros([19, 19]);
+
   let li, lj;
   const markup = empty([19, 19]);
   const numMarkup = empty([19, 19]);

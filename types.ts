@@ -1,3 +1,6 @@
+/**
+ * Options for configuring GhostBan.
+ */
 export type GhostBanOptions = {
   boardSize: number;
   size?: number;
