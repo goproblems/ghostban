@@ -83,32 +83,42 @@ const TOKEN_REGEX = new RegExp(/([A-Z]*)\[([\s\S]*?)\]/);
 export class SgfPropBase {
   public token: string;
   public type: string = '-';
-  public value: string = '';
-  public values: string[] = [];
+  protected _value: string = '';
+  protected _values: string[] = [];
 
   constructor(token: string, value: string | string[]) {
     this.token = token;
-    this.setValue(value);
+    if (typeof value === 'string' || value instanceof String) {
+      this.value = value as string;
+    } else if (Array.isArray(value)) {
+      this.values = value;
+    }
   }
 
-  setValue(value: string | string[]) {
-    if (typeof value === 'string' || value instanceof String) {
-      if (LIST_OF_POINTS_PROP.includes(this.token)) {
-        this.value = value as string;
-        this.values = value.split(',');
-      } else {
-        this.value = value as string;
-        this.values = [value as string];
-      }
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
     }
-    if (Array.isArray(value)) {
-      this.values = value;
-      this.value = value.join(',');
-    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
   }
 
   toString() {
-    return `${this.token}${this.values.map(v => `[${v}]`).join('')}`;
+    return `${this.token}${this._values.map(v => `[${v}]`).join('')}`;
   }
 }
 
@@ -127,6 +137,29 @@ export class MoveProp extends SgfPropBase {
     }
     return new MoveProp('', '');
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class SetupProp extends SgfPropBase {
@@ -144,6 +177,29 @@ export class SetupProp extends SgfPropBase {
     if (tokenMatch) token = tokenMatch[1];
     return new SetupProp(token, vals);
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class NodeAnnotationProp extends SgfPropBase {
@@ -160,6 +216,29 @@ export class NodeAnnotationProp extends SgfPropBase {
     }
     return new NodeAnnotationProp('', '');
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class MoveAnnotationProp extends SgfPropBase {
@@ -175,6 +254,29 @@ export class MoveAnnotationProp extends SgfPropBase {
       return new MoveAnnotationProp(token, val);
     }
     return new MoveAnnotationProp('', '');
+  }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
   }
 }
 
@@ -193,6 +295,29 @@ export class MarkupProp extends SgfPropBase {
     if (tokenMatch) token = tokenMatch[1];
     return new MarkupProp(token, vals);
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class RootProp extends SgfPropBase {
@@ -208,6 +333,29 @@ export class RootProp extends SgfPropBase {
       return new RootProp(token, val);
     }
     return new RootProp('', '');
+  }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
   }
 }
 
@@ -225,6 +373,29 @@ export class GameInfoProp extends SgfPropBase {
     }
     return new GameInfoProp('', '');
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class CustomProp extends SgfPropBase {
@@ -241,12 +412,58 @@ export class CustomProp extends SgfPropBase {
     }
     return new CustomProp('', '');
   }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
 }
 
 export class TimingProp extends SgfPropBase {
   constructor(token: string, value: string) {
     super(token, value);
     this.type = 'Timing';
+  }
+
+  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
   }
 }
 
