@@ -83,28 +83,42 @@ const TOKEN_REGEX = new RegExp(/([A-Z]*)\[([\s\S]*?)\]/);
 export class SgfPropBase {
   public token: string;
   public type: string = '-';
-  public value: string = '';
-  public values: string[] = [];
+  private _value: string = '';
+  private _values: string[] = [];
 
   constructor(token: string, value: string | string[]) {
     this.token = token;
     if (typeof value === 'string' || value instanceof String) {
-      if (LIST_OF_POINTS_PROP.includes(this.token)) {
-        this.value = value as string;
-        this.values = value.split(',');
-      } else {
-        this.value = value as string;
-        this.values = [value as string];
-      }
-    }
-    if (Array.isArray(value)) {
+      this.value = value as string;
+    } else if (Array.isArray(value)) {
       this.values = value;
-      this.value = value.join(',');
     }
   }
 
+  get value(): string {
+    return this._value;
+  }
+
+  set value(newValue: string) {
+    this._value = newValue;
+    if (LIST_OF_POINTS_PROP.includes(this.token)) {
+      this._values = newValue.split(',');
+    } else {
+      this._values = [newValue];
+    }
+  }
+
+  get values(): string[] {
+    return this._values;
+  }
+
+  set values(newValues: string[]) {
+    this._values = newValues;
+    this._value = newValues.join(',');
+  }
+
   toString() {
-    return `${this.token}${this.values.map(v => `[${v}]`).join('')}`;
+    return `${this.token}${this._values.map(v => `[${v}]`).join('')}`;
   }
 }
 
