@@ -76,21 +76,31 @@ export const MISCELLANEOUS_PROP_LIST = ['FG', 'PM', 'VW'];
 
 export const CUSTOM_PROP_LIST = ['PI', 'PAI', 'NID', 'PAT'];
 
-export const LIST_OF_POINTS_PROP = ['AB', 'AE', 'AW'];
+export const LIST_OF_POINTS_PROP = ['AB', 'AE', 'AW', 'MA', 'SL', 'SQ', 'TR'];
 
 const TOKEN_REGEX = new RegExp(/([A-Z]*)\[([\s\S]*?)\]/);
 
 export class SgfPropBase {
-  token: string;
-  value: string;
-  values: string[];
-  type: string;
+  public token: string;
+  public type: string = '-';
+  public value: string = '';
+  public values: string[] = [];
 
-  constructor(token: string, value: string, values?: string[]) {
+  constructor(token: string, value: string | string[]) {
     this.token = token;
-    this.value = value;
-    this.values = values || [value];
-    this.type = '-';
+    if (typeof value === 'string' || value instanceof String) {
+      if (LIST_OF_POINTS_PROP.includes(this.token)) {
+        this.value = value as string;
+        this.values = value.split(',');
+      } else {
+        this.value = value as string;
+        this.values = [value as string];
+      }
+    }
+    if (Array.isArray(value)) {
+      this.values = value;
+      this.value = value.join(',');
+    }
   }
 
   toString() {
@@ -99,8 +109,8 @@ export class SgfPropBase {
 }
 
 export class MoveProp extends SgfPropBase {
-  constructor(token: string, value: string, values?: string[]) {
-    super(token, value, values);
+  constructor(token: string, value: string) {
+    super(token, value);
     this.type = 'move';
   }
 
@@ -116,8 +126,8 @@ export class MoveProp extends SgfPropBase {
 }
 
 export class SetupProp extends SgfPropBase {
-  constructor(token: string, value: string, values?: string[]) {
-    super(token, value, values);
+  constructor(token: string, value: string | string[]) {
+    super(token, value);
     this.type = 'setup';
   }
 
@@ -128,7 +138,7 @@ export class SetupProp extends SgfPropBase {
     let token = '';
     const vals = [...valMatches].map(m => m[1]);
     if (tokenMatch) token = tokenMatch[1];
-    return new SetupProp(token, vals.join(','), vals);
+    return new SetupProp(token, vals);
   }
 }
 
@@ -166,8 +176,8 @@ export class MoveAnnotationProp extends SgfPropBase {
 
 export class AnnotationProp extends SgfPropBase {}
 export class MarkupProp extends SgfPropBase {
-  constructor(token: string, value: string, values?: string[]) {
-    super(token, value, values);
+  constructor(token: string, value: string | string[]) {
+    super(token, value);
     this.type = 'markup';
   }
   static from(str: string) {
@@ -177,7 +187,7 @@ export class MarkupProp extends SgfPropBase {
     let token = '';
     const vals = [...valMatches].map(m => m[1]);
     if (tokenMatch) token = tokenMatch[1];
-    return new MarkupProp(token, vals.join(','), vals);
+    return new MarkupProp(token, vals);
   }
 }
 
