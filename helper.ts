@@ -1438,6 +1438,43 @@ export const findProp = (node: TreeModel.Node<SgfNode>, token: string) => {
   return null;
 };
 
+/**
+ * Finds properties in a given node based on the provided token.
+ * @param node - The node to search for properties.
+ * @param token - The token to match against the properties.
+ * @returns An array of properties that match the provided token.
+ */
+export const findProps = (node: TreeModel.Node<SgfNode>, token: string) => {
+  if (MOVE_PROP_LIST.includes(token)) {
+    return node.model.moveProps.filter((p: MoveProp) => p.token === token);
+  }
+  if (NODE_ANNOTATION_PROP_LIST.includes(token)) {
+    return node.model.nodeAnnotationProps.filter(
+      (p: NodeAnnotationProp) => p.token === token
+    );
+  }
+  if (MOVE_ANNOTATION_PROP_LIST.includes(token)) {
+    return node.model.moveAnnotationProps.filter(
+      (p: MoveAnnotationProp) => p.token === token
+    );
+  }
+  if (ROOT_PROP_LIST.includes(token)) {
+    return node.model.rootProps.filter((p: RootProp) => p.token === token);
+  }
+  if (SETUP_PROP_LIST.includes(token)) {
+    return node.model.setupProps.filter((p: SetupProp) => p.token === token);
+  }
+  if (MARKUP_PROP_LIST.includes(token)) {
+    return node.model.markupProps.filter((p: MarkupProp) => p.token === token);
+  }
+  if (GAME_INFO_PROP_LIST.includes(token)) {
+    return node.model.gameInfoProps.filter(
+      (p: GameInfoProp) => p.token === token
+    );
+  }
+  return [];
+};
+
 export const genMove = (
   node: TreeModel.Node<SgfNode>,
   onRight: (path: string) => void,
