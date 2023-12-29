@@ -17,8 +17,20 @@ import {
   CustomProp,
   SgfPropBase,
   NodeAnnotationProp,
+  GameInfoProp,
+  MoveAnnotationProp,
   RootProp,
   MarkupProp,
+  MOVE_PROP_LIST,
+  SETUP_PROP_LIST,
+  NODE_ANNOTATION_PROP_LIST,
+  MOVE_ANNOTATION_PROP_LIST,
+  MARKUP_PROP_LIST,
+  ROOT_PROP_LIST,
+  GAME_INFO_PROP_LIST,
+  TIMING_PROP_LIST,
+  MISCELLANEOUS_PROP_LIST,
+  CUSTOM_PROP_LIST,
 } from './core/props';
 import {
   Analysis,
@@ -230,7 +242,6 @@ export const calcSHA = (
   }
 
   const sha = sha256(fullname).toString().slice(0, 6);
-  console.log(fullname, sha);
   return sha;
 };
 
@@ -1388,6 +1399,43 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   }
 
   return {mat, markup};
+};
+
+/**
+ * Finds a property in the given node based on the provided token.
+ * @param node The node to search for the property.
+ * @param token The token of the property to find.
+ * @returns The found property or null if not found.
+ */
+export const findProp = (node: TreeModel.Node<SgfNode>, token: string) => {
+  if (MOVE_PROP_LIST.includes(token)) {
+    return node.model.moveProps.find((p: MoveProp) => p.token === token);
+  }
+  if (NODE_ANNOTATION_PROP_LIST.includes(token)) {
+    return node.model.nodeAnnotationProps.find(
+      (p: NodeAnnotationProp) => p.token === token
+    );
+  }
+  if (MOVE_ANNOTATION_PROP_LIST.includes(token)) {
+    return node.model.moveAnnotationProps.find(
+      (p: MoveAnnotationProp) => p.token === token
+    );
+  }
+  if (ROOT_PROP_LIST.includes(token)) {
+    return node.model.rootProps.find((p: RootProp) => p.token === token);
+  }
+  if (SETUP_PROP_LIST.includes(token)) {
+    return node.model.setupProps.find((p: SetupProp) => p.token === token);
+  }
+  if (MARKUP_PROP_LIST.includes(token)) {
+    return node.model.markupProps.find((p: MarkupProp) => p.token === token);
+  }
+  if (GAME_INFO_PROP_LIST.includes(token)) {
+    return node.model.gameInfoProps.find(
+      (p: GameInfoProp) => p.token === token
+    );
+  }
+  return null;
 };
 
 export const genMove = (
