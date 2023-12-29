@@ -1202,6 +1202,47 @@ export const handleMove = (
   }
 };
 
+export const addStone = (
+  mat: number[][],
+  currentNode: TreeModel.Node<SgfNode>,
+  i: number,
+  j: number,
+  ki: Ki
+) => {
+  const value = SGF_LETTERS[i] + SGF_LETTERS[j];
+  let token = ki === Ki.White ? 'AW' : 'AB';
+  const prop = findProp(currentNode, token);
+  if (mat[i][j] !== Ki.Empty) {
+    const path = currentNode.getPath();
+    path.forEach(node => {
+      const {setupProps} = node.model;
+      if (setupProps.filter((s: SetupProp) => s.value === value).length > 0) {
+        node.model.setupProps = setupProps.filter(
+          (s: any) => s.value !== value
+        );
+      }
+      setupProps.forEach((s: SetupProp) => {
+        s.values = s.values.filter(v => v !== value);
+        if (s.values.length === 0) {
+          node.model.setupProps = node.model.setupProps.filter(
+            (p: SetupProp) => p.token !== s.token
+          );
+        }
+      });
+    });
+  } else {
+    if (prop) {
+      prop.values = [...prop.values, value];
+    } else {
+      currentNode.model.setupProps = [
+        ...currentNode.model.setupProps,
+        new SetupProp(token, value),
+      ];
+    }
+  }
+  return currentNode;
+};
+
 /**
  * Adds a move to the given matrix and returns the corresponding node in the tree.
  * If the ki is empty, no move is added and null is returned.
