@@ -160,7 +160,7 @@ export const isMoveNode = (n: TreeModel.Node<SgfNode>) => {
 };
 
 export const isRootNode = (n: TreeModel.Node<SgfNode>) => {
-  return n.model.moveProps.length > 0;
+  return n.model.rootProps.length > 0 || n.isRoot();
 };
 
 export const isSetupNode = (n: TreeModel.Node<SgfNode>) => {
