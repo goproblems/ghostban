@@ -1381,6 +1381,10 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
       if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
         numMarkup[li][lj] = node.model.number || index - setupCount;
       }
+
+      if (index === path.length - 1) {
+        markup[li][lj] = Markup.Current;
+      }
     });
 
     for (let i = 0; i < 19; i++) {
@@ -1430,15 +1434,15 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
     });
   });
 
-  if (
-    li !== undefined &&
-    lj !== undefined &&
-    li >= 0 &&
-    lj >= 0 &&
-    !markup[li][lj]
-  ) {
-    markup[li][lj] = Markup.Current;
-  }
+  // if (
+  //   li !== undefined &&
+  //   lj !== undefined &&
+  //   li >= 0 &&
+  //   lj >= 0 &&
+  //   !markup[li][lj]
+  // ) {
+  //   markup[li][lj] = Markup.Current;
+  // }
 
   return {mat, markup};
 };

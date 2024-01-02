@@ -27,6 +27,7 @@ import {
   TriangleMarkup,
   NodeMarkup,
   PositiveNodeMarkup,
+  CircleSolidMarkup,
 } from './markups';
 
 // const devicePixelRatio = window.devicePixelRatio;
@@ -538,9 +539,12 @@ export class GhostBan {
 
               if (ctx) {
                 switch (value) {
-                  case Markup.Circle:
-                  case Markup.Current: {
+                  case Markup.Circle: {
                     markup = new CircleMarkup(ctx, x, y, space, ki);
+                    break;
+                  }
+                  case Markup.Current: {
+                    markup = new CircleSolidMarkup(ctx, x, y, space, ki);
                     break;
                   }
                   case Markup.PositiveNode: {

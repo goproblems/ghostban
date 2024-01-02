@@ -127,7 +127,9 @@ export enum Center {
 export enum Markup {
   Current = 'cu',
   Circle = 'ci',
+  CircleSolid = 'cis',
   Square = 'sq',
+  SquareSolid = 'sqs',
   Triangle = 'tri',
   Cross = 'cr',
   Number = 'num',

@@ -5,3 +5,4 @@ export * from './SquareMarkup';
 export * from './TriangleMarkup';
 export * from './NodeMarkup';
 export * from './PositiveNodeMarkup';
+export * from './CircleSolidMarkup';
