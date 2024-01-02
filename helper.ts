@@ -1202,9 +1202,9 @@ export const handleMove = (
   }
 };
 
-export const addStone = (
-  mat: number[][],
+export const addStoneToCurrentNode = (
   currentNode: TreeModel.Node<SgfNode>,
+  mat: number[][],
   i: number,
   j: number,
   ki: Ki
@@ -1254,9 +1254,10 @@ export const addStone = (
  * @param ki - The type of move (Ki).
  * @returns The corresponding node in the tree, or null if no move is added.
  */
-export const addMove = (
-  mat: number[][],
+// TODO: The params here is weird
+export const addMoveToCurrentNode = (
   currentNode: TreeModel.Node<SgfNode>,
+  mat: number[][],
   i: number,
   j: number,
   ki: Ki
