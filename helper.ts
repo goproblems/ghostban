@@ -45,6 +45,10 @@ import sha256 from 'crypto-js/sha256';
 
 import {Center} from './types';
 
+import {canMove, execCapture} from './boardcore';
+export {canMove, execCapture};
+// export * from './boardcore';
+
 export const calcDoubtfulMovesThresholdRange = (threshold: number) => {
   // 8D-9D
   if (threshold >= 25) {
@@ -692,7 +696,7 @@ export const zeros = (size: [number, number]) =>
 export const empty = (size: [number, number]): string[][] =>
   new Array(size[0]).fill('').map(() => new Array(size[1]).fill(''));
 
-const GRID = 19;
+// const GRID = 19;
 let liberties = 0;
 let recursionPath: string[] = [];
 
@@ -892,151 +896,6 @@ export const calcVisibleArea = (
   }
   return {visibleArea, center};
 };
-
-function calcLibertyCore(mat: number[][], x: number, y: number, ki: number) {
-  if (x >= 0 && x < GRID && y >= 0 && y < GRID) {
-    if (mat[x][y] === ki && !recursionPath.includes(`${x},${y}`)) {
-      recursionPath.push(`${x},${y}`);
-      calcLibertyCore(mat, x - 1, y, ki);
-      calcLibertyCore(mat, x + 1, y, ki);
-      calcLibertyCore(mat, x, y - 1, ki);
-      calcLibertyCore(mat, x, y + 1, ki);
-    } else if (mat[x][y] === 0) {
-      liberties += 1;
-    }
-  }
-}
-
-function calcLiberty(mat: number[][], x: number, y: number, ki: number) {
-  liberties = 0;
-  recursionPath = [];
-
-  if (x < 0 || y < 0 || x > GRID - 1 || y > GRID - 1) {
-    return {
-      liberty: 4,
-      recursionPath: [],
-    };
-  }
-
-  if (mat[x][y] === 0) {
-    return {
-      liberty: 4,
-      recursionPath: [],
-    };
-  }
-  calcLibertyCore(mat, x, y, ki);
-  return {
-    liberty: liberties,
-    recursionPath,
-  };
-}
-
-function execCapture(mat: number[][], i: number, j: number, ki: number) {
-  const newMat = cloneDeep(mat);
-  const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
-    mat,
-    i,
-    j - 1,
-    ki
-  );
-  const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
-    mat,
-    i,
-    j + 1,
-    ki
-  );
-  const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
-    mat,
-    i - 1,
-    j,
-    ki
-  );
-  const {liberty: libertyRight, recursionPath: recursionPathRight} =
-    calcLiberty(mat, i + 1, j, ki);
-  if (libertyUp === 0) {
-    recursionPathUp.forEach(item => {
-      const coord = item.split(',');
-      newMat[parseInt(coord[0], 10)][parseInt(coord[1], 10)] = 0;
-    });
-  }
-  if (libertyDown === 0) {
-    recursionPathDown.forEach(item => {
-      const coord = item.split(',');
-      newMat[parseInt(coord[0], 10)][parseInt(coord[1], 10)] = 0;
-    });
-  }
-  if (libertyLeft === 0) {
-    recursionPathLeft.forEach(item => {
-      const coord = item.split(',');
-      newMat[parseInt(coord[0], 10)][parseInt(coord[1], 10)] = 0;
-    });
-  }
-  if (libertyRight === 0) {
-    recursionPathRight.forEach(item => {
-      const coord = item.split(',');
-      newMat[parseInt(coord[0], 10)][parseInt(coord[1], 10)] = 0;
-    });
-  }
-  return newMat;
-}
-
-function canCapture(mat: number[][], i: number, j: number, ki: number) {
-  const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
-    mat,
-    i,
-    j - 1,
-    ki
-  );
-  const {liberty: libertyDown, recursionPath: recursionPathDown} = calcLiberty(
-    mat,
-    i,
-    j + 1,
-    ki
-  );
-  const {liberty: libertyLeft, recursionPath: recursionPathLeft} = calcLiberty(
-    mat,
-    i - 1,
-    j,
-    ki
-  );
-  const {liberty: libertyRight, recursionPath: recursionPathRight} =
-    calcLiberty(mat, i + 1, j, ki);
-  if (libertyUp === 0 && recursionPathUp.length > 0) {
-    return true;
-  }
-  if (libertyDown === 0 && recursionPathDown.length > 0) {
-    return true;
-  }
-  if (libertyLeft === 0 && recursionPathLeft.length > 0) {
-    return true;
-  }
-  if (libertyRight === 0 && recursionPathRight.length > 0) {
-    return true;
-  }
-  return false;
-}
-
-export function canMove(mat: number[][], i: number, j: number, ki: number) {
-  if (i < 0 || j < 0) return true;
-  if (i > 18 || j > 18) return true;
-  const newMat = cloneDeep(mat);
-  if (newMat[i][j] !== 0) {
-    return false;
-  }
-
-  newMat[i][j] = ki;
-  const {liberty} = calcLiberty(newMat, i, j, ki);
-  if (canCapture(newMat, i, j, -ki)) {
-    return true;
-  }
-  if (canCapture(newMat, i, j, ki)) {
-    return false;
-  }
-  if (liberty === 0) {
-    return false;
-  }
-  return true;
-}
 
 export function move(mat: number[][], i: number, j: number, ki: number) {
   if (i < 0 || j < 0) return mat;
@@ -1360,12 +1219,15 @@ export const calcVariationsMarkup = (
  */
 export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
   const path = currentNode.getPath();
-  let mat = zeros([19, 19]);
 
   let li, lj;
-  const markup = empty([19, 19]);
-  const numMarkup = empty([19, 19]);
   let setupCount = 0;
+  const root = currentNode.getPath()[0];
+  const size = parseInt(findProp(root, 'SZ')?.value || 19);
+  let mat = zeros([size, size]);
+  const markup = empty([size, size]);
+  const numMarkup = empty([size, size]);
+
   path.forEach((node, index) => {
     const {moveProps, setupProps, rootProps} = node.model;
     if (setupProps.length > 0) setupCount += 1;
@@ -1387,8 +1249,8 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
       }
     });
 
-    for (let i = 0; i < 19; i++) {
-      for (let j = 0; j < 19; j++) {
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
         if (mat[i][j] === 0) numMarkup[i][j] = '';
       }
     }

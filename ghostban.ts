@@ -103,16 +103,17 @@ export class GhostBan {
       ...this.defaultOptions,
       ...options,
     };
-    this.mat = zeros([19, 19]);
-    this.markup = empty([19, 19]);
+    const size = this.options.boardSize;
+    this.mat = zeros([size, size]);
+    this.markup = empty([size, size]);
     this.turn = Ki.Black;
-    this.cursorPosition = [18, 0];
-    this.maxhv = this.options.boardSize;
+    this.cursorPosition = [size - 1, 0];
+    this.maxhv = size;
     this.transMat = new DOMMatrix();
     this.analysis = null;
     this.visibleArea = [
-      [0, this.options.boardSize - 1],
-      [0, this.options.boardSize - 1],
+      [0, size - 1],
+      [0, size - 1],
     ];
   }
 
@@ -180,8 +181,9 @@ export class GhostBan {
   }
 
   init(dom: HTMLElement) {
-    this.mat = zeros([19, 19]);
-    this.markup = empty([19, 19]);
+    const size = this.options.boardSize;
+    this.mat = zeros([size, size]);
+    this.markup = empty([size, size]);
     this.transMat = new DOMMatrix();
 
     const board = document.createElement('canvas');
@@ -537,6 +539,7 @@ export class GhostBan {
       for (let i = 0; i < markup.length; i++) {
         for (let j = 0; j < markup[i].length; j++) {
           const values = markup[i][j];
+          if (!values) return;
           values.split('|').forEach(value => {
             if (value !== null && value !== '') {
               const {space, scaledPadding} = this.calcSpaceAndPadding();

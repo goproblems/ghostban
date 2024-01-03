@@ -4,10 +4,27 @@ import {sgfToPos} from './helper';
 let liberties = 0;
 let recursionPath: string[] = [];
 
-const GRID = 19;
+/**
+ * Calculates the size of a matrix.
+ * @param mat The matrix to calculate the size of.
+ * @returns An array containing the number of rows and columns in the matrix.
+ */
+const calcSize = (mat: number[][]) => {
+  const rowsSize = mat.length;
+  const columnsSize = mat.length > 0 ? mat[0].length : 0;
+  return [rowsSize, columnsSize];
+};
 
-function calcLibertyCore(mat: number[][], x: number, y: number, ki: number) {
-  if (x >= 0 && x < GRID && y >= 0 && y < GRID) {
+/**
+ * Calculates the liberty of a stone on the board.
+ * @param mat - The board matrix.
+ * @param x - The x-coordinate of the stone.
+ * @param y - The y-coordinate of the stone.
+ * @param ki - The value of the stone.
+ */
+const calcLibertyCore = (mat: number[][], x: number, y: number, ki: number) => {
+  const size = calcSize(mat);
+  if (x >= 0 && x < size[1] && y >= 0 && y < size[0]) {
     if (mat[x][y] === ki && !recursionPath.includes(`${x},${y}`)) {
       recursionPath.push(`${x},${y}`);
       calcLibertyCore(mat, x - 1, y, ki);
@@ -18,13 +35,14 @@ function calcLibertyCore(mat: number[][], x: number, y: number, ki: number) {
       liberties += 1;
     }
   }
-}
+};
 
-function calcLiberty(mat: number[][], x: number, y: number, ki: number) {
+const calcLiberty = (mat: number[][], x: number, y: number, ki: number) => {
+  const size = calcSize(mat);
   liberties = 0;
   recursionPath = [];
 
-  if (x < 0 || y < 0 || x > GRID - 1 || y > GRID - 1) {
+  if (x < 0 || y < 0 || x > size[1] - 1 || y > size[0] - 1) {
     return {
       liberty: 4,
       recursionPath: [],
@@ -42,9 +60,14 @@ function calcLiberty(mat: number[][], x: number, y: number, ki: number) {
     liberty: liberties,
     recursionPath,
   };
-}
+};
 
-function execCapture(mat: number[][], i: number, j: number, ki: number) {
+export const execCapture = (
+  mat: number[][],
+  i: number,
+  j: number,
+  ki: number
+) => {
   const newArray = mat;
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
@@ -91,9 +114,9 @@ function execCapture(mat: number[][], i: number, j: number, ki: number) {
     });
   }
   return newArray;
-}
+};
 
-function canCapture(mat: number[][], i: number, j: number, ki: number) {
+const canCapture = (mat: number[][], i: number, j: number, ki: number) => {
   const {liberty: libertyUp, recursionPath: recursionPathUp} = calcLiberty(
     mat,
     i,
@@ -127,9 +150,9 @@ function canCapture(mat: number[][], i: number, j: number, ki: number) {
     return true;
   }
   return false;
-}
+};
 
-export function canMove(mat: number[][], i: number, j: number, ki: number) {
+export const canMove = (mat: number[][], i: number, j: number, ki: number) => {
   const newArray = mat;
   if (mat[i][j] !== 0) {
     return false;
@@ -147,9 +170,13 @@ export function canMove(mat: number[][], i: number, j: number, ki: number) {
     return false;
   }
   return true;
-}
+};
 
-export function showKi(array: number[][], steps: string[], isCaptured = true) {
+export const showKi = (
+  array: number[][],
+  steps: string[],
+  isCaptured = true
+) => {
   let newMat = cloneDeep(array);
   let hasMoved = false;
   steps.forEach(str => {
@@ -178,4 +205,4 @@ export function showKi(array: number[][], steps: string[], isCaptured = true) {
     arrangement: newMat,
     hasMoved,
   };
-}
+};
