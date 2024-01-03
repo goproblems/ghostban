@@ -392,47 +392,60 @@
     // ;W[ea]CR[ea]C[W +7])))
     // `;
     // const c = `(;AP[goproblems]AW[bp]AW[cp]AW[cr]AW[dr]AB[er][mk]AB[fq]AB[ep]AB[eo]AW[dp]AB[do]AW[co]AB[bo]AB[bn]AB[cn]AB[dm]AB[dq]AW[ao]TR[dq]SQ[br]SQ[bq]SQ[aq]SQ[ar]SQ[as]SQ[bs]SQ[cs]C[Black has just played the marked move. White to live.];W[bs];B[ar](;W[ds])(;W[cq];B[ds])(;W[aq];B[ds]TR[cq]TR[br]C[Dieeeeeed.]))`;
-    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
-RU[Japanese]SZ[9]KM[0.00]
-PW[White]PB[Black]
-;B[fd]
-;W[de]
-;B[dd]
-;W[ce]
-;B[cf]
-;W[df]
-;B[ef]
-;W[dg]
-;B[eg]
-;W[cd]
-;B[dc]
-;W[cc]
-;B[db]
-;W[ic]
-;B[ie]
-;W[ig]
-;B[ii])
-`;
+    //     const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
+    // RU[Japanese]SZ[9]KM[0.00]
+    // PW[White]PB[Black]
+    // ;B[fd]
+    // ;W[de]
+    // ;B[dd]
+    // ;W[ce]
+    // ;B[cf]
+    // ;W[df]
+    // ;B[ef]
+    // ;W[dg]
+    // ;B[eg]
+    // ;W[cd]
+    // ;B[dc]
+    // ;W[cc]
+    // ;B[db]
+    // ;W[ic]
+    // ;B[ie]
+    // ;W[ig]
+    // ;B[ii])
+    // `;
+    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]SZ[19]AB[de][fg]AW[dc][fd][he][lk][jl]SQ[hd]SQ[jg]SQ[ej]CR[ca]CR[ea]CR[ga]RU[Japanese]PW[White]PB[Black](;B[fd];W[de](;B[dd];W[ce];B[cf];W[df];B[ef];W[dg];B[eg];W[cd];B[dc];W[cc];B[db];W[ic];B[ie];W[ig];B[ii]CR[fh]CR[hl]CR[ik]CR[dj]CR[gd]CR[kc]CR[ib]CR[fb]CR[lc]CR[kj]LB[ag:A]LB[gi:B]LB[ge:C]LB[ld:D]C[RIGHT])(;B[je];W[jf](;B[ih];W[gj];B[fj])(;B[kd];W[kh];B[hj];W[dj];B[dg]CR[dd]CR[de]CR[hf]CR[hh]CR[gj]CR[hi]LB[bi:A]LB[di:B]LB[fk:C])))(;B[ae];W[cf];B[dh];W[fi];B[ji]))`;
 
     let sgf = new Sgf(c)
-    console.log(sgf.toSgf());
-    console.log(sgf.root.model.id);
+    // console.log(sgf.toSgf());
+    // console.log(sgf.root.model.id);
     let root = sgf.root;
     let currentNode = root;
+    while (currentNode && currentNode.hasChildren()) {
+      currentNode = currentNode.children[0];
+    }
     let turn = Ki.Black;
 
-    let { mat, markup } = calcMatAndMarkup(root)
+    let { mat, markup } = calcMatAndMarkup(currentNode)
     let g = new GhostBan({
       padding: 30,
       interactive: true,
-      zoom: true,
+      zoom: false,
       extent: 3,
     });
-    markup[0][18] = "sq|pos";
-    markup[0][17] = "sq|neg";
-    markup[0][16] = "ci|neu";
-    markup[0][15] = "tri|node";
+    // markup[0][0] = "sq";
+    // markup[0][1] = "sq";
+    // markup[0][2] = "ci";
+    // markup[0][3] = "tri";
+    markup[0][0] = "sq|pos";
+    markup[0][1] = "sq|neg";
+    markup[0][2] = "ci|neu";
+    markup[0][3] = "tri|node";
+    // markup[0][18] = "sq|pos";
+    // markup[0][17] = "sq|neg";
+    // markup[0][16] = "ci|neu";
+    // markup[0][15] = "tri|node";
     g.init(dom);
+    g.setBoardSize(9);
     g.setMat(mat);
     g.setMarkup(markup);
     // g.setCursor(Cursor.Circle)
@@ -443,9 +456,10 @@ PW[White]PB[Black]
     // g.setCursor(Cursor.BlackStone)
     g.setCursor(Cursor.BlackStone);
     g.setTurn(Ki.Black)
-    g.calcBoardVisibleArea(true);
+    // g.calcBoardVisibleArea(true);
     g.setTheme(Theme.Flat)
     g.render();
+    g.resize();
 
 
     dom.onclick = () => {

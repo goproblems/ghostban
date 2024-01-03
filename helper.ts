@@ -696,10 +696,6 @@ export const zeros = (size: [number, number]) =>
 export const empty = (size: [number, number]): string[][] =>
   new Array(size[0]).fill('').map(() => new Array(size[1]).fill(''));
 
-// const GRID = 19;
-let liberties = 0;
-let recursionPath: string[] = [];
-
 export const calcMost = (mat: number[][], boardSize = 19) => {
   let leftMost: number = boardSize - 1;
   let rightMost = 0;

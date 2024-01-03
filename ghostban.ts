@@ -30,8 +30,8 @@ import {
   CircleSolidMarkup,
 } from './markups';
 
-// const devicePixelRatio = window.devicePixelRatio;
-let devicePixelRatio = 1.0;
+let devicePixelRatio = window.devicePixelRatio || 1.0;
+// let devicePixelRatio = 1.0;
 if (typeof window !== 'undefined') {
   devicePixelRatio = window.devicePixelRatio;
   // browser code
@@ -73,6 +73,8 @@ export class GhostBan {
     theme: Theme.BlackAndWhite,
     background: false,
     showAnalysis: false,
+    borderLineWidth: 3,
+    boardLineWidth: 1,
     themeFlatBoardColor: '#ECB55A',
     positiveNodeColor: '#4d7c0f',
     negativeNodeColor: '#b91c1c',
@@ -539,8 +541,8 @@ export class GhostBan {
       for (let i = 0; i < markup.length; i++) {
         for (let j = 0; j < markup[i].length; j++) {
           const values = markup[i][j];
-          if (!values) return;
-          values.split('|').forEach(value => {
+          // console.log(values);
+          values?.split('|').forEach(value => {
             if (value !== null && value !== '') {
               const {space, scaledPadding} = this.calcSpaceAndPadding();
               const x = scaledPadding + i * space;
@@ -669,16 +671,21 @@ export class GhostBan {
 
   drawBoardLine = (board = this.board) => {
     if (!board) return;
-
-    const {visibleArea} = this;
+    const {visibleArea, options} = this;
+    const {boardLineWidth, borderLineWidth} = options;
     const ctx = board.getContext('2d');
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
-      ctx.lineWidth = 1 * devicePixelRatio;
+      // ctx.lineWidth = boardLineWidth * devicePixelRatio;
       ctx.fillStyle = '#000000';
-      ctx.beginPath();
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
+        ctx.beginPath();
+        if (i === visibleArea[0][0] || i === visibleArea[0][1]) {
+          ctx.lineWidth = borderLineWidth;
+        } else {
+          ctx.lineWidth = boardLineWidth * devicePixelRatio;
+        }
         ctx.moveTo(
           i * space + scaledPadding,
           scaledPadding + visibleArea[1][0] * space
@@ -687,8 +694,16 @@ export class GhostBan {
           i * space + scaledPadding,
           space * visibleArea[1][1] + scaledPadding
         );
+        ctx.stroke();
       }
+
       for (let i = visibleArea[1][0]; i <= visibleArea[1][1]; i++) {
+        ctx.beginPath();
+        if (i === visibleArea[1][0] || i == visibleArea[1][1]) {
+          ctx.lineWidth = borderLineWidth;
+        } else {
+          ctx.lineWidth = boardLineWidth * devicePixelRatio;
+        }
         ctx.moveTo(
           visibleArea[0][0] * space + scaledPadding,
           i * space + scaledPadding
@@ -697,8 +712,8 @@ export class GhostBan {
           visibleArea[0][1] * space + scaledPadding,
           i * space + scaledPadding
         );
+        ctx.stroke();
       }
-      ctx.stroke();
     }
   };
 

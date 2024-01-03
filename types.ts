@@ -12,6 +12,8 @@ export type GhostBanOptions = {
   interactive: boolean;
   background: boolean;
   showAnalysis: boolean;
+  borderLineWidth: number;
+  boardLineWidth: number;
   themeFlatBoardColor: string;
   positiveNodeColor: string;
   negativeNodeColor: string;
@@ -30,6 +32,8 @@ export type GhostBanOptionsParams = {
   interactive?: boolean;
   background?: boolean;
   showAnalysis?: boolean;
+  borderLineWidth?: number;
+  boardLineWidth?: number;
   themeFlatBoardColor?: string;
   positiveNodeColor?: string;
   negativeNodeColor?: string;
