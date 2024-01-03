@@ -69,7 +69,7 @@ export const SGF_LETTERS = [
   'r',
   's',
 ];
-export const BLANK_ARRAY = chunk(new Array(361).fill(0), 19);
+// export const BLANK_ARRAY = chunk(new Array(361).fill(0), 19);
 export const GRID = 19;
 export const DOT_SIZE = 3;
 export const EXPAND_H = 5;

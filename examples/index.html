@@ -59,338 +59,361 @@
     // (;W[br];B[cq];W[bq];B[ds];W[cs];B[ap]C[nope.:)]))
     //     `;
 
-    const c = `
-(;GM[1]FF[4]CA[UTF-8]AP[CGoban:2]ST[2]
+    // const c = `
+    // (;GM[1]FF[4]CA[UTF-8]AP[CGoban:2]ST[2]
+    // RU[Japanese]SZ[9]KM[0.00]
+    // PW[White]PB[Black]SQ[aa]CR[ab]MA[ac]AW[dc][dd][ed][fd][gd][hd][id][ge][ff][fg][hg][fh][fi]AB[cb][cc][cd][ae][be][de][ee][cf][ef][dg][bh][dh][di]LB[da:K][ea:S][fa:L][db:P][eb:I]C[No komi, no prisoners yet - Black to win.]PL[B]
+    // (;B[fa]CR[fa]
+    // (;W[ga]CR[ga]
+    // (;B[fb]CR[fb]
+    // (;W[db]CR[db]
+    // ;B[da]CR[da]
+    // (;W[gb]CR[gb]
+    // ;B[fc]CR[fc]
+    // (;W[gc]CR[gc]
+    // (;B[ea]CR[ea]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
+    // (;B[ca]CR[ca]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
+    // (;W[eb]CR[eb]
+    // ;B[ea]CR[ea]
+    // ;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
+    // (;W[eb]CR[eb]
+    // ;B[ea]CR[ea]
+    // ;W[gb]CR[gb]
+    // ;B[fc]CR[fc]
+    // ;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
+    // (;W[eb]CR[eb]
+    // ;B[ea]CR[ea]
+    // ;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[gb]CR[gb]
+    // ;B[fc]CR[fc]
+    // ;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
+    // (;B[da]CR[da]
+    // ;W[fb]CR[fb]
+    // ;B[ea]CR[ea]
+    // ;W[gb]CR[gb]
+    // ;B[eb]CR[eb]
+    // ;W[ec]CR[ec]
+    // ;B[db]CR[db]C[Jigo])
+    // (;B[ea]CR[ea]
+    // (;W[fb]CR[fb]
+    // (;B[da]CR[da]
+    // ;W[gb]CR[gb]
+    // ;B[eb]CR[eb]
+    // ;W[ec]CR[ec]
+    // ;B[db]CR[db]C[Jigo])
+    // (;B[db]CR[db]
+    // ;W[eb]CR[eb]
+    // ;B[da]CR[da]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // (;B[da]CR[da]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[gb]CR[gb]
+    // ;W[da]CR[da]
+    // (;B[ha]CR[ha]
+    // ;W[ib]CR[ib]
+    // ;B[fc]CR[fc]
+    // ;W[hb]CR[hb]C[B dies.])
+    // (;B[fc]CR[fc]
+    // ;W[hb]CR[hb]
+    // ;B[ha]CR[ha]
+    // ;W[hc]CR[hc]C[B dies.])))
+    // (;B[gb]CR[gb]
+    // ;W[da]CR[da]
+    // ;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // (;B[ha]CR[ha]
+    // ;W[ib]CR[ib]
+    // ;B[fc]CR[fc]
+    // ;W[hb]CR[hb]C[B dies.])
+    // (;B[fc]CR[fc]
+    // ;W[hb]CR[hb]
+    // ;B[ha]CR[ha]
+    // ;W[hc]CR[hc]C[B dies.])))
+    // (;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[gb]CR[gb]
+    // ;B[fb]CR[fb]
+    // ;W[fc]CR[fc]
+    // ;B[eb]CR[eb]C[Jigo])
+    // (;W[gb]CR[gb]C[Bad for W]
+    // ;B[db]CR[db]
+    // ;W[fb]CR[fb]
+    // ;B[eb]CR[eb]
+    // ;W[ec]CR[ec]C[B +1]))
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[fb]CR[fb]
+    // ;B[ea]CR[ea]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[gb]CR[gb]
+    // ;W[ea]CR[ea]
+    // ;B[eb]CR[eb]
+    // ;W[fb]CR[fb]
+    // ;B[fc]CR[fc]
+    // ;W[db]CR[db]
+    // ;B[fa]CR[fa]
+    // ;W[da]CR[da]C[B dies.]))
+    // (;W[eb]CR[eb]
+    // ;B[ea]CR[ea]
+    // (;W[gb]CR[gb]
+    // (;B[ga]CR[ga]
+    // ;W[da]CR[da]
+    // ;B[db]CR[db]
+    // ;W[ha]CR[ha]
+    // ;B[ca]CR[ca]
+    // ;W[fb]CR[fb]
+    // ;B[da]CR[da]
+    // ;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
+    // (;B[db]CR[db]
+    // ;W[fb]CR[fb]
+    // ;B[ga]CR[ga]
+    // ;W[ha]CR[ha]
+    // ;B[da]CR[da]
+    // ;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
+    // (;B[da]CR[da]
+    // ;W[ga]CR[ga]
+    // ;B[fb]CR[fb]
+    // ;W[fc]CR[fc]
+    // ;B[db]CR[db]
+    // ;W[ec]CR[ec]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
+    // (;B[fb]CR[fb]
+    // ;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[fc]CR[fc]
+    // ;B[ga]CR[ga]
+    // ;W[ha]CR[ha]
+    // ;B[ca]CR[ca]
+    // ;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
+    // jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
+    // (;W[da]CR[da]C[Bad for W]
+    // ;B[db]CR[db]
+    // ;W[fb]CR[fb]
+    // ;B[ga]CR[ga]
+    // (;W[hb]CR[hb]
+    // (;B[ha]CR[ha]
+    // ;W[gb]CR[gb]
+    // ;B[ca]CR[ca]
+    // ;W[ib]CR[ib]C[B +3])
+    // (;B[gb]CR[gb]
+    // ;W[gc]CR[gc]
+    // ;B[ca]CR[ca]
+    // ;W[ha]CR[ha]
+    // ;B[da]CR[da]C[B +2]))
+    // (;W[ha]CR[ha]C[Bad for W]
+    // (;B[gb]CR[gb]
+    // ;W[hb]CR[hb]
+    // ;B[gc]CR[gc]
+    // ;W[hc]CR[hc]
+    // ;B[ca]CR[ca]
+    // ;W[fc]CR[fc]
+    // ;B[da]CR[da]C[B +4])
+    // (;B[ca]CR[ca]
+    // ;W[gb]CR[gb]
+    // ;B[da]CR[da]
+    // ;W[hb]CR[hb]C[B +1])))))
+    // (;B[da]CR[da]
+    // ;W[fb]CR[fb]
+    // (;B[fa]CR[fa]
+    // ;W[ga]CR[ga]
+    // (;B[ea]CR[ea]
+    // ;W[gb]CR[gb]
+    // ;B[eb]CR[eb]
+    // ;W[ec]CR[ec]
+    // ;B[db]CR[db]C[Jigo])
+    // (;B[eb]CR[eb]
+    // ;W[ea]CR[ea]
+    // (;B[db]CR[db]
+    // ;W[fa]CR[fa]
+    // ;B[ec]CR[ec]
+    // ;W[fc]CR[fc]C[W +1])
+    // (;B[ec]CR[ec]
+    // ;W[db]CR[db]
+    // (;B[ca]CR[ca]
+    // ;W[fc]CR[fc]C[W +7])
+    // (;B[fa]CR[fa]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7]))))
+    // (;B[eb]CR[eb]
+    // ;W[fa]CR[fa]
+    // ;B[ec]CR[ec]
+    // ;W[fc]CR[fc]
+    // ;B[db]CR[db]C[W +1]))
+    // (;B[ea]CR[ea]
+    // ;W[fb]CR[fb]
+    // (;B[fa]CR[fa]
+    // ;W[ga]CR[ga]
+    // (;B[da]CR[da]
+    // ;W[gb]CR[gb]
+    // ;B[eb]CR[eb]
+    // ;W[ec]CR[ec]
+    // ;B[db]CR[db]C[Jigo])
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // (;B[da]CR[da]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[gb]CR[gb]
+    // ;W[da]CR[da]
+    // ;B[ha]CR[ha]
+    // ;W[ib]CR[ib]
+    // ;B[fc]CR[fc]
+    // ;W[hb]CR[hb]C[B dies.]))
+    // (;B[db]CR[db]
+    // ;W[eb]CR[eb]
+    // ;B[da]CR[da]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[gb]CR[gb]
+    // ;W[da]CR[da]
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // ;B[ha]CR[ha]
+    // ;W[ib]CR[ib]
+    // ;B[fc]CR[fc]
+    // ;W[hb]CR[hb]C[B dies.])
+    // (;B[ha]CR[ha]
+    // ;W[eb]CR[eb]
+    // ;B[ib]CR[ib]
+    // ;W[ga]CR[ga]
+    // ;B[hc]CR[hc]
+    // ;W[fa]CR[fa]C[B dies.])))
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[fa]CR[fa]
+    // ;B[ec]CR[ec]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]C[W +2]))
+    // (;B[eb]CR[eb]
+    // ;W[db]CR[db]
+    // ;B[da]CR[da]
+    // ;W[fb]CR[fb]
+    // (;B[fa]CR[fa]
+    // (;W[ga]CR[ga]
+    // (;B[ea]CR[ea]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]
+    // ;W[gb]CR[gb]C[W +1])
+    // (;B[ec]CR[ec]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7])
+    // (;B[gb]CR[gb]
+    // ;W[ea]CR[ea]
+    // ;B[ca]CR[ca]
+    // ;W[ec]CR[ec]C[W +7]))
+    // (;W[gb]CR[gb]C[As W can win the ko, wG9 is 2 points better.]
+    // (;B[ga]CR[ga]
+    // ;W[ha]CR[ha]
+    // (;B[ea]CR[ea]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]
+    // ;W[hb]CR[hb]C[B +1])
+    // (;B[ec]CR[ec]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7]))
+    // (;B[ec]CR[ec]
+    // (;W[ga]CR[ga]
+    // (;B[ea]CR[ea]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]C[Jigo])
+    // (;B[ca]CR[ca]
+    // ;W[ea]CR[ea]
+    // ;B[]
+    // ;W[fc]CR[fc]C[W +6]))
+    // (;W[fc]CR[fc]
+    // ;B[ea]CR[ea]
+    // ;W[ga]CR[ga]
+    // ;B[ca]CR[ca]C[Jigo]))))
+    // (;B[ec]CR[ec]
+    // ;W[fa]CR[fa]
+    // ;B[ea]CR[ea]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]C[W +2])
+    // (;B[ea]CR[ea]
+    // ;W[fa]CR[fa]
+    // ;B[ec]CR[ec]
+    // ;W[fc]CR[fc]
+    // ;B[ca]CR[ca]C[W +2])
+    // (;B[gb]CR[gb]
+    // (;W[fa]CR[fa]
+    // (;B[ea]CR[ea]
+    // ;W[ec]CR[ec]
+    // ;B[ca]CR[ca]C[W +4])
+    // (;B[fc]CR[fc]
+    // ;W[ec]CR[ec]
+    // (;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7])
+    // (;B[ga]CR[ga]
+    // ;W[gc]CR[gc]
+    // ;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7])))
+    // (;W[ec]CR[ec]
+    // (;B[ea]CR[ea]
+    // ;W[fa]CR[fa]
+    // ;B[ca]CR[ca]C[W +4])
+    // (;B[fa]CR[fa]
+    // ;W[ea]CR[ea]
+    // ;B[ca]CR[ca]
+    // ;W[ga]CR[ga]C[W +7]))))
+    // (;B[db]CR[db]
+    // ;W[eb]CR[eb]
+    // (;B[ea]CR[ea]
+    // ;W[fa]CR[fa]
+    // (;B[da]CR[da]
+    // ;W[fb]CR[fb]C[W +3])
+    // (;B[fb]CR[fb]
+    // ;W[da]CR[da]
+    // ;B[ga]CR[ga]
+    // ;W[ea]CR[ea]
+    // ;B[ca]CR[ca]
+    // ;W[ec]CR[ec]C[W +7]))
+    // (;B[fb]CR[fb]
+    // ;W[da]CR[da]
+    // ;B[ca]CR[ca]
+    // ;W[ea]CR[ea]C[W +7])))
+    // `;
+    // const c = `(;AP[goproblems]AW[bp]AW[cp]AW[cr]AW[dr]AB[er][mk]AB[fq]AB[ep]AB[eo]AW[dp]AB[do]AW[co]AB[bo]AB[bn]AB[cn]AB[dm]AB[dq]AW[ao]TR[dq]SQ[br]SQ[bq]SQ[aq]SQ[ar]SQ[as]SQ[bs]SQ[cs]C[Black has just played the marked move. White to live.];W[bs];B[ar](;W[ds])(;W[cq];B[ds])(;W[aq];B[ds]TR[cq]TR[br]C[Dieeeeeed.]))`;
+    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
 RU[Japanese]SZ[9]KM[0.00]
-PW[White]PB[Black]SQ[aa]CR[ab]MA[ac]AW[dc][dd][ed][fd][gd][hd][id][ge][ff][fg][hg][fh][fi]AB[cb][cc][cd][ae][be][de][ee][cf][ef][dg][bh][dh][di]LB[da:K][ea:S][fa:L][db:P][eb:I]C[No komi, no prisoners yet - Black to win.]PL[B]
-(;B[fa]CR[fa]
-(;W[ga]CR[ga]
-(;B[fb]CR[fb]
-(;W[db]CR[db]
-;B[da]CR[da]
-(;W[gb]CR[gb]
-;B[fc]CR[fc]
-(;W[gc]CR[gc]
-(;B[ea]CR[ea]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
-(;B[ca]CR[ca]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
-(;W[eb]CR[eb]
-;B[ea]CR[ea]
-;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
-(;W[eb]CR[eb]
-;B[ea]CR[ea]
-;W[gb]CR[gb]
-;B[fc]CR[fc]
-;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
-(;W[eb]CR[eb]
-;B[ea]CR[ea]
-;W[db]CR[db]
-;B[da]CR[da]
-;W[gb]CR[gb]
-;B[fc]CR[fc]
-;W[gc]CR[gc]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
-(;B[da]CR[da]
-;W[fb]CR[fb]
-;B[ea]CR[ea]
-;W[gb]CR[gb]
-;B[eb]CR[eb]
-;W[ec]CR[ec]
-;B[db]CR[db]C[Jigo])
-(;B[ea]CR[ea]
-(;W[fb]CR[fb]
-(;B[da]CR[da]
-;W[gb]CR[gb]
-;B[eb]CR[eb]
-;W[ec]CR[ec]
-;B[db]CR[db]C[Jigo])
-(;B[db]CR[db]
-;W[eb]CR[eb]
-;B[da]CR[da]
-;W[gb]CR[gb]C[W +1])
-(;B[eb]CR[eb]
-;W[db]CR[db]
-(;B[da]CR[da]
-;W[ec]CR[ec]
-;B[ca]CR[ca]
-;W[gb]CR[gb]C[W +1])
-(;B[gb]CR[gb]
-;W[da]CR[da]
-(;B[ha]CR[ha]
-;W[ib]CR[ib]
-;B[fc]CR[fc]
-;W[hb]CR[hb]C[B dies.])
-(;B[fc]CR[fc]
-;W[hb]CR[hb]
-;B[ha]CR[ha]
-;W[hc]CR[hc]C[B dies.])))
-(;B[gb]CR[gb]
-;W[da]CR[da]
-;B[eb]CR[eb]
-;W[db]CR[db]
-(;B[ha]CR[ha]
-;W[ib]CR[ib]
-;B[fc]CR[fc]
-;W[hb]CR[hb]C[B dies.])
-(;B[fc]CR[fc]
-;W[hb]CR[hb]
-;B[ha]CR[ha]
-;W[hc]CR[hc]C[B dies.])))
-(;W[db]CR[db]
-;B[da]CR[da]
-;W[gb]CR[gb]
-;B[fb]CR[fb]
-;W[fc]CR[fc]
-;B[eb]CR[eb]C[Jigo])
-(;W[gb]CR[gb]C[Bad for W]
-;B[db]CR[db]
-;W[fb]CR[fb]
-;B[eb]CR[eb]
-;W[ec]CR[ec]C[B +1]))
-(;B[eb]CR[eb]
-;W[db]CR[db]
-;B[da]CR[da]
-;W[fb]CR[fb]
-;B[ea]CR[ea]
-;W[ec]CR[ec]
-;B[ca]CR[ca]
-;W[gb]CR[gb]C[W +1])
-(;B[gb]CR[gb]
-;W[ea]CR[ea]
-;B[eb]CR[eb]
-;W[fb]CR[fb]
-;B[fc]CR[fc]
-;W[db]CR[db]
-;B[fa]CR[fa]
-;W[da]CR[da]C[B dies.]))
-(;W[eb]CR[eb]
-;B[ea]CR[ea]
-(;W[gb]CR[gb]
-(;B[ga]CR[ga]
-;W[da]CR[da]
-;B[db]CR[db]
-;W[ha]CR[ha]
-;B[ca]CR[ca]
-;W[fb]CR[fb]
-;B[da]CR[da]
-;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
-(;B[db]CR[db]
-;W[fb]CR[fb]
-;B[ga]CR[ga]
-;W[ha]CR[ha]
-;B[da]CR[da]
-;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
-(;B[da]CR[da]
-;W[ga]CR[ga]
-;B[fb]CR[fb]
-;W[fc]CR[fc]
-;B[db]CR[db]
-;W[ec]CR[ec]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.])
-(;B[fb]CR[fb]
-;W[db]CR[db]
-;B[da]CR[da]
-;W[fc]CR[fc]
-;B[ga]CR[ga]
-;W[ha]CR[ha]
-;B[ca]CR[ca]
-;W[hb]CR[hb]C[RIGHT You won by 1. When Black has no large ko threats, and the value of sente is worth less than 2, a large monkey
-jump is the best 1st move. For values of sente greater than 2 (again when B has no large ko threats), lmj & the 1 space jump give the same result.]))
-(;W[da]CR[da]C[Bad for W]
-;B[db]CR[db]
-;W[fb]CR[fb]
-;B[ga]CR[ga]
-(;W[hb]CR[hb]
-(;B[ha]CR[ha]
-;W[gb]CR[gb]
-;B[ca]CR[ca]
-;W[ib]CR[ib]C[B +3])
-(;B[gb]CR[gb]
-;W[gc]CR[gc]
-;B[ca]CR[ca]
-;W[ha]CR[ha]
-;B[da]CR[da]C[B +2]))
-(;W[ha]CR[ha]C[Bad for W]
-(;B[gb]CR[gb]
-;W[hb]CR[hb]
-;B[gc]CR[gc]
-;W[hc]CR[hc]
-;B[ca]CR[ca]
-;W[fc]CR[fc]
-;B[da]CR[da]C[B +4])
-(;B[ca]CR[ca]
-;W[gb]CR[gb]
-;B[da]CR[da]
-;W[hb]CR[hb]C[B +1])))))
-(;B[da]CR[da]
-;W[fb]CR[fb]
-(;B[fa]CR[fa]
-;W[ga]CR[ga]
-(;B[ea]CR[ea]
-;W[gb]CR[gb]
-;B[eb]CR[eb]
-;W[ec]CR[ec]
-;B[db]CR[db]C[Jigo])
-(;B[eb]CR[eb]
-;W[ea]CR[ea]
-(;B[db]CR[db]
-;W[fa]CR[fa]
-;B[ec]CR[ec]
-;W[fc]CR[fc]C[W +1])
-(;B[ec]CR[ec]
-;W[db]CR[db]
-(;B[ca]CR[ca]
-;W[fc]CR[fc]C[W +7])
-(;B[fa]CR[fa]
-;W[fc]CR[fc]
-;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7]))))
-(;B[eb]CR[eb]
-;W[fa]CR[fa]
-;B[ec]CR[ec]
-;W[fc]CR[fc]
-;B[db]CR[db]C[W +1]))
-(;B[ea]CR[ea]
-;W[fb]CR[fb]
-(;B[fa]CR[fa]
-;W[ga]CR[ga]
-(;B[da]CR[da]
-;W[gb]CR[gb]
-;B[eb]CR[eb]
-;W[ec]CR[ec]
-;B[db]CR[db]C[Jigo])
-(;B[eb]CR[eb]
-;W[db]CR[db]
-(;B[da]CR[da]
-;W[ec]CR[ec]
-;B[ca]CR[ca]
-;W[gb]CR[gb]C[W +1])
-(;B[gb]CR[gb]
-;W[da]CR[da]
-;B[ha]CR[ha]
-;W[ib]CR[ib]
-;B[fc]CR[fc]
-;W[hb]CR[hb]C[B dies.]))
-(;B[db]CR[db]
-;W[eb]CR[eb]
-;B[da]CR[da]
-;W[gb]CR[gb]C[W +1])
-(;B[gb]CR[gb]
-;W[da]CR[da]
-(;B[eb]CR[eb]
-;W[db]CR[db]
-;B[ha]CR[ha]
-;W[ib]CR[ib]
-;B[fc]CR[fc]
-;W[hb]CR[hb]C[B dies.])
-(;B[ha]CR[ha]
-;W[eb]CR[eb]
-;B[ib]CR[ib]
-;W[ga]CR[ga]
-;B[hc]CR[hc]
-;W[fa]CR[fa]C[B dies.])))
-(;B[eb]CR[eb]
-;W[db]CR[db]
-;B[da]CR[da]
-;W[fa]CR[fa]
-;B[ec]CR[ec]
-;W[fc]CR[fc]
-;B[ca]CR[ca]C[W +2]))
-(;B[eb]CR[eb]
-;W[db]CR[db]
-;B[da]CR[da]
-;W[fb]CR[fb]
-(;B[fa]CR[fa]
-(;W[ga]CR[ga]
-(;B[ea]CR[ea]
-;W[ec]CR[ec]
-;B[ca]CR[ca]
-;W[gb]CR[gb]C[W +1])
-(;B[ec]CR[ec]
-;W[fc]CR[fc]
-;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7])
-(;B[gb]CR[gb]
-;W[ea]CR[ea]
-;B[ca]CR[ca]
-;W[ec]CR[ec]C[W +7]))
-(;W[gb]CR[gb]C[As W can win the ko, wG9 is 2 points better.]
-(;B[ga]CR[ga]
-;W[ha]CR[ha]
-(;B[ea]CR[ea]
-;W[ec]CR[ec]
-;B[ca]CR[ca]
-;W[hb]CR[hb]C[B +1])
-(;B[ec]CR[ec]
-;W[fc]CR[fc]
-;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7]))
-(;B[ec]CR[ec]
-(;W[ga]CR[ga]
-(;B[ea]CR[ea]
-;W[fc]CR[fc]
-;B[ca]CR[ca]C[Jigo])
-(;B[ca]CR[ca]
-;W[ea]CR[ea]
-;B[]
-;W[fc]CR[fc]C[W +6]))
-(;W[fc]CR[fc]
-;B[ea]CR[ea]
-;W[ga]CR[ga]
-;B[ca]CR[ca]C[Jigo]))))
-(;B[ec]CR[ec]
-;W[fa]CR[fa]
-;B[ea]CR[ea]
-;W[fc]CR[fc]
-;B[ca]CR[ca]C[W +2])
-(;B[ea]CR[ea]
-;W[fa]CR[fa]
-;B[ec]CR[ec]
-;W[fc]CR[fc]
-;B[ca]CR[ca]C[W +2])
-(;B[gb]CR[gb]
-(;W[fa]CR[fa]
-(;B[ea]CR[ea]
-;W[ec]CR[ec]
-;B[ca]CR[ca]C[W +4])
-(;B[fc]CR[fc]
-;W[ec]CR[ec]
-(;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7])
-(;B[ga]CR[ga]
-;W[gc]CR[gc]
-;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7])))
-(;W[ec]CR[ec]
-(;B[ea]CR[ea]
-;W[fa]CR[fa]
-;B[ca]CR[ca]C[W +4])
-(;B[fa]CR[fa]
-;W[ea]CR[ea]
-;B[ca]CR[ca]
-;W[ga]CR[ga]C[W +7]))))
-(;B[db]CR[db]
-;W[eb]CR[eb]
-(;B[ea]CR[ea]
-;W[fa]CR[fa]
-(;B[da]CR[da]
-;W[fb]CR[fb]C[W +3])
-(;B[fb]CR[fb]
-;W[da]CR[da]
-;B[ga]CR[ga]
-;W[ea]CR[ea]
-;B[ca]CR[ca]
-;W[ec]CR[ec]C[W +7]))
-(;B[fb]CR[fb]
-;W[da]CR[da]
-;B[ca]CR[ca]
-;W[ea]CR[ea]C[W +7])))
+PW[White]PB[Black]
+;B[fd]
+;W[de]
+;B[dd]
+;W[ce]
+;B[cf]
+;W[df]
+;B[ef]
+;W[dg]
+;B[eg]
+;W[cd]
+;B[dc]
+;W[cc]
+;B[db]
+;W[ic]
+;B[ie]
+;W[ig]
+;B[ii])
 `;
+
     let sgf = new Sgf(c)
     console.log(sgf.toSgf());
     console.log(sgf.root.model.id);
@@ -402,7 +425,7 @@ jump is the best 1st move. For values of sente greater than 2 (again when B has 
     let g = new GhostBan({
       padding: 30,
       interactive: true,
-      zoom: false,
+      zoom: true,
       extent: 3,
     });
     markup[0][18] = "sq|pos";
@@ -418,11 +441,12 @@ jump is the best 1st move. For values of sente greater than 2 (again when B has 
     // g.setCursor(Cursor.Triangle)
     // g.setCursor(Cursor.Text, "B")
     // g.setCursor(Cursor.BlackStone)
-    g.setCursor(Cursor.WhiteStone);
-    // g.calcBoardVisibleArea(true);
+    g.setCursor(Cursor.BlackStone);
+    g.setTurn(Ki.Black)
+    g.calcBoardVisibleArea(true);
     g.setTheme(Theme.Flat)
-
     g.render();
+
 
     dom.onclick = () => {
       i = g.cursorPosition[0];

@@ -846,8 +846,8 @@ export const calcVisibleArea = (
   const center = calcCenter(mat);
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat, boardSize);
   let visibleArea = [
-    [0, 18],
-    [0, 18],
+    [0, boardSize - 1],
+    [0, boardSize - 1],
   ];
   let visibleSize = boardSize - 1;
   if (center === Center.TopLeft) {
@@ -865,7 +865,7 @@ export const calcVisibleArea = (
       boardSize - 1
     );
     visibleArea = [
-      [boardSize - 1 - visibleSize, 18],
+      [boardSize - 1 - visibleSize, boardSize - 1],
       [0, visibleSize],
     ];
   } else if (center === Center.BottomLeft) {
@@ -875,7 +875,7 @@ export const calcVisibleArea = (
     );
     visibleArea = [
       [0, visibleSize],
-      [boardSize - 1 - visibleSize, 18],
+      [boardSize - 1 - visibleSize, boardSize - 1],
     ];
   } else if (center === Center.BottomRight) {
     visibleSize = Math.min(
@@ -886,8 +886,8 @@ export const calcVisibleArea = (
       boardSize - 1
     );
     visibleArea = [
-      [boardSize - 1 - visibleSize, 18],
-      [boardSize - 1 - visibleSize, 18],
+      [boardSize - 1 - visibleSize, boardSize - 1],
+      [boardSize - 1 - visibleSize, boardSize - 1],
     ];
   }
   return {visibleArea, center};

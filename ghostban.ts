@@ -111,13 +111,22 @@ export class GhostBan {
     this.transMat = new DOMMatrix();
     this.analysis = null;
     this.visibleArea = [
-      [0, 18],
-      [0, 18],
+      [0, this.options.boardSize - 1],
+      [0, this.options.boardSize - 1],
     ];
   }
 
   setTurn(turn: Ki) {
     this.turn = turn;
+  }
+
+  setBoardSize(size: number) {
+    this.options.boardSize = size;
+    this.visibleArea = [
+      [0, this.options.boardSize - 1],
+      [0, this.options.boardSize - 1],
+    ];
+    this.render();
   }
 
   resize() {
@@ -748,7 +757,7 @@ export class GhostBan {
           ctx.fillText(l, x, board.height - offset);
         }
       });
-      A1_NUMBERS.forEach((l: number, index) => {
+      A1_NUMBERS.slice(-this.options.boardSize).forEach((l: number, index) => {
         const y = space * index + scaledPadding;
         if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
           ctx.fillText(l.toString(), offset, y);
