@@ -1232,16 +1232,18 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
       if (i < 0 || j < 0) return;
-      li = i;
-      lj = j;
-      mat = move(mat, i, j, m.token === 'B' ? Ki.Black : Ki.White);
+      if (i < size && j < size) {
+        li = i;
+        lj = j;
+        mat = move(mat, i, j, m.token === 'B' ? Ki.Black : Ki.White);
 
-      if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
-        numMarkup[li][lj] = node.model.number || index - setupCount;
-      }
+        if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
+          numMarkup[li][lj] = node.model.number || index - setupCount;
+        }
 
-      if (index === path.length - 1) {
-        markup[li][lj] = Markup.Current;
+        if (index === path.length - 1) {
+          markup[li][lj] = Markup.Current;
+        }
       }
     });
 
@@ -1257,8 +1259,10 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
         const j = SGF_LETTERS.indexOf(value[1]);
         li = i;
         lj = j;
-        mat[i][j] = setup.token === 'AB' ? 1 : -1;
-        if (setup.token === 'AE') mat[i][j] = 0;
+        if (i < size && j < size) {
+          mat[i][j] = setup.token === 'AB' ? 1 : -1;
+          if (setup.token === 'AE') mat[i][j] = 0;
+        }
       });
     });
   });
@@ -1270,25 +1274,27 @@ export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
       const i = SGF_LETTERS.indexOf(value[0]);
       const j = SGF_LETTERS.indexOf(value[1]);
       if (i < 0 || j < 0) return;
-      let mark;
-      switch (token) {
-        case 'CR':
-          mark = Markup.Circle;
-          break;
-        case 'SQ':
-          mark = Markup.Square;
-          break;
-        case 'TR':
-          mark = Markup.Triangle;
-          break;
-        case 'MA':
-          mark = Markup.Cross;
-          break;
-        default: {
-          mark = value.split(':')[1];
+      if (i < size && j < size) {
+        let mark;
+        switch (token) {
+          case 'CR':
+            mark = Markup.Circle;
+            break;
+          case 'SQ':
+            mark = Markup.Square;
+            break;
+          case 'TR':
+            mark = Markup.Triangle;
+            break;
+          case 'MA':
+            mark = Markup.Cross;
+            break;
+          default: {
+            mark = value.split(':')[1];
+          }
         }
+        markup[i][j] = mark;
       }
-      markup[i][j] = mark;
     });
   });
 

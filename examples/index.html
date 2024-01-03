@@ -413,7 +413,7 @@
     // ;W[ig]
     // ;B[ii])
     // `;
-    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]SZ[19]AB[de][fg]AW[dc][fd][he][lk][jl]SQ[hd]SQ[jg]SQ[ej]CR[ca]CR[ea]CR[ga]RU[Japanese]PW[White]PB[Black](;B[fd];W[de](;B[dd];W[ce];B[cf];W[df];B[ef];W[dg];B[eg];W[cd];B[dc];W[cc];B[db];W[ic];B[ie];W[ig];B[ii]CR[fh]CR[hl]CR[ik]CR[dj]CR[gd]CR[kc]CR[ib]CR[fb]CR[lc]CR[kj]LB[ag:A]LB[gi:B]LB[ge:C]LB[ld:D]C[RIGHT])(;B[je];W[jf](;B[ih];W[gj];B[fj])(;B[kd];W[kh];B[hj];W[dj];B[dg]CR[dd]CR[de]CR[hf]CR[hh]CR[gj]CR[hi]LB[bi:A]LB[di:B]LB[fk:C])))(;B[ae];W[cf];B[dh];W[fi];B[ji]))`;
+    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]SZ[9]AB[de][fg]AW[dc][fd][he][lk][jl]SQ[hd]SQ[jg]SQ[ej]CR[ca]CR[ea]CR[ga]RU[Japanese]PW[White]PB[Black](;B[fd];W[de](;B[dd];W[ce];B[cf];W[df];B[ef];W[dg];B[eg];W[cd];B[dc];W[cc];B[db];W[ic];B[ie];W[ig];B[ii]CR[fh]CR[hl]CR[ik]CR[dj]CR[gd]CR[kc]CR[ib]CR[fb]CR[lc]CR[kj]LB[ag:A]LB[gi:B]LB[ge:C]LB[ld:D]C[RIGHT])(;B[je];W[jf](;B[ih];W[gj];B[fj])(;B[kd];W[kh];B[hj];W[dj];B[dg]CR[dd]CR[de]CR[hf]CR[hh]CR[gj]CR[hi]LB[bi:A]LB[di:B]LB[fk:C])))(;B[ae];W[cf];B[dh];W[fi];B[ji]))`;
 
     let sgf = new Sgf(c)
     // console.log(sgf.toSgf());
@@ -445,7 +445,7 @@
     // markup[0][16] = "ci|neu";
     // markup[0][15] = "tri|node";
     g.init(dom);
-    g.setBoardSize(9);
+    // g.setBoardSize(9);
     g.setMat(mat);
     g.setMarkup(markup);
     // g.setCursor(Cursor.Circle)
