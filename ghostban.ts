@@ -338,8 +338,8 @@ export class GhostBan {
     const visibleArea = zoom
       ? zoomedVisibleArea
       : [
-          [0, 18],
-          [0, 18],
+          [0, boardSize - 1],
+          [0, boardSize - 1],
         ];
 
     this.visibleArea = visibleArea;
