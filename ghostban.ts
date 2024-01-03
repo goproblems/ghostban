@@ -719,6 +719,7 @@ export class GhostBan {
 
   drawStars = (board = this.board) => {
     if (!board) return;
+    if (this.options.boardSize !== 19) return;
 
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
