@@ -72,7 +72,7 @@ export class GhostBan {
     theme: Theme.BlackAndWhite,
     background: false,
     showAnalysis: false,
-    boardEdgeLineWidth: 10,
+    boardEdgeLineWidth: 5,
     boardLineWidth: 1,
     themeFlatBoardColor: '#ECB55A',
     positiveNodeColor: '#4d7c0f',
@@ -323,7 +323,7 @@ export class GhostBan {
     this.render();
   }
 
-  calcBoardVisibleArea(zoom: boolean) {
+  calcBoardVisibleArea(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     const {boardSize, extent} = this.options;
     const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
@@ -404,6 +404,7 @@ export class GhostBan {
   render() {
     const {mat} = this;
     if (this.mat && mat[0]) this.options.boardSize = mat[0].length;
+    this.calcBoardVisibleArea(this.options.zoom);
     this.clearAllCanvas();
     this.drawBoard();
     this.drawStones();
