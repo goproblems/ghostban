@@ -1208,18 +1208,21 @@ export const calcVariationsMarkup = (
 };
 
 /**
- * Calculates the matrix and markup matrix based on the given currentNode.
- *
+ * Calculates the mat and markup arrays based on the currentNode and defaultBoardSize.
  * @param currentNode The current node in the tree.
- * @returns An object containing the calculated matrix and markup.
+ * @param defaultBoardSize The default size of the board (optional, default is 19).
+ * @returns An object containing the mat and markup arrays.
  */
-export const calcMatAndMarkup = (currentNode: TreeModel.Node<SgfNode>) => {
+export const calcMatAndMarkup = (
+  currentNode: TreeModel.Node<SgfNode>,
+  defaultBoardSize = 19
+) => {
   const path = currentNode.getPath();
 
   let li, lj;
   let setupCount = 0;
   const root = currentNode.getPath()[0];
-  const size = parseInt(findProp(root, 'SZ')?.value || 19);
+  const size = parseInt(findProp(root, 'SZ')?.value || defaultBoardSize);
   let mat = zeros([size, size]);
   const markup = empty([size, size]);
   const numMarkup = empty([size, size]);

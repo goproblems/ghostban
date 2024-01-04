@@ -30,8 +30,7 @@ import {
   CircleSolidMarkup,
 } from './markups';
 
-let devicePixelRatio = window.devicePixelRatio || 1.0;
-// let devicePixelRatio = 1.0;
+let devicePixelRatio = 1.0;
 if (typeof window !== 'undefined') {
   devicePixelRatio = window.devicePixelRatio;
   // browser code
@@ -73,7 +72,7 @@ export class GhostBan {
     theme: Theme.BlackAndWhite,
     background: false,
     showAnalysis: false,
-    borderLineWidth: 3,
+    boardEdgeLineWidth: 10,
     boardLineWidth: 1,
     themeFlatBoardColor: '#ECB55A',
     positiveNodeColor: '#4d7c0f',
@@ -403,6 +402,8 @@ export class GhostBan {
   }
 
   render() {
+    const {mat} = this;
+    if (this.mat && mat[0]) this.options.boardSize = mat[0].length;
     this.clearAllCanvas();
     this.drawBoard();
     this.drawStones();
@@ -672,17 +673,19 @@ export class GhostBan {
   drawBoardLine = (board = this.board) => {
     if (!board) return;
     const {visibleArea, options} = this;
-    const {boardLineWidth, borderLineWidth} = options;
+    const {boardSize, boardLineWidth, boardEdgeLineWidth} = options;
     const ctx = board.getContext('2d');
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
-      // ctx.lineWidth = boardLineWidth * devicePixelRatio;
       ctx.fillStyle = '#000000';
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();
-        if (i === visibleArea[0][0] || i === visibleArea[0][1]) {
-          ctx.lineWidth = borderLineWidth;
+        if (
+          (visibleArea[0][0] === 0 && i === 0) ||
+          (visibleArea[0][1] === boardSize - 1 && i === boardSize - 1)
+        ) {
+          ctx.lineWidth = boardEdgeLineWidth * devicePixelRatio;
         } else {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
@@ -699,8 +702,11 @@ export class GhostBan {
 
       for (let i = visibleArea[1][0]; i <= visibleArea[1][1]; i++) {
         ctx.beginPath();
-        if (i === visibleArea[1][0] || i == visibleArea[1][1]) {
-          ctx.lineWidth = borderLineWidth;
+        if (
+          (visibleArea[1][0] === 0 && i === 0) ||
+          (visibleArea[1][1] === boardSize - 1 && i === boardSize - 1)
+        ) {
+          ctx.lineWidth = boardEdgeLineWidth * devicePixelRatio;
         } else {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
