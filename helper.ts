@@ -838,60 +838,55 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
   return {x: oox, y: ooy};
 };
 
-export const calcVisibleArea = (
+export function calcVisibleArea(
   mat: number[][],
-  boardSize = 19,
-  extent = 2
-) => {
-  const center = calcCenter(mat);
-  const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat, boardSize);
-  let visibleArea = [
-    [0, boardSize - 1],
-    [0, boardSize - 1],
-  ];
-  let visibleSize = boardSize - 1;
-  if (center === Center.TopLeft) {
-    visibleSize = Math.min(
-      Math.max(rightMost, bottomMost) + extent,
-      boardSize - 1
-    );
-    visibleArea = [
-      [0, visibleSize],
-      [0, visibleSize],
-    ];
-  } else if (center === Center.TopRight) {
-    visibleSize = Math.min(
-      Math.max(bottomMost + extent, boardSize - 1 - (leftMost - extent)),
-      boardSize - 1
-    );
-    visibleArea = [
-      [boardSize - 1 - visibleSize, boardSize - 1],
-      [0, visibleSize],
-    ];
-  } else if (center === Center.BottomLeft) {
-    visibleSize = Math.min(
-      Math.max(boardSize - 1 - (topMost - extent), rightMost + extent),
-      boardSize - 1
-    );
-    visibleArea = [
-      [0, visibleSize],
-      [boardSize - 1 - visibleSize, boardSize - 1],
-    ];
-  } else if (center === Center.BottomRight) {
-    visibleSize = Math.min(
-      Math.max(
-        boardSize - 1 - (topMost - extent),
-        boardSize - 1 - (leftMost - extent)
-      ),
-      boardSize - 1
-    );
-    visibleArea = [
-      [boardSize - 1 - visibleSize, boardSize - 1],
-      [boardSize - 1 - visibleSize, boardSize - 1],
-    ];
+  extent: number,
+  allowRectangle = false
+): number[][] {
+  let minRow = mat.length;
+  let maxRow = 0;
+  let minCol = mat[0].length;
+  let maxCol = 0;
+
+  for (let i = 0; i < mat.length; i++) {
+    for (let j = 0; j < mat[0].length; j++) {
+      if (mat[i][j] !== 0) {
+        minRow = Math.min(minRow, i);
+        maxRow = Math.max(maxRow, i);
+        minCol = Math.min(minCol, j);
+        maxCol = Math.max(maxCol, j);
+      }
+    }
   }
-  return {visibleArea, center};
-};
+
+  if (!allowRectangle) {
+    const maxRange = Math.max(maxRow - minRow, maxCol - minCol) + 2 * extent;
+    const centerRow = Math.floor((minRow + maxRow) / 2);
+    const centerCol = Math.floor((minCol + maxCol) / 2);
+    minRow = Math.max(0, centerRow - Math.floor(maxRange / 2));
+    maxRow = minRow + maxRange;
+    if (maxRow >= mat.length) {
+      maxRow = mat.length - 1;
+      minRow = maxRow - maxRange;
+    }
+    minCol = Math.max(0, centerCol - Math.floor(maxRange / 2));
+    maxCol = minCol + maxRange;
+    if (maxCol >= mat[0].length) {
+      maxCol = mat[0].length - 1;
+      minCol = maxCol - maxRange;
+    }
+  } else {
+    minRow = Math.max(0, minRow - extent);
+    maxRow = Math.min(mat.length - 1, maxRow + extent);
+    minCol = Math.max(0, minCol - extent);
+    maxCol = Math.min(mat[0].length - 1, maxCol + extent);
+  }
+
+  return [
+    [minRow, maxRow],
+    [minCol, maxCol],
+  ];
+}
 
 export function move(mat: number[][], i: number, j: number, ki: number) {
   if (i < 0 || j < 0) return mat;
@@ -931,102 +926,7 @@ export function showKi(mat: number[][], steps: string[], isCaptured = true) {
   };
 }
 
-export const calcTransform = (
-  size: number,
-  mat: number[][],
-  options: GhostBanOptions
-) => {
-  const {boardSize, extent, padding, zoom} = options;
-  const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
-    mat,
-    boardSize,
-    extent
-  );
-  const va = zoom
-    ? zoomedVisibleArea
-    : [
-        [0, 18],
-        [0, 18],
-      ];
-
-  const zoomedBoardSize = va[0][1] - va[0][0] + 1;
-  const {space} = calcSpaceAndScaledPadding(size, padding, boardSize);
-  // const scale = 1 / (zoomedBoardSize / boardSize);
-  const scale = size / (zoomedBoardSize * space + padding);
-  const clip = {
-    x: 0,
-    y: 0,
-    width: zoom ? size / scale : size,
-    height: zoom ? size / scale : size,
-  };
-  const transform: any = [];
-
-  if (
-    zoom &&
-    !(va[0][0] === 0 && va[0][1] === 18 && va[1][0] === 0 && va[1][1] === 18)
-  ) {
-    let offsetX = 0;
-    let offsetY = 0;
-    // const offset = this.options.padding;
-    const offset = padding * scale;
-
-    // This offset formula is not accurate, just try many time
-    // const offset = (padding * scale - (space * scale) / 2.5) * scale;
-
-    switch (center) {
-      case Center.TopLeft:
-        break;
-      case Center.TopRight:
-        clip.x = size - size / scale;
-        offsetX = va[0][0] * space * scale + offset;
-        break;
-      case Center.BottomLeft:
-        clip.y = size - size / scale;
-        offsetY = va[1][0] * space * scale + offset;
-        break;
-      case Center.BottomRight:
-        clip.x = size - size / scale;
-        clip.y = size - size / scale;
-        offsetX = va[0][0] * space * scale + offset;
-        offsetY = va[1][0] * space * scale + offset;
-        break;
-    }
-
-    return {
-      va,
-      scale,
-      translateX: -offsetX,
-      translateY: -offsetY,
-      center,
-      clip,
-      space,
-      // transform: [{translateX: -offsetX, translateY: -offsetY}, {scale}],
-      transform: [
-        {
-          translateX: -offsetX,
-          // translateX: 0,
-        },
-        {
-          translateY: -offsetY,
-          // translateY: 0,
-        },
-        {scale},
-      ],
-    };
-  } else {
-    return {
-      va,
-      scale: 1,
-      translateX: 0,
-      translateY: 0,
-      center,
-      clip,
-      space,
-      transform,
-    };
-  }
-};
-
+// TODO:
 export const handleMove = (
   mat: number[][],
   i: number,

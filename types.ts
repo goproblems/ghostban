@@ -14,6 +14,7 @@ export type GhostBanOptions = {
   showAnalysis: boolean;
   boardEdgeLineWidth: number;
   boardLineWidth: number;
+  boardLineExtent: number;
   themeFlatBoardColor: string;
   positiveNodeColor: string;
   negativeNodeColor: string;

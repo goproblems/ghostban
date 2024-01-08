@@ -2,7 +2,6 @@ import {compact} from 'lodash-es';
 import {calcVisibleArea, reverseOffset, zeros, empty, a1ToPos} from './helper';
 import {A1_LETTERS, A1_NUMBERS, RESOURCES} from './const';
 import {
-  Center,
   Cursor,
   Markup,
   Theme,
@@ -74,6 +73,7 @@ export class GhostBan {
     showAnalysis: false,
     boardEdgeLineWidth: 5,
     boardLineWidth: 1,
+    boardLineExtent: 0.5,
     themeFlatBoardColor: '#ECB55A',
     positiveNodeColor: '#4d7c0f',
     negativeNodeColor: '#b91c1c',
@@ -234,6 +234,7 @@ export class GhostBan {
 
   setOptions(options: GhostBanOptionsParams) {
     this.options = {...this.options, ...options};
+    this.render();
   }
 
   setMat(mat: number[][]) {
@@ -326,11 +327,7 @@ export class GhostBan {
   calcBoardVisibleArea(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     const {boardSize, extent} = this.options;
-    const {visibleArea: zoomedVisibleArea, center} = calcVisibleArea(
-      this.mat,
-      boardSize,
-      extent
-    );
+    const zoomedVisibleArea = calcVisibleArea(this.mat, extent, false);
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
     const cursorCtx = cursorCanvas?.getContext('2d');
@@ -355,21 +352,10 @@ export class GhostBan {
         let offsetY = 0;
 
         // const offset = this.options.padding;
-        const offset = this.options.padding * scale;
-        switch (center) {
-          case Center.TopLeft:
-            break;
-          case Center.TopRight:
-            offsetX = visibleArea[0][0] * space * scale + offset;
-            break;
-          case Center.BottomLeft:
-            offsetY = visibleArea[1][0] * space * scale + offset;
-            break;
-          case Center.BottomRight:
-            offsetX = visibleArea[0][0] * space * scale + offset;
-            offsetY = visibleArea[1][0] * space * scale + offset;
-            break;
-        }
+        // const offset = this.options.padding * scale;
+        offsetX = visibleArea[0][0] * space * scale;
+        offsetY = visibleArea[1][0] * space * scale;
+
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
         this.transMat.scaleSelf(scale, scale);
@@ -674,12 +660,21 @@ export class GhostBan {
   drawBoardLine = (board = this.board) => {
     if (!board) return;
     const {visibleArea, options} = this;
-    const {boardSize, boardLineWidth, boardEdgeLineWidth} = options;
+    const {
+      zoom,
+      boardSize,
+      boardLineWidth,
+      boardEdgeLineWidth,
+      boardLineExtent,
+    } = options;
     const ctx = board.getContext('2d');
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
+      const extendSpace = zoom ? boardLineExtent * space : 0;
+
       ctx.fillStyle = '#000000';
+      // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();
         if (
@@ -690,17 +685,17 @@ export class GhostBan {
         } else {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
-        ctx.moveTo(
-          i * space + scaledPadding,
-          scaledPadding + visibleArea[1][0] * space
-        );
-        ctx.lineTo(
-          i * space + scaledPadding,
-          space * visibleArea[1][1] + scaledPadding
-        );
+        // let startPointY = scaledPadding + visibleArea[1][0] * space;
+        let startPointY = scaledPadding + visibleArea[1][0] * space;
+        let endPointY = space * visibleArea[1][1] + scaledPadding;
+        if (visibleArea[1][0] > 0) startPointY -= extendSpace;
+        if (visibleArea[1][1] < boardSize - 1) endPointY += extendSpace;
+        ctx.moveTo(i * space + scaledPadding, startPointY);
+        ctx.lineTo(i * space + scaledPadding, endPointY);
         ctx.stroke();
       }
 
+      // horizontal
       for (let i = visibleArea[1][0]; i <= visibleArea[1][1]; i++) {
         ctx.beginPath();
         if (
@@ -711,14 +706,12 @@ export class GhostBan {
         } else {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
-        ctx.moveTo(
-          visibleArea[0][0] * space + scaledPadding,
-          i * space + scaledPadding
-        );
-        ctx.lineTo(
-          visibleArea[0][1] * space + scaledPadding,
-          i * space + scaledPadding
-        );
+        let startPointX = scaledPadding + visibleArea[0][0] * space;
+        let endPointX = space * visibleArea[0][1] + scaledPadding;
+        if (visibleArea[0][0] > 0) startPointX -= extendSpace;
+        if (visibleArea[0][1] < boardSize - 1) endPointX += extendSpace;
+        ctx.moveTo(startPointX, i * space + scaledPadding);
+        ctx.lineTo(endPointX, i * space + scaledPadding);
         ctx.stroke();
       }
     }
@@ -797,9 +790,10 @@ export class GhostBan {
     let space = 0;
     let scaledPadding = 0;
     if (canvas) {
-      const {padding, boardSize} = this.options;
+      const {padding, boardSize, boardLineExtent, zoom} = this.options;
+      const divisor = zoom ? boardSize + boardLineExtent : boardSize;
       scaledPadding = padding;
-      space = (canvas.width - padding * 2) / boardSize;
+      space = (canvas.width - padding * 2) / divisor;
       scaledPadding = scaledPadding + space / 2;
     }
     return {space, scaledPadding};
