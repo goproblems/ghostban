@@ -860,21 +860,45 @@ export function calcVisibleArea(
   }
 
   if (!allowRectangle) {
-    const maxRange = Math.max(maxRow - minRow, maxCol - minCol) + 2 * extent;
-    const centerRow = Math.floor((minRow + maxRow) / 2);
-    const centerCol = Math.floor((minCol + maxCol) / 2);
-    minRow = Math.max(0, centerRow - Math.floor(maxRange / 2));
+    let minRowWithExtent = Math.max(minRow - extent, 0);
+    let maxRowWithExtent = Math.min(maxRow + extent, mat.length);
+    let minColWithExtent = Math.max(minCol - extent, 0);
+    let maxColWithExtent = Math.min(maxCol + extent, mat[0].length);
+
+    // const maxRange = Math.max(maxRow - minRow, maxCol - minCol) + 2 * extent;
+    const maxRange = Math.max(
+      maxRowWithExtent - minRowWithExtent,
+      maxColWithExtent - minColWithExtent
+    );
+
+    minRow = minRowWithExtent;
     maxRow = minRow + maxRange;
     if (maxRow >= mat.length) {
       maxRow = mat.length - 1;
       minRow = maxRow - maxRange;
     }
-    minCol = Math.max(0, centerCol - Math.floor(maxRange / 2));
+
+    minCol = minColWithExtent;
     maxCol = minCol + maxRange;
     if (maxCol >= mat[0].length) {
       maxCol = mat[0].length - 1;
       minCol = maxCol - maxRange;
     }
+
+    // const centerRow = Math.floor((minRow + maxRow) / 2);
+    // const centerCol = Math.floor((minCol + maxCol) / 2);
+    // minRow = Math.max(0, centerRow - Math.floor(maxRange / 2));
+    // maxRow = minRow + maxRange;
+    // if (maxRow >= mat.length) {
+    //   maxRow = mat.length - 1;
+    //   minRow = maxRow - maxRange;
+    // }
+    // minCol = Math.max(0, centerCol - Math.floor(maxRange / 2));
+    // maxCol = minCol + maxRange;
+    // if (maxCol >= mat[0].length) {
+    //   maxCol = mat[0].length - 1;
+    //   minCol = maxCol - maxRange;
+    // }
   } else {
     minRow = Math.max(0, minRow - extent);
     maxRow = Math.min(mat.length - 1, maxRow + extent);

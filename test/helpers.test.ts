@@ -24,15 +24,29 @@ test('calcVisibleArea should be correct in top left position', () => {
   const visibleAreaSquare = calcVisibleArea(mat, extent, false);
   expect(visibleAreaSquare).toEqual([
     [1, 5],
-    [0, 4],
+    [1, 5],
   ]);
+});
 
-  // extent = 1.5;
-  // const visibleAreaSquareWithFloatExtent = calcVisibleArea(mat, extent, false);
-  // expect(visibleAreaSquareWithFloatExtent).toEqual([
-  //   [1.5, 5.5],
-  //   [0.5, 4.5],
-  // ]);
+test('calcVisibleArea should be correct in top left position', () => {
+  const mat = [
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+
+  let extent = 1;
+  const visibleAreaSquare = calcVisibleArea(mat, extent, false);
+  expect(visibleAreaSquare).toEqual([
+    [0, 3],
+    [1, 4],
+  ]);
 });
 
 test('calcVisibleArea should be correct in top right position', () => {
