@@ -861,11 +861,10 @@ export function calcVisibleArea(
 
   if (!allowRectangle) {
     let minRowWithExtent = Math.max(minRow - extent, 0);
-    let maxRowWithExtent = Math.min(maxRow + extent, mat.length);
+    let maxRowWithExtent = Math.min(maxRow + extent, mat.length - 1);
     let minColWithExtent = Math.max(minCol - extent, 0);
-    let maxColWithExtent = Math.min(maxCol + extent, mat[0].length);
+    let maxColWithExtent = Math.min(maxCol + extent, mat[0].length - 1);
 
-    // const maxRange = Math.max(maxRow - minRow, maxCol - minCol) + 2 * extent;
     const maxRange = Math.max(
       maxRowWithExtent - minRowWithExtent,
       maxColWithExtent - minColWithExtent
@@ -873,6 +872,7 @@ export function calcVisibleArea(
 
     minRow = minRowWithExtent;
     maxRow = minRow + maxRange;
+
     if (maxRow >= mat.length) {
       maxRow = mat.length - 1;
       minRow = maxRow - maxRange;
