@@ -1,47 +1,6 @@
 import TreeModel from 'tree-model';
-import {calcMost, calcVisibleArea, calcSpaceAndScaledPadding} from './helper';
-import {
-  cloneDeep,
-  flattenDepth,
-  clone,
-  sum,
-  filter,
-  findLastIndex,
-  compact,
-  sample,
-} from 'lodash-es';
-import {SgfNode, SgfNodeOptions} from './core/types';
-import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS} from './const';
-import {
-  SetupProp,
-  MoveProp,
-  CustomProp,
-  SgfPropBase,
-  NodeAnnotationProp,
-  GameInfoProp,
-  MoveAnnotationProp,
-  RootProp,
-  MarkupProp,
-  MOVE_PROP_LIST,
-  SETUP_PROP_LIST,
-  NODE_ANNOTATION_PROP_LIST,
-  MOVE_ANNOTATION_PROP_LIST,
-  MARKUP_PROP_LIST,
-  ROOT_PROP_LIST,
-  GAME_INFO_PROP_LIST,
-  TIMING_PROP_LIST,
-  MISCELLANEOUS_PROP_LIST,
-  CUSTOM_PROP_LIST,
-} from './core/props';
-import {
-  Analysis,
-  GhostBanOptions,
-  Ki,
-  MoveInfo,
-  ProblemAnswerType as PAT,
-  RootInfo,
-  Markup,
-} from './types';
+import {calcMost} from './helper';
+import {SgfNode} from './core/types';
 import sha256 from 'crypto-js/sha256';
 
 import {Center} from './types';
@@ -114,6 +73,15 @@ export const calcSHA_deprecated = (
 
   const sha = sha256(fullname).toString().slice(0, 6);
   return sha;
+};
+
+export const calcSpaceAndScaledPadding = (
+  size: number,
+  padding: number,
+  boardSize: number
+) => {
+  const newSpace = (size - padding * 2) / boardSize;
+  return {space: newSpace, scaledPadding: padding + newSpace / 2};
 };
 
 // export const calcTransform = (

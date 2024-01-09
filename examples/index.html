@@ -413,23 +413,31 @@
     // ;W[ig]
     // ;B[ii])
     // `;
-    const c = `(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]SZ[9]AB[de][fg]AW[dc][fd][he][lk][jl]SQ[hd]SQ[jg]SQ[ej]CR[ca]CR[ea]CR[ga]RU[Japanese]PW[White]PB[Black](;B[fd];W[de](;B[dd];W[ce];B[cf];W[df];B[ef];W[dg];B[eg];W[cd];B[dc];W[cc];B[db];W[ic];B[ie];W[ig];B[ii]CR[fh]CR[hl]CR[ik]CR[dj]CR[gd]CR[kc]CR[ib]CR[fb]CR[lc]CR[kj]LB[ag:A]LB[gi:B]LB[ge:C]LB[ld:D]C[RIGHT])(;B[je];W[jf](;B[ih];W[gj];B[fj])(;B[kd];W[kh];B[hj];W[dj];B[dg]CR[dd]CR[de]CR[hf]CR[hh]CR[gj]CR[hi]LB[bi:A]LB[di:B]LB[fk:C])))(;B[ae];W[cf];B[dh];W[fi];B[ji]))`;
+    // const c = `(;GM[1]FF[4]CA[UTF-8]SZ[19]AP[CGoban:3]ST[2]AB[de][fg]AW[dc][fd][he][lk][jl]SQ[hd]SQ[jg]SQ[ej]CR[ca]CR[ea]CR[ga]RU[Japanese]PW[White]PB[Black](;B[fd];W[de](;B[dd];W[ce];B[cf];W[df];B[ef];W[dg];B[eg];W[cd];B[dc];W[cc];B[db];W[ic];B[ie];W[ig];B[ii]CR[fh]CR[hl]CR[ik]CR[dj]CR[gd]CR[kc]CR[ib]CR[fb]CR[lc]CR[kj]LB[ag:A]LB[gi:B]LB[ge:C]LB[ld:D]C[RIGHT])(;B[je];W[jf](;B[ih];W[gj];B[fj])(;B[kd];W[kh];B[hj];W[dj];B[dg]CR[dd]CR[de]CR[hf]CR[hh]CR[gj]CR[hi]LB[bi:A]LB[di:B]LB[fk:C])))(;B[ae];W[cf];B[dh];W[fi];B[ji]))`;
+    // const c = "(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jj][ll][lm][ln])";
+    // const c = "(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[qc][qd][pd][qf][gc][gd][fd][gf])";
+    // const c = "(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[9]ST[0]AB[qc][qd][pd][qf][cg][cf][ce][ef][fd])";
+    // const c = "(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[9]ST[0]AB[gc][gd][fd][gf])";
+    // const c = `(;AP[goproblems]SZ[19]AW[bp][cp][dp][co][cq][dr][cr]AB[bo][bn][dm][cn][do][ep][eq][er][ap]TR[dq]C[Black has just played the marked move. White to live.](;W[bs];B[ar](;W[ds];B[bq];W[cq];B[ap](;W[aq];B[iq]LB[ip:A]C[Please answer the black ko threat at AFORCE];W[ip];B[ap];W[br];B[an];W[as];B[ao];W[aq]C[Nicely done. :)RIGHT])(;W[br];B[an];W[as];B[ao];W[aq]C[nice :)RIGHT])(;W[as]C[NOTTHIS]))(;W[cq];B[ds];W[aq];B[br]C[oww])(;W[aq];B[ds]TR[cq]TR[br]C[Dieeeeeed.]))(;W[cq];B[ds]C[this shape is dead :(])(;W[ds];B[cq];W[bq];B[bs]C[];W[eq];B[dq](;W[br];B[ap]C[deadNOTTHIS])(;W[ap](;B[ar]C[CHOICE];W[br]C[Dead in gote. FAIL! (Bent 4 in corner)])(;B[br]C[CHOICE];W[ar];B[es];W[cq];B[eq]MA[cs]C[No libs :(])))(;W[ar];B[bs](;W[br];B[ap](;W[aq];B[cq]C[Nope...])(;W[cq];B[aq]C[Nuh uh.]))(;W[cq];B[ds];W[cs];B[ap]C[Why did the chicken cross the road? Because he wanted death by car after his corner died :(])(;W[ap];B[br](;W[bq];B[ds]C[woops])(;W[cq];B[ds];W[cs];B[bq]C[Life? Seki? no. Just dead.])))(;W[ap];B[br](;W[bs];B[ar](;W[ds];B[cq];W[bq];B[eq]MA[aq]C[Uh oh, can't approach :(])(;W[cq];B[ds]C[No good!]))(;W[ar];B[bs](;W[bq];B[ds]C[Dieeeeeeee])(;W[cq];B[ds];W[cs];B[bq]C[It's not seki. You're still dead. Accept it!]))(;W[cq];B[ds]C[dead])(;W[ds];B[cq];W[bq];B[eq](;W[bs];B[ar]MA[aq]MA[as]C[:(])(;W[ar];B[bs]MA[cs]MA[as]C[:(])))(;W[br];B[cq];W[bq];B[ds];W[cs];B[ap]C[nope.]))`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[dd])`;
+    const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[kl])`;
+
 
     let sgf = new Sgf(c)
-    // console.log(sgf.toSgf());
-    // console.log(sgf.root.model.id);
     let root = sgf.root;
     let currentNode = root;
-    while (currentNode && currentNode.hasChildren()) {
-      currentNode = currentNode.children[0];
-    }
+    // while (currentNode && currentNode.hasChildren()) {
+    //   currentNode = currentNode.children[0];
+    // }
     let turn = Ki.Black;
 
-    let { mat, markup } = calcMatAndMarkup(currentNode)
+    let { mat, markup } = calcMatAndMarkup(currentNode, 15)
     let g = new GhostBan({
       padding: 30,
       interactive: true,
-      zoom: false,
+      boardLineExtent: 0.5,
+      // zoom: false,
+      zoom: true,
       extent: 3,
     });
     // markup[0][0] = "sq";
@@ -454,6 +462,7 @@
     // g.setCursor(Cursor.Triangle)
     // g.setCursor(Cursor.Text, "B")
     // g.setCursor(Cursor.BlackStone)
+    // g.setBoardSize(9);
     g.setCursor(Cursor.BlackStone);
     g.setTurn(Ki.Black)
     // g.calcBoardVisibleArea(true);
@@ -496,9 +505,9 @@
       g.renderInteractive();
 
       let nextNode = genMove(currentNode, (path) => {
-        alert('right', path);
+        // alert('right', path);
       }, (path) => {
-        alert('wrong', path);
+        // alert('wrong', path);
       }, (path) => { alert('variant', path); });
       // console.log(nextNode);
       if (nextNode) {

@@ -681,15 +681,6 @@ export const cutMoveNodes = (
   return node;
 };
 
-export const calcSpaceAndScaledPadding = (
-  size: number,
-  padding: number,
-  boardSize: number
-) => {
-  const newSpace = (size - padding * 2) / boardSize;
-  return {space: newSpace, scaledPadding: padding + newSpace / 2};
-};
-
 export const zeros = (size: [number, number]) =>
   new Array(size[0]).fill(0).map(() => new Array(size[1]).fill(0));
 
@@ -848,15 +839,25 @@ export function calcVisibleArea(
   let minCol = mat[0].length;
   let maxCol = 0;
 
+  let empty = true;
+
   for (let i = 0; i < mat.length; i++) {
     for (let j = 0; j < mat[0].length; j++) {
       if (mat[i][j] !== 0) {
+        empty = false;
         minRow = Math.min(minRow, i);
         maxRow = Math.max(maxRow, i);
         minCol = Math.min(minCol, j);
         maxCol = Math.max(maxCol, j);
       }
     }
+  }
+
+  if (empty) {
+    return [
+      [0, 18],
+      [0, 18],
+    ];
   }
 
   if (!allowRectangle) {
@@ -884,21 +885,6 @@ export function calcVisibleArea(
       maxCol = mat[0].length - 1;
       minCol = maxCol - maxRange;
     }
-
-    // const centerRow = Math.floor((minRow + maxRow) / 2);
-    // const centerCol = Math.floor((minCol + maxCol) / 2);
-    // minRow = Math.max(0, centerRow - Math.floor(maxRange / 2));
-    // maxRow = minRow + maxRange;
-    // if (maxRow >= mat.length) {
-    //   maxRow = mat.length - 1;
-    //   minRow = maxRow - maxRange;
-    // }
-    // minCol = Math.max(0, centerCol - Math.floor(maxRange / 2));
-    // maxCol = minCol + maxRange;
-    // if (maxCol >= mat[0].length) {
-    //   maxCol = mat[0].length - 1;
-    //   minCol = maxCol - maxRange;
-    // }
   } else {
     minRow = Math.max(0, minRow - extent);
     maxRow = Math.min(mat.length - 1, maxRow + extent);

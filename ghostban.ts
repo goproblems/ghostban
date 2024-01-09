@@ -326,7 +326,8 @@ export class GhostBan {
 
   calcBoardVisibleArea(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
-    const {boardSize, extent} = this.options;
+    if (!canvas) return;
+    const {boardSize, extent, boardLineExtent} = this.options;
     const zoomedVisibleArea = calcVisibleArea(this.mat, extent, false);
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
@@ -343,18 +344,31 @@ export class GhostBan {
     this.visibleArea = visibleArea;
 
     if (zoom) {
-      const {space} = this.calcSpaceAndPadding();
+      const {space, scaledPadding} = this.calcSpaceAndPadding();
       const zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
       if (zoomedBoardSize < boardSize) {
-        const scale = 1 / (zoomedBoardSize / boardSize);
+        const scale =
+          canvas.width /
+          ((zoomedBoardSize + boardLineExtent) * space + scaledPadding / 2);
 
-        let offsetX = 0;
-        let offsetY = 0;
-
-        // const offset = this.options.padding;
-        // const offset = this.options.padding * scale;
-        offsetX = visibleArea[0][0] * space * scale;
-        offsetY = visibleArea[1][0] * space * scale;
+        // let paddingOffsetX = 0;
+        // let paddingOffsetY = 0;
+        // if (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) {
+        //   paddingOffsetX = -this.options.padding * scale + scaledPadding / 2;
+        // }
+        // if (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1) {
+        //   paddingOffsetY = -this.options.padding * scale + scaledPadding / 2;
+        // }
+        // if (visibleArea[0][0] !== 0 && visibleArea[0][1] !== boardSize - 1) {
+        //   paddingOffsetX =
+        //     -(this.options.padding * scale) / 2 + scaledPadding / 2;
+        // }
+        // if (visibleArea[1][0] !== 0 && visibleArea[1][1] !== boardSize - 1) {
+        //   paddingOffsetY =
+        //     -(this.options.padding * scale) / 2 + scaledPadding / 2;
+        // }
+        let offsetX = visibleArea[0][0] * space * scale;
+        let offsetY = visibleArea[1][0] * space * scale;
 
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
@@ -686,8 +700,10 @@ export class GhostBan {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
         // let startPointY = scaledPadding + visibleArea[1][0] * space;
-        let startPointY = scaledPadding + visibleArea[1][0] * space;
-        let endPointY = space * visibleArea[1][1] + scaledPadding;
+        let startPointY =
+          scaledPadding + visibleArea[1][0] * space - boardEdgeLineWidth;
+        let endPointY =
+          space * visibleArea[1][1] + scaledPadding + boardEdgeLineWidth;
         if (visibleArea[1][0] > 0) startPointY -= extendSpace;
         if (visibleArea[1][1] < boardSize - 1) endPointY += extendSpace;
         ctx.moveTo(i * space + scaledPadding, startPointY);
@@ -706,8 +722,10 @@ export class GhostBan {
         } else {
           ctx.lineWidth = boardLineWidth * devicePixelRatio;
         }
-        let startPointX = scaledPadding + visibleArea[0][0] * space;
-        let endPointX = space * visibleArea[0][1] + scaledPadding;
+        let startPointX =
+          scaledPadding + visibleArea[0][0] * space - boardEdgeLineWidth;
+        let endPointX =
+          space * visibleArea[0][1] + scaledPadding + boardEdgeLineWidth;
         if (visibleArea[0][0] > 0) startPointX -= extendSpace;
         if (visibleArea[0][1] < boardSize - 1) endPointX += extendSpace;
         ctx.moveTo(startPointX, i * space + scaledPadding);
@@ -752,13 +770,9 @@ export class GhostBan {
     }
   };
 
-  drawCoordinate = (
-    visibleArea = [
-      [0, 18],
-      [0, 18],
-    ]
-  ) => {
-    const board = this.board;
+  drawCoordinate = () => {
+    const {board, options, visibleArea} = this;
+    const {boardSize, zoom} = options;
     if (!board) return;
     const ctx = board.getContext('2d');
     const {space, scaledPadding} = this.calcSpaceAndPadding();
@@ -768,19 +782,35 @@ export class GhostBan {
       ctx.fillStyle = '#000000';
       ctx.font = `bold ${space / 2.8}px Helvetica`;
 
-      const offset = space / 3;
+      let offset = space / 3;
       A1_LETTERS.forEach((l, index) => {
         const x = space * index + scaledPadding;
         if (index >= visibleArea[0][0] && index <= visibleArea[0][1]) {
           ctx.fillText(l, x, 0 + offset);
-          ctx.fillText(l, x, board.height - offset);
+          if (
+            zoom &&
+            visibleArea[1][0] !== 0 &&
+            visibleArea[1][1] === boardSize - 1
+          ) {
+            ctx.fillText(l, x, board.height - offset - scaledPadding);
+          } else {
+            ctx.fillText(l, x, board.height - offset);
+          }
         }
       });
       A1_NUMBERS.slice(-this.options.boardSize).forEach((l: number, index) => {
         const y = space * index + scaledPadding;
         if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
           ctx.fillText(l.toString(), offset, y);
-          ctx.fillText(l.toString(), board.width - offset, y);
+          if (
+            zoom &&
+            visibleArea[0][0] !== 0 &&
+            visibleArea[0][1] === boardSize - 1
+          ) {
+            ctx.fillText(l.toString(), board.width - offset - scaledPadding, y);
+          } else {
+            ctx.fillText(l.toString(), board.width - offset, y);
+          }
         }
       });
     }
@@ -789,14 +819,29 @@ export class GhostBan {
   calcSpaceAndPadding = (canvas = this.canvas) => {
     let space = 0;
     let scaledPadding = 0;
+    let scaledBoardExtent = 0;
     if (canvas) {
       const {padding, boardSize, boardLineExtent, zoom} = this.options;
-      const divisor = zoom ? boardSize + boardLineExtent : boardSize;
-      scaledPadding = padding;
-      space = (canvas.width - padding * 2) / divisor;
-      scaledPadding = scaledPadding + space / 2;
+      const {visibleArea} = this;
+
+      if (
+        (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) ||
+        (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1)
+      ) {
+        scaledBoardExtent = boardLineExtent;
+      }
+      if (
+        (visibleArea[0][0] !== 0 && visibleArea[0][1] !== boardSize - 1) ||
+        (visibleArea[1][0] !== 0 && visibleArea[1][1] !== boardSize - 1)
+      ) {
+        scaledBoardExtent = boardLineExtent * 2;
+      }
+
+      const divisor = zoom ? boardSize + scaledBoardExtent : boardSize;
+      space = (canvas.width - padding * 2) / Math.ceil(divisor);
+      scaledPadding = padding + space / 2;
     }
-    return {space, scaledPadding};
+    return {space, scaledPadding, scaledBoardExtent};
   };
 
   drawCursor = () => {
