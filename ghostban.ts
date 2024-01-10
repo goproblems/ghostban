@@ -366,38 +366,13 @@ export class GhostBan {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       const zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
       if (zoomedBoardSize < boardSize) {
-        // let scale =
-        //   canvas.width /
-        //   ((zoomedBoardSize + boardLineExtent) * space + scaledPadding / 2);
         let scale =
-          (canvas.width - scaledPadding * 2) /
+          (canvas.width - padding * 2) /
           ((zoomedBoardSize + boardLineExtent) * space);
-        // scale *= 0.5;
-        // const scale =
-        //   canvas.width / (zoomedBoardSize * space + scaledPadding / 2);
-
-        // let offsetX =
-        //   visibleArea[0][0] * space * scale - (scaledBoardExtent * space) / 2;
-        // let offsetY =
-        //   visibleArea[1][0] * space * scale - (scaledBoardExtent * space) / 2;
-        // let offsetX = visibleArea[0][0] * space * scale - (padding * scale) / 2;
-        // let offsetY = visibleArea[1][0] * space * scale - (padding * scale) / 2;
         let offsetX =
-          visibleArea[0][0] * space * scale -
-          (scaledPadding * scale) / 2 +
-          padding * scale;
+          visibleArea[0][0] * space * scale + padding * scale - padding;
         let offsetY =
-          visibleArea[1][0] * space * scale -
-          (scaledPadding * scale) / 2 +
-          padding * scale;
-
-        // offsetX -= scale * scaledPadding;
-
-        //TODO: Workaround
-        // if (visibleArea[0][0] !== 0 && visibleArea[0][1] !== boardSize - 1) {
-        //   offsetX -= (scaledPadding * scale) / 4;
-        //   offsetY -= (scaledPadding * scale) / 4;
-        // }
+          visibleArea[1][0] * space * scale + padding * scale - padding;
 
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
@@ -872,6 +847,7 @@ export class GhostBan {
       }
 
       const divisor = zoom ? boardSize + scaledBoardExtent : boardSize;
+      // const divisor = boardSize;
       space = (canvas.width - padding * 2) / Math.ceil(divisor);
       scaledPadding = padding + space / 2;
     }
