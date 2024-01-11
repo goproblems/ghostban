@@ -789,10 +789,10 @@ export class GhostBan {
       [3, 9, 15].forEach(i => {
         [3, 9, 15].forEach(j => {
           if (
-            i > visibleArea[0][0] &&
-            i < visibleArea[0][1] &&
-            j > visibleArea[1][0] &&
-            j < visibleArea[1][1]
+            i >= visibleArea[0][0] &&
+            i <= visibleArea[0][1] &&
+            j >= visibleArea[1][0] &&
+            j <= visibleArea[1][1]
           ) {
             ctx.beginPath();
             ctx.arc(
