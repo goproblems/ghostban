@@ -122,6 +122,10 @@ export enum Theme {
 }
 
 export enum Center {
+  Left = 'l',
+  Right = 'r',
+  Top = 't',
+  Bottom = 'b',
   TopRight = 'tr',
   TopLeft = 'tl',
   BottomLeft = 'bl',
