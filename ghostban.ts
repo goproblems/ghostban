@@ -351,25 +351,6 @@ export class GhostBan {
     }
   };
 
-  calcScaledBoardExtent = () => {
-    const {visibleArea} = this;
-    const {boardSize, boardLineExtent} = this.options;
-    let scaledBoardExtent = 0;
-    if (
-      (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) ||
-      (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1)
-    ) {
-      scaledBoardExtent = boardLineExtent;
-    }
-    if (
-      (visibleArea[0][0] !== 0 && visibleArea[0][1] !== boardSize - 1) ||
-      (visibleArea[1][0] !== 0 && visibleArea[1][1] !== boardSize - 1)
-    ) {
-      scaledBoardExtent = boardLineExtent * 2;
-    }
-    return scaledBoardExtent;
-  };
-
   calcBoardVisibleArea(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     if (!canvas) return;
@@ -391,40 +372,14 @@ export class GhostBan {
 
     if (zoom) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
-      const scaledBoardExtent = this.calcScaledBoardExtent();
-      // "visibleArea[0][0] + 1" the '+1' for 2 * halfSpace in scaledPadding
       const center = this.calcCenter();
 
       let ratioX = 1;
       let ratioY = 1;
 
-      console.log('center', center);
-
-      // if (center === Center.Left) {
-      //   ratioX = 1 ;
-      // }
-
-      if (
-        (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) ||
-        (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1)
-      ) {
-        ratioX = boardLineExtent;
-      }
-      if (
-        (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1) ||
-        (visibleArea[1][0] === 0 && visibleArea[1][1] !== boardSize - 1)
-      ) {
-        ratioY = boardLineExtent;
-      }
-      if (visibleArea[0][0] !== 0 && visibleArea[0][1] !== boardSize - 1) {
-        ratioX = boardLineExtent * 2;
-      }
-      if (visibleArea[1][0] !== 0 && visibleArea[1][1] !== boardSize - 1) {
-        ratioY = boardLineExtent * 2;
-      }
-
       const zoomedBoardSize =
-        visibleArea[0][1] - visibleArea[0][0] + Math.max(ratioX, ratioY) + 1;
+        visibleArea[0][1] - visibleArea[0][0] + Math.min(ratioX, ratioY) + 1;
+      console.log(zoomedBoardSize);
       if (zoomedBoardSize < boardSize) {
         let scale = (canvas.width - padding * 2) / (zoomedBoardSize * space);
 
@@ -444,17 +399,18 @@ export class GhostBan {
           // for board line extent
           (space * ratioY * scale) / 2;
 
-        // if (center.includes(Center.Top)) {
-        //   offsetY += space * scale * 0.5;
-        // }
+        // for example: (;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jg][ie][ic])
+        if (center === Center.Top || Center.TopLeft || Center.TopRight) {
+          offsetY -= space / 2;
+        }
 
         // if (center.includes(Center.Bottom)) {
         //   offsetY -= space * scale * 0.5;
         // }
 
-        // if (center.includes(Center.Left)) {
-        //   offsetX += space * scale * 0.5;
-        // }
+        if (center.includes(Center.Left)) {
+          offsetX += space * scale * 0.5;
+        }
 
         // if (center.includes(Center.Right)) {
         //   offsetX -= space * scale * 0.5;
@@ -633,7 +589,6 @@ export class GhostBan {
       for (let i = 0; i < markup.length; i++) {
         for (let j = 0; j < markup[i].length; j++) {
           const values = markup[i][j];
-          // console.log(values);
           values?.split('|').forEach(value => {
             if (value !== null && value !== '') {
               const {space, scaledPadding} = this.calcSpaceAndPadding();
@@ -864,7 +819,7 @@ export class GhostBan {
     const {board, options, visibleArea} = this;
     if (!board) return;
     const {boardSize, zoom, padding, boardLineExtent} = options;
-    const zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
+    let zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
     const ctx = board.getContext('2d');
     const {space, scaledPadding} = this.calcSpaceAndPadding();
     if (ctx) {
@@ -874,15 +829,36 @@ export class GhostBan {
       ctx.font = `bold ${space / 2.8}px Helvetica`;
 
       const center = this.calcCenter();
-      const scaledBoardExtent = this.calcScaledBoardExtent();
-      let offset = (space * scaledBoardExtent) / 2;
+      let offset = space / 2;
+
+      if (
+        center === Center.Center &&
+        visibleArea[0][0] === 0 &&
+        visibleArea[0][1] === boardSize - 1
+      ) {
+        offset -= scaledPadding / 2;
+      }
 
       A1_LETTERS.forEach((l, index) => {
         const x = space * index + scaledPadding;
         let offsetTop = offset;
         let offsetBottom = offset;
+        if (
+          center === Center.TopLeft ||
+          center === Center.TopRight ||
+          center === Center.Top
+        ) {
+          offsetTop -= space * boardLineExtent;
+        }
+        if (
+          center === Center.BottomLeft ||
+          center === Center.BottomRight ||
+          center === Center.Bottom
+        ) {
+          offsetBottom -= (space * boardLineExtent) / 2;
+        }
         let y1 = visibleArea[1][0] * space + padding - offsetTop;
-        let y2 = y1 + zoomedBoardSize * space + 2 * offsetBottom;
+        let y2 = y1 + zoomedBoardSize * space + offsetBottom * 2;
         if (index >= visibleArea[0][0] && index <= visibleArea[0][1]) {
           if (
             center !== Center.BottomLeft &&
@@ -906,6 +882,21 @@ export class GhostBan {
         const y = space * index + scaledPadding;
         let offsetLeft = offset;
         let offsetRight = offset;
+        if (
+          center === Center.TopLeft ||
+          center === Center.BottomLeft ||
+          center === Center.Left
+        ) {
+          offsetLeft -= space * boardLineExtent;
+        }
+        if (
+          center === Center.TopRight ||
+          center === Center.BottomRight ||
+          center === Center.Right
+        ) {
+          offsetRight -= (space * boardLineExtent) / 2;
+          // offsetBottom -= (space * boardLineExtent) / 2;
+        }
         let x1 = visibleArea[0][0] * space + padding - offsetLeft;
         let x2 = x1 + zoomedBoardSize * space + 2 * offsetRight;
         if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
