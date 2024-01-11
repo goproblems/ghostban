@@ -374,13 +374,29 @@ export class GhostBan {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       const center = this.calcCenter();
 
-      let ratioX = 1;
-      let ratioY = 1;
+      const visibleSpaceCount = 0;
+      const visibleAreaSize = Math.max(
+        visibleArea[0][1] - visibleArea[0][0],
+        visibleArea[1][1] - visibleArea[1][0]
+      );
 
-      const zoomedBoardSize =
-        visibleArea[0][1] - visibleArea[0][0] + Math.min(ratioX, ratioY) + 1;
-      console.log(zoomedBoardSize);
-      if (zoomedBoardSize < boardSize) {
+      let extraVisibleSize = boardLineExtent * 2 + 1;
+
+      if (
+        center === Center.TopRight ||
+        center === Center.TopLeft ||
+        center === Center.BottomRight ||
+        center === Center.BottomLeft
+      ) {
+        extraVisibleSize = boardLineExtent + 0.5;
+      }
+
+      // const zoomedBoardSize =
+      //   visibleArea[0][1] - visibleArea[0][0] + Math.min(ratioX, ratioY) + 1;
+      const zoomedBoardSize = visibleAreaSize + extraVisibleSize;
+      console.log('zbz', zoomedBoardSize);
+      // console.log(zoomedBoardSize);
+      if (extraVisibleSize < boardSize) {
         let scale = (canvas.width - padding * 2) / (zoomedBoardSize * space);
 
         let offsetX =
@@ -389,7 +405,8 @@ export class GhostBan {
           padding * scale -
           padding -
           // for board line extent
-          (space * ratioX * scale) / 2;
+          (space * extraVisibleSize * scale) / 2 +
+          (space * scale) / 2;
 
         let offsetY =
           visibleArea[1][0] * space * scale +
@@ -397,12 +414,13 @@ export class GhostBan {
           padding * scale -
           padding -
           // for board line extent
-          (space * ratioY * scale) / 2;
+          (space * extraVisibleSize * scale) / 2 +
+          (space * scale) / 2;
 
         // for example: (;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jg][ie][ic])
-        if (center === Center.Top || Center.TopLeft || Center.TopRight) {
-          offsetY -= space / 2;
-        }
+        // if (center === Center.Top || Center.TopLeft || Center.TopRight) {
+        //   offsetY -= space / 2;
+        // }
 
         // if (center.includes(Center.Bottom)) {
         //   offsetY -= space * scale * 0.5;
