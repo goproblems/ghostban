@@ -371,10 +371,9 @@ export class GhostBan {
     this.visibleArea = visibleArea;
 
     if (zoom) {
-      const {space, scaledPadding} = this.calcSpaceAndPadding();
+      const {space} = this.calcSpaceAndPadding();
       const center = this.calcCenter();
 
-      const visibleSpaceCount = 0;
       const visibleAreaSize = Math.max(
         visibleArea[0][1] - visibleArea[0][0],
         visibleArea[1][1] - visibleArea[1][0]
@@ -390,13 +389,9 @@ export class GhostBan {
       ) {
         extraVisibleSize = boardLineExtent + 0.5;
       }
+      let zoomedBoardSize = visibleAreaSize + extraVisibleSize;
 
-      // const zoomedBoardSize =
-      //   visibleArea[0][1] - visibleArea[0][0] + Math.min(ratioX, ratioY) + 1;
-      const zoomedBoardSize = visibleAreaSize + extraVisibleSize;
-      console.log('zbz', zoomedBoardSize);
-      // console.log(zoomedBoardSize);
-      if (extraVisibleSize < boardSize) {
+      if (zoomedBoardSize < boardSize) {
         let scale = (canvas.width - padding * 2) / (zoomedBoardSize * space);
 
         let offsetX =
@@ -416,23 +411,6 @@ export class GhostBan {
           // for board line extent
           (space * extraVisibleSize * scale) / 2 +
           (space * scale) / 2;
-
-        // for example: (;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jg][ie][ic])
-        // if (center === Center.Top || Center.TopLeft || Center.TopRight) {
-        //   offsetY -= space / 2;
-        // }
-
-        // if (center.includes(Center.Bottom)) {
-        //   offsetY -= space * scale * 0.5;
-        // }
-
-        if (center.includes(Center.Left)) {
-          offsetX += space * scale * 0.5;
-        }
-
-        // if (center.includes(Center.Right)) {
-        //   offsetX -= space * scale * 0.5;
-        // }
 
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
@@ -913,7 +891,6 @@ export class GhostBan {
           center === Center.Right
         ) {
           offsetRight -= (space * boardLineExtent) / 2;
-          // offsetBottom -= (space * boardLineExtent) / 2;
         }
         let x1 = visibleArea[0][0] * space + padding - offsetLeft;
         let x2 = x1 + zoomedBoardSize * space + 2 * offsetRight;

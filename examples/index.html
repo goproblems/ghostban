@@ -420,8 +420,22 @@
     // const c = "(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[9]ST[0]AB[gc][gd][fd][gf])";
     // const c = `(;AP[goproblems]SZ[19]AW[bp][cp][dp][co][cq][dr][cr]AB[bo][bn][dm][cn][do][ep][eq][er][ap]TR[dq]C[Black has just played the marked move. White to live.](;W[bs];B[ar](;W[ds];B[bq];W[cq];B[ap](;W[aq];B[iq]LB[ip:A]C[Please answer the black ko threat at AFORCE];W[ip];B[ap];W[br];B[an];W[as];B[ao];W[aq]C[Nicely done. :)RIGHT])(;W[br];B[an];W[as];B[ao];W[aq]C[nice :)RIGHT])(;W[as]C[NOTTHIS]))(;W[cq];B[ds];W[aq];B[br]C[oww])(;W[aq];B[ds]TR[cq]TR[br]C[Dieeeeeed.]))(;W[cq];B[ds]C[this shape is dead :(])(;W[ds];B[cq];W[bq];B[bs]C[];W[eq];B[dq](;W[br];B[ap]C[deadNOTTHIS])(;W[ap](;B[ar]C[CHOICE];W[br]C[Dead in gote. FAIL! (Bent 4 in corner)])(;B[br]C[CHOICE];W[ar];B[es];W[cq];B[eq]MA[cs]C[No libs :(])))(;W[ar];B[bs](;W[br];B[ap](;W[aq];B[cq]C[Nope...])(;W[cq];B[aq]C[Nuh uh.]))(;W[cq];B[ds];W[cs];B[ap]C[Why did the chicken cross the road? Because he wanted death by car after his corner died :(])(;W[ap];B[br](;W[bq];B[ds]C[woops])(;W[cq];B[ds];W[cs];B[bq]C[Life? Seki? no. Just dead.])))(;W[ap];B[br](;W[bs];B[ar](;W[ds];B[cq];W[bq];B[eq]MA[aq]C[Uh oh, can't approach :(])(;W[cq];B[ds]C[No good!]))(;W[ar];B[bs](;W[bq];B[ds]C[Dieeeeeeee])(;W[cq];B[ds];W[cs];B[bq]C[It's not seki. You're still dead. Accept it!]))(;W[cq];B[ds]C[dead])(;W[ds];B[cq];W[bq];B[eq](;W[bs];B[ar]MA[aq]MA[as]C[:(])(;W[ar];B[bs]MA[cs]MA[as]C[:(])))(;W[br];B[cq];W[bq];B[ds];W[cs];B[ap]C[nope.]))`;
     // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[dd])`;
-    const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[kl])`;
-
+    // const c= `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[kl])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[fd][cc])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[op])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[cl][cj])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[kl][mk][ol])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[dj][fj])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[dj][fj][hj][jj][lj][nj])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[fm][dm][bp])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[cd])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[qc])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[fj][dl])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jg][ie][ic])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[kn][kp])`;
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems: 0.1.0]SZ[19]ST[0]AB[jd])`
+    // const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[jj])`;
+    const c = `(;FF[4]GM[1]CA[UTF-8]AP[goproblems:0.1.0]SZ[19]ST[0]AB[pd][oa][na][ma][la][ka][ia][ja][ha][fa][eb])`;
 
     let sgf = new Sgf(c)
     let root = sgf.root;
@@ -433,11 +447,15 @@
 
     let { mat, markup } = calcMatAndMarkup(currentNode, 15)
     let g = new GhostBan({
-      padding: 30,
+      boardEdgeLineWidth: 2,
+      padding: 35,
       interactive: true,
+      coordinate: true,
+      // boardLineExtent: 0.5,
+      // boardLineExtent: 0.5,
       boardLineExtent: 0.5,
-      // zoom: false,
       zoom: true,
+      // zoom: false,
       extent: 3,
     });
     // markup[0][0] = "sq";
