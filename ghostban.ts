@@ -329,6 +329,13 @@ export class GhostBan {
     const {visibleArea} = this;
     const {boardSize} = this.options;
 
+    if (
+      (visibleArea[0][0] === 0 && visibleArea[0][1] === boardSize - 1) ||
+      (visibleArea[1][0] === 0 && visibleArea[1][1] === boardSize - 1)
+    ) {
+      return Center.Center;
+    }
+
     if (visibleArea[0][0] === 0) {
       if (visibleArea[1][0] === 0) return Center.TopLeft;
       else if (visibleArea[1][1] === boardSize - 1) return Center.BottomLeft;
@@ -390,6 +397,13 @@ export class GhostBan {
 
       let ratioX = 1;
       let ratioY = 1;
+
+      console.log('center', center);
+
+      // if (center === Center.Left) {
+      //   ratioX = 1 ;
+      // }
+
       if (
         (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) ||
         (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1)
@@ -420,7 +434,7 @@ export class GhostBan {
           padding * scale -
           padding -
           // for board line extent
-          (space * Math.max(ratioX, ratioY) * scale) / 2;
+          (space * ratioX * scale) / 2;
 
         let offsetY =
           visibleArea[1][0] * space * scale +
@@ -428,7 +442,23 @@ export class GhostBan {
           padding * scale -
           padding -
           // for board line extent
-          (space * Math.max(ratioX, ratioY) * scale) / 2;
+          (space * ratioY * scale) / 2;
+
+        // if (center.includes(Center.Top)) {
+        //   offsetY += space * scale * 0.5;
+        // }
+
+        // if (center.includes(Center.Bottom)) {
+        //   offsetY -= space * scale * 0.5;
+        // }
+
+        // if (center.includes(Center.Left)) {
+        //   offsetX += space * scale * 0.5;
+        // }
+
+        // if (center.includes(Center.Right)) {
+        //   offsetX -= space * scale * 0.5;
+        // }
 
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
@@ -843,29 +873,32 @@ export class GhostBan {
       ctx.fillStyle = '#000000';
       ctx.font = `bold ${space / 2.8}px Helvetica`;
 
+      const center = this.calcCenter();
       const scaledBoardExtent = this.calcScaledBoardExtent();
       let offset = (space * scaledBoardExtent) / 2;
-      // if (visibleArea[0][0] === 0 && visibleArea[0][1] === boardSize - 1) {
-      //   offset += scaledPadding / 2;
-      // }
 
       A1_LETTERS.forEach((l, index) => {
         const x = space * index + scaledPadding;
         let offsetTop = offset;
         let offsetBottom = offset;
-        // if (visibleArea[1][0] === 0 && visibleArea[1][1] !== boardSize - 1) {
-        //   console.log('aaaaaaaaaaaaaaaaaa');
-        //   offsetTop = (space * boardLineExtent) / 2;
-        // }
-        // if (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1) {
-        //   console.log('bbbbbbbbbbbbbbbbb');
-        //   offsetBottom = (space * boardLineExtent) / 2;
-        // }
         let y1 = visibleArea[1][0] * space + padding - offsetTop;
         let y2 = y1 + zoomedBoardSize * space + 2 * offsetBottom;
         if (index >= visibleArea[0][0] && index <= visibleArea[0][1]) {
-          ctx.fillText(l, x, y1);
-          ctx.fillText(l, x, y2);
+          if (
+            center !== Center.BottomLeft &&
+            center !== Center.BottomRight &&
+            center !== Center.Bottom
+          ) {
+            ctx.fillText(l, x, y1);
+          }
+
+          if (
+            center !== Center.TopLeft &&
+            center !== Center.TopRight &&
+            center !== Center.Top
+          ) {
+            ctx.fillText(l, x, y2);
+          }
         }
       });
 
@@ -873,19 +906,23 @@ export class GhostBan {
         const y = space * index + scaledPadding;
         let offsetLeft = offset;
         let offsetRight = offset;
-        // if (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1) {
-        //   console.log('cccccccccccccccccccc');
-        //   offsetLeft = (space * boardLineExtent) / 2;
-        // }
-        // if (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) {
-        //   console.log('dddddddddddddddddddd');
-        //   offsetRight = (space * boardLineExtent) / 2;
-        // }
         let x1 = visibleArea[0][0] * space + padding - offsetLeft;
         let x2 = x1 + zoomedBoardSize * space + 2 * offsetRight;
         if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
-          ctx.fillText(l.toString(), x1, y);
-          ctx.fillText(l.toString(), x2, y);
+          if (
+            center !== Center.TopRight &&
+            center !== Center.BottomRight &&
+            center !== Center.Right
+          ) {
+            ctx.fillText(l.toString(), x1, y);
+          }
+          if (
+            center !== Center.TopLeft &&
+            center !== Center.BottomLeft &&
+            center !== Center.Left
+          ) {
+            ctx.fillText(l.toString(), x2, y);
+          }
         }
       });
     }
