@@ -364,15 +364,52 @@ export class GhostBan {
 
     if (zoom) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
-      const zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
+      const scaledBoardExtent = this.calcScaledBoardExtent();
+      // "visibleArea[0][0] + 1" the '+1' for 2 * halfSpace in scaledPadding
+      const zoomedBoardSize =
+        visibleArea[0][1] - visibleArea[0][0] + scaledBoardExtent + 1;
       if (zoomedBoardSize < boardSize) {
         let scale =
           (canvas.width - padding * 2) /
-          ((zoomedBoardSize + boardLineExtent) * space);
+          // ((zoomedBoardSize + scaledBoardExtent) * space);
+          (zoomedBoardSize * space);
+
+        console.log('sbe', scaledBoardExtent);
+        console.log('boardsize', zoomedBoardSize, scaledBoardExtent);
+
         let offsetX =
-          visibleArea[0][0] * space * scale + padding * scale - padding;
+          visibleArea[0][0] * space * scale +
+          // for padding
+          padding * scale -
+          padding -
+          // for board line extent
+          (space * scaledBoardExtent * scale) / 2;
+
         let offsetY =
-          visibleArea[1][0] * space * scale + padding * scale - padding;
+          visibleArea[1][0] * space * scale +
+          // for padding
+          padding * scale -
+          padding -
+          (space * scaledBoardExtent * scale) / 2;
+
+        if (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1) {
+          offsetX += space / 2;
+        }
+
+        if (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1) {
+          offsetX -= space / 4;
+        }
+        // if (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1) {
+        //   console.log('bbbbbbbbbbbbbbbbb');
+        // }
+
+        console.log(
+          'space, scale, boardline, scaledBoardExtent',
+          space,
+          scale,
+          boardLineExtent,
+          scaledBoardExtent
+        );
 
         this.transMat = new DOMMatrix();
         this.transMat.translateSelf(-offsetX, -offsetY);
@@ -787,18 +824,28 @@ export class GhostBan {
       ctx.fillStyle = '#000000';
       ctx.font = `bold ${space / 2.8}px Helvetica`;
 
-      let offset = (space * boardLineExtent) / 2;
       const scaledBoardExtent = this.calcScaledBoardExtent();
+      // let offset = (space * scaledBoardExtent) / 2;
+      let offset = space * boardLineExtent - scaledPadding / 2;
+      // console.log(scaledBoardExtent);
 
       // if (visibleArea[0][0] == 0 && visibleArea[0][1] === boardSize - 1) {
 
       A1_LETTERS.forEach((l, index) => {
         const x = space * index + scaledPadding;
-        // if (visibleArea[1][0] === 0 || visibleArea[1][1] === boardSize - 1) {
-        //   offset = (space * scaledBoardExtent) / 2;
-        // }
-        let y1 = visibleArea[1][0] * space + padding - offset;
-        let y2 = y1 + zoomedBoardSize * space + 2 * offset;
+        let offsetTop = offset;
+        let offsetBottom = offset;
+        console.log(visibleArea);
+        if (visibleArea[1][0] === 0 && visibleArea[1][1] !== boardSize - 1) {
+          console.log('aaaaaaaaaaaaaaaaaa');
+          offsetTop = (space * boardLineExtent) / 2;
+        }
+        if (visibleArea[1][0] !== 0 && visibleArea[1][1] === boardSize - 1) {
+          console.log('bbbbbbbbbbbbbbbbb');
+          offsetBottom = (space * boardLineExtent) / 2;
+        }
+        let y1 = visibleArea[1][0] * space + padding - offsetTop;
+        let y2 = y1 + zoomedBoardSize * space + 2 * offsetBottom;
         if (index >= visibleArea[0][0] && index <= visibleArea[0][1]) {
           ctx.fillText(l, x, y1);
           ctx.fillText(l, x, y2);
@@ -809,12 +856,14 @@ export class GhostBan {
         const y = space * index + scaledPadding;
         let offsetLeft = offset;
         let offsetRight = offset;
-        // if (visibleArea[0][0] === 0) {
-        //   offsetLeft = (space * boardLineExtent) / 2;
-        // }
-        // if (visibleArea[0][1] === boardSize - 1) {
-        //   offsetRight= (space * boardLineExtent) / 2;
-        // }
+        if (visibleArea[0][0] === 0 && visibleArea[0][1] !== boardSize - 1) {
+          console.log('cccccccccccccccccccc');
+          offsetLeft = (space * boardLineExtent) / 2;
+        }
+        if (visibleArea[0][0] !== 0 && visibleArea[0][1] === boardSize - 1) {
+          console.log('dddddddddddddddddddd');
+          offsetRight = (space * boardLineExtent) / 2;
+        }
         let x1 = visibleArea[0][0] * space + padding - offsetLeft;
         let x2 = x1 + zoomedBoardSize * space + 2 * offsetRight;
         if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
