@@ -4,6 +4,7 @@
 export type GhostBanOptions = {
   boardSize: number;
   size?: number;
+  dynamicPadding: boolean;
   padding: number;
   zoom?: boolean;
   extent: number;
@@ -20,11 +21,14 @@ export type GhostBanOptions = {
   negativeNodeColor: string;
   neutralNodeColor: string;
   defaultNodeColor: string;
+  themeResources: ThemeResources;
+  moveSound: boolean;
 };
 
 export type GhostBanOptionsParams = {
   boardSize?: number;
   size?: number;
+  dynamicPadding?: boolean;
   padding?: number;
   zoom?: boolean;
   extent?: number;
@@ -40,6 +44,12 @@ export type GhostBanOptionsParams = {
   negativeNodeColor?: string;
   neutralNodeColor?: string;
   defaultNodeColor?: string;
+  themeResources?: ThemeResources;
+  moveSound?: boolean;
+};
+
+export type ThemeResources = {
+  [key in Theme]: {board?: string; blacks: string[]; whites: string[]};
 };
 
 export type ConsumedAnalysis = {

@@ -87,8 +87,8 @@ export const DEFAULT_OPTIONS = {
   showAnalysis: false,
 };
 
-export const RESOURCES: {
-  [key: string]: {board?: string; blacks: string[]; whites: string[]};
+export const THEME_RESOURCES: {
+  [key in Theme]: {board?: string; blacks: string[]; whites: string[]};
 } = {
   [Theme.BlackAndWhite]: {
     blacks: [],

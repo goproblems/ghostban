@@ -1,6 +1,11 @@
 import {compact} from 'lodash-es';
 import {calcVisibleArea, reverseOffset, zeros, empty, a1ToPos} from './helper';
-import {A1_LETTERS, A1_NUMBERS, RESOURCES} from './const';
+import {
+  A1_LETTERS,
+  A1_NUMBERS,
+  DEFAULT_OPTIONS,
+  THEME_RESOURCES,
+} from './const';
 import {
   Cursor,
   Markup,
@@ -65,6 +70,7 @@ function preload(urls: string[], done: () => void) {
 export class GhostBan {
   defaultOptions: GhostBanOptions = {
     boardSize: 19,
+    dynamicPadding: false,
     padding: 10,
     extent: 3,
     interactive: false,
@@ -80,6 +86,8 @@ export class GhostBan {
     negativeNodeColor: '#b91c1c',
     neutralNodeColor: '#a16207',
     defaultNodeColor: '#404040',
+    themeResources: THEME_RESOURCES,
+    moveSound: false,
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -88,6 +96,7 @@ export class GhostBan {
   analysisCanvas?: HTMLCanvasElement;
   cursorCanvas?: HTMLCanvasElement;
   markupCanvas?: HTMLCanvasElement;
+  moveSoundAudio?: HTMLAudioElement;
   turn: Ki;
   private cursor: Cursor = Cursor.None;
   private cursorValue: string = '';
@@ -125,11 +134,6 @@ export class GhostBan {
 
   setBoardSize(size: number) {
     this.options.boardSize = size;
-    this.visibleArea = [
-      [0, this.options.boardSize - 1],
-      [0, this.options.boardSize - 1],
-    ];
-    this.render();
   }
 
   resize() {
@@ -178,7 +182,6 @@ export class GhostBan {
       analysisCanvas.width = Math.floor(clientWidth * devicePixelRatio);
       analysisCanvas.height = Math.floor(clientWidth * devicePixelRatio);
     }
-    this.calcBoardVisibleArea(zoom || false);
     this.render();
   }
 
@@ -309,8 +312,9 @@ export class GhostBan {
   }
 
   setTheme(theme: Theme, options = {}) {
-    if (!RESOURCES[theme]) return;
-    const {board, blacks, whites} = RESOURCES[theme];
+    const {themeResources} = this.options;
+    if (!themeResources[theme]) return;
+    const {board, blacks, whites} = themeResources[theme];
     this.options.theme = theme;
     this.options = {
       ...this.options,
@@ -351,11 +355,39 @@ export class GhostBan {
     }
   };
 
+  calcDynamicPadding(visibleAreaSize: number) {
+    const {coordinate} = this.options;
+    let padding = 30;
+    if (visibleAreaSize <= 3) {
+      padding = coordinate ? 120 : 100;
+    } else if (visibleAreaSize <= 6) {
+      padding = coordinate ? 80 : 60;
+    } else if (visibleAreaSize <= 9) {
+      padding = coordinate ? 60 : 50;
+    } else if (visibleAreaSize <= 12) {
+      padding = coordinate ? 50 : 40;
+    } else if (visibleAreaSize <= 15) {
+      padding = coordinate ? 40 : 30;
+    } else if (visibleAreaSize <= 17) {
+      padding = coordinate ? 35 : 25;
+    } else if (visibleAreaSize <= 19) {
+      padding = coordinate ? 30 : 20;
+    }
+    this.options.padding = padding;
+    this.renderInteractive();
+  }
+
   calcBoardVisibleArea(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     if (!canvas) return;
-    const {boardSize, extent, boardLineExtent, padding} = this.options;
-    const zoomedVisibleArea = calcVisibleArea(this.mat, extent, false);
+    const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
+      this.options;
+    const zoomedVisibleArea = calcVisibleArea(
+      this.mat,
+      extent,
+      boardSize,
+      false
+    );
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
     const cursorCtx = cursorCanvas?.getContext('2d');
@@ -369,15 +401,26 @@ export class GhostBan {
         ];
 
     this.visibleArea = visibleArea;
+    const visibleAreaSize = Math.max(
+      visibleArea[0][1] - visibleArea[0][0],
+      visibleArea[1][1] - visibleArea[1][0]
+    );
+
+    if (dynamicPadding) {
+      this.calcDynamicPadding(visibleAreaSize);
+    } else {
+      this.options.padding = DEFAULT_OPTIONS.padding;
+    }
 
     if (zoom) {
       const {space} = this.calcSpaceAndPadding();
       const center = this.calcCenter();
 
-      const visibleAreaSize = Math.max(
-        visibleArea[0][1] - visibleArea[0][0],
-        visibleArea[1][1] - visibleArea[1][0]
-      );
+      if (dynamicPadding) {
+        this.calcDynamicPadding(visibleAreaSize);
+      } else {
+        this.options.padding = DEFAULT_OPTIONS.padding;
+      }
 
       let extraVisibleSize = boardLineExtent * 2 + 1;
 
@@ -446,6 +489,9 @@ export class GhostBan {
   render() {
     const {mat} = this;
     if (this.mat && mat[0]) this.options.boardSize = mat[0].length;
+
+    // TODO: calc visible area twice is not good, need to refactor
+    this.calcBoardVisibleArea(this.options.zoom);
     this.calcBoardVisibleArea(this.options.zoom);
     this.clearAllCanvas();
     this.drawBoard();
@@ -676,7 +722,7 @@ export class GhostBan {
   };
 
   drawBan = (board = this.board) => {
-    const {theme} = this.options;
+    const {theme, themeResources} = this.options;
     if (board) {
       board.style.borderRadius = '2px';
       const ctx = board.getContext('2d');
@@ -690,15 +736,15 @@ export class GhostBan {
           ctx.fillRect(0, 0, board.width, board.height);
         } else if (
           theme === Theme.Walnut &&
-          RESOURCES[theme].board !== undefined
+          themeResources[theme].board !== undefined
         ) {
-          const boardUrl = RESOURCES[theme].board || '';
+          const boardUrl = themeResources[theme].board || '';
           const boardRes = images[boardUrl];
           if (boardRes) {
             ctx.drawImage(boardRes, 0, 0, board.width, board.height);
           }
         } else {
-          const boardUrl = RESOURCES[theme].board || '';
+          const boardUrl = themeResources[theme].board || '';
           const image = images[boardUrl];
           if (image) {
             const pattern = ctx.createPattern(image, 'repeat');
@@ -1001,7 +1047,7 @@ export class GhostBan {
     canvas = this.canvas,
     clear = true
   ) => {
-    const {theme = Theme.BlackAndWhite} = this.options;
+    const {theme = Theme.BlackAndWhite, themeResources} = this.options;
     if (clear) this.clearCanvas();
     if (canvas) {
       for (let i = 0; i < mat.length; i++) {
@@ -1039,8 +1085,12 @@ export class GhostBan {
                   break;
                 }
                 default: {
-                  const blacks = RESOURCES[theme].blacks.map(i => images[i]);
-                  const whites = RESOURCES[theme].whites.map(i => images[i]);
+                  const blacks = themeResources[theme].blacks.map(
+                    i => images[i]
+                  );
+                  const whites = themeResources[theme].whites.map(
+                    i => images[i]
+                  );
                   const mod = i + 10 + j;
                   stone = new ImageStone(ctx, x, y, value, mod, blacks, whites);
                   stone.setSize(space * ratio * 2);

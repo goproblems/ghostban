@@ -832,6 +832,7 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
 export function calcVisibleArea(
   mat: number[][],
   extent: number,
+  boardSize = 19,
   allowRectangle = false
 ): number[][] {
   let minRow = mat.length;
@@ -855,8 +856,8 @@ export function calcVisibleArea(
 
   if (empty) {
     return [
-      [0, 18],
-      [0, 18],
+      [0, boardSize - 1],
+      [0, boardSize - 1],
     ];
   }
 
@@ -967,6 +968,16 @@ export const handleMove = (
   }
 };
 
+/**
+ * Adds a stone to the current node in the tree.
+ *
+ * @param currentNode The current node in the tree.
+ * @param mat The matrix representing the board.
+ * @param i The row index of the stone.
+ * @param j The column index of the stone.
+ * @param ki The color of the stone (Ki.White or Ki.Black).
+ * @returns True if the stone was removed from previous nodes, false otherwise.
+ */
 export const addStoneToCurrentNode = (
   currentNode: TreeModel.Node<SgfNode>,
   mat: number[][],
@@ -977,6 +988,7 @@ export const addStoneToCurrentNode = (
   const value = SGF_LETTERS[i] + SGF_LETTERS[j];
   let token = ki === Ki.White ? 'AW' : 'AB';
   const prop = findProp(currentNode, token);
+  let result = false;
   if (mat[i][j] !== Ki.Empty) {
     const path = currentNode.getPath();
     path.forEach(node => {
@@ -1004,8 +1016,9 @@ export const addStoneToCurrentNode = (
         new SetupProp(token, value),
       ];
     }
+    result = true;
   }
-  return currentNode;
+  return result;
 };
 
 /**
@@ -1121,7 +1134,7 @@ export const calcVariationsMarkup = (
  * Calculates the mat and markup arrays based on the currentNode and defaultBoardSize.
  * @param currentNode The current node in the tree.
  * @param defaultBoardSize The default size of the board (optional, default is 19).
- * @returns An object containing the mat and markup arrays.
+ * @returns An object containing the mat and markup/numMarkup arrays.
  */
 export const calcMatAndMarkup = (
   currentNode: TreeModel.Node<SgfNode>,
@@ -1151,7 +1164,9 @@ export const calcMatAndMarkup = (
         mat = move(mat, i, j, m.token === 'B' ? Ki.Black : Ki.White);
 
         if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
-          numMarkup[li][lj] = node.model.number || index - setupCount;
+          numMarkup[li][lj] = (
+            node.model.number || index - setupCount
+          ).toString();
         }
 
         if (index === path.length - 1) {
@@ -1160,6 +1175,7 @@ export const calcMatAndMarkup = (
       }
     });
 
+    // Clear number when stones are captured
     for (let i = 0; i < size; i++) {
       for (let j = 0; j < size; j++) {
         if (mat[i][j] === 0) numMarkup[i][j] = '';
@@ -1221,7 +1237,7 @@ export const calcMatAndMarkup = (
   //   markup[li][lj] = Markup.Current;
   // }
 
-  return {mat, markup};
+  return {mat, markup, numMarkup};
 };
 
 /**
@@ -1231,6 +1247,7 @@ export const calcMatAndMarkup = (
  * @returns The found property or null if not found.
  */
 export const findProp = (node: TreeModel.Node<SgfNode>, token: string) => {
+  if (!node) return;
   if (MOVE_PROP_LIST.includes(token)) {
     return node.model.moveProps.find((p: MoveProp) => p.token === token);
   }
