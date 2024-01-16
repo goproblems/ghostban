@@ -832,7 +832,6 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
 export function calcVisibleArea(
   mat: number[][],
   extent: number,
-  boardSize = 19,
   allowRectangle = false
 ): number[][] {
   let minRow = mat.length;
@@ -856,8 +855,8 @@ export function calcVisibleArea(
 
   if (empty) {
     return [
-      [0, boardSize - 1],
-      [0, boardSize - 1],
+      [0, mat.length - 1],
+      [0, mat[0].length - 1],
     ];
   }
 

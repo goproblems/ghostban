@@ -382,12 +382,7 @@ export class GhostBan {
     if (!canvas) return;
     const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
       this.options;
-    const zoomedVisibleArea = calcVisibleArea(
-      this.mat,
-      extent,
-      boardSize,
-      false
-    );
+    const zoomedVisibleArea = calcVisibleArea(this.mat, extent, false);
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
     const cursorCtx = cursorCanvas?.getContext('2d');
