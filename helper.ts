@@ -604,7 +604,8 @@ export const initialRootNode = (
 ) => {
   const tree: TreeModel = new TreeModel();
   const root = tree.parse({
-    id: 'root',
+    // '1b16b1' is the SHA256 hash of the 'n'
+    id: '1b16b1',
     name: 0,
     index: 0,
     number: 0,
@@ -617,8 +618,10 @@ export const initialRootNode = (
     moveAnnotationProps: [],
     customProps: [],
   });
-  const sha = calcSHA(root);
-  root.model.id = sha;
+  // const sha = calcSHA(root);
+  // root.model.id = sha;
+  // console.log('root', root);
+  // console.log(sha);
   return root;
 };
 
