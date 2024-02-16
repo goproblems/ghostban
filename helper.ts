@@ -10,7 +10,7 @@ import {
   sample,
 } from 'lodash-es';
 import {SgfNode, SgfNodeOptions} from './core/types';
-import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS} from './const';
+import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS, MAX_BOARD_SIZE} from './const';
 import {
   SetupProp,
   MoveProp,
@@ -1147,7 +1147,10 @@ export const calcMatAndMarkup = (
   let li, lj;
   let setupCount = 0;
   const root = currentNode.getPath()[0];
-  const size = parseInt(findProp(root, 'SZ')?.value || defaultBoardSize);
+  const size = Math.min(
+    parseInt(findProp(root, 'SZ')?.value || defaultBoardSize),
+    MAX_BOARD_SIZE
+  );
   let mat = zeros([size, size]);
   const markup = empty([size, size]);
   const numMarkup = empty([size, size]);

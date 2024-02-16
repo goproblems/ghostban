@@ -4,6 +4,7 @@ import {
   A1_LETTERS,
   A1_NUMBERS,
   DEFAULT_OPTIONS,
+  MAX_BOARD_SIZE,
   THEME_RESOURCES,
 } from './const';
 import {
@@ -133,7 +134,7 @@ export class GhostBan {
   }
 
   setBoardSize(size: number) {
-    this.options.boardSize = size;
+    this.options.boardSize = Math.min(size, MAX_BOARD_SIZE);
   }
 
   resize() {

@@ -113,7 +113,7 @@ export class Sgf {
    */
   parse(sgf: string) {
     if (!sgf) return;
-    // sgf = sgf.replace(/(\r\n|\n|\r)/gm, '');
+    sgf = sgf.replace(/\s+(?![^\[\]]*])/gm, '');
     let nodeStart = 0;
     let counter = 0;
     const stack: TreeModel.Node<SgfNode>[] = [];
