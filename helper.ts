@@ -1075,6 +1075,35 @@ export const calcVariationsMarkup = (
   let res = calcMatAndMarkup(node);
   const {mat, markup} = res;
 
+  if (node.hasChildren()) {
+    node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+      n.model.moveProps.forEach((m: MoveProp) => {
+        const i = SGF_LETTERS.indexOf(m.value[0]);
+        const j = SGF_LETTERS.indexOf(m.value[1]);
+        let mark = Markup.NeutralNode;
+        if (inWrongPath(n)) mark = Markup.NegativeNode;
+        if (inRightPath(n)) mark = Markup.PositiveNode;
+        if (mat[i][j] === Ki.Empty) {
+          switch (policy) {
+            case 'prepend':
+              markup[i][j] = mark + '|' + markup[i][j];
+              break;
+            case 'replace':
+              markup[i][j] = mark;
+              break;
+            case 'append':
+            default:
+              markup[i][j] += '|' + mark;
+          }
+        }
+      });
+    });
+  }
+
+  return markup;
+};
+
+export const detectST = (node: TreeModel.Node<SgfNode>) => {
   // Reference: https://www.red-bean.com/sgf/properties.html#ST
   const root = node.getPath()[0];
   const stProp = root.model.rootProps.find((p: RootProp) => p.token === 'ST');
@@ -1102,34 +1131,7 @@ export const calcVariationsMarkup = (
       showVariationsMarkup = false;
     }
   }
-
-  if (showVariationsMarkup && showChildrenMarkup) {
-    if (node.hasChildren()) {
-      node.children.forEach((n: TreeModel.Node<SgfNode>) => {
-        n.model.moveProps.forEach((m: MoveProp) => {
-          const i = SGF_LETTERS.indexOf(m.value[0]);
-          const j = SGF_LETTERS.indexOf(m.value[1]);
-          let mark = Markup.NeutralNode;
-          if (inWrongPath(n)) mark = Markup.NegativeNode;
-          if (inRightPath(n)) mark = Markup.PositiveNode;
-          if (mat[i][j] === Ki.Empty) {
-            switch (policy) {
-              case 'prepend':
-                markup[i][j] = mark + '|' + markup[i][j];
-                break;
-              case 'replace':
-                markup[i][j] = mark;
-                break;
-              case 'append':
-              default:
-                markup[i][j] += '|' + mark;
-            }
-          }
-        });
-      });
-    }
-  }
-  return markup;
+  return {showVariationsMarkup, showChildrenMarkup, showSiblingsMarkup};
 };
 
 /**
