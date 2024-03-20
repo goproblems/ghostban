@@ -235,6 +235,12 @@ export class GhostBan {
 
     this.resize();
     this.renderInteractive();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => {
+        this.resize();
+      });
+    }
   }
 
   setOptions(options: GhostBanOptionsParams) {

@@ -1070,30 +1070,35 @@ export const addMoveToCurrentNode = (
  */
 export const calcVariationsMarkup = (
   node: TreeModel.Node<SgfNode>,
-  policy: 'append' | 'prepend' | 'replace' = 'append'
+  policy: 'append' | 'prepend' | 'replace' = 'append',
+  defaultBoardSize = 19
 ) => {
   let res = calcMatAndMarkup(node);
   const {mat, markup} = res;
+  const size = extractBoardSize(node, defaultBoardSize);
 
   if (node.hasChildren()) {
     node.children.forEach((n: TreeModel.Node<SgfNode>) => {
       n.model.moveProps.forEach((m: MoveProp) => {
         const i = SGF_LETTERS.indexOf(m.value[0]);
         const j = SGF_LETTERS.indexOf(m.value[1]);
-        let mark = Markup.NeutralNode;
-        if (inWrongPath(n)) mark = Markup.NegativeNode;
-        if (inRightPath(n)) mark = Markup.PositiveNode;
-        if (mat[i][j] === Ki.Empty) {
-          switch (policy) {
-            case 'prepend':
-              markup[i][j] = mark + '|' + markup[i][j];
-              break;
-            case 'replace':
-              markup[i][j] = mark;
-              break;
-            case 'append':
-            default:
-              markup[i][j] += '|' + mark;
+        if (i < 0 || j < 0) return;
+        if (i < size && j < size) {
+          let mark = Markup.NeutralNode;
+          if (inWrongPath(n)) mark = Markup.NegativeNode;
+          if (inRightPath(n)) mark = Markup.PositiveNode;
+          if (mat[i][j] === Ki.Empty) {
+            switch (policy) {
+              case 'prepend':
+                markup[i][j] = mark + '|' + markup[i][j];
+                break;
+              case 'replace':
+                markup[i][j] = mark;
+                break;
+              case 'append':
+              default:
+                markup[i][j] += '|' + mark;
+            }
           }
         }
       });
@@ -1148,11 +1153,7 @@ export const calcMatAndMarkup = (
 
   let li, lj;
   let setupCount = 0;
-  const root = currentNode.getPath()[0];
-  const size = Math.min(
-    parseInt(findProp(root, 'SZ')?.value || defaultBoardSize),
-    MAX_BOARD_SIZE
-  );
+  const size = extractBoardSize(currentNode, defaultBoardSize);
   let mat = zeros([size, size]);
   const markup = empty([size, size]);
   const numMarkup = empty([size, size]);
@@ -1379,4 +1380,16 @@ export const genMove = (
     checkResult(node);
   }
   return nextNode;
+};
+
+export const extractBoardSize = (
+  node: TreeModel.Node<SgfNode>,
+  defaultBoardSize = 19
+) => {
+  const root = node.getPath()[0];
+  const size = Math.min(
+    parseInt(findProp(root, 'SZ')?.value || defaultBoardSize),
+    MAX_BOARD_SIZE
+  );
+  return size;
 };
