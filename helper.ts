@@ -971,6 +971,33 @@ export const handleMove = (
 };
 
 /**
+ * Clear stone from the currentNode
+ * @param currentNode
+ * @param value
+ */
+export const clearStoneFromCurrentNode = (currentNode: TreeModel.Node<SgfNode>, value: string) => {
+  console.log('aaaa');
+  const path = currentNode.getPath();
+  path.forEach(node => {
+    const {setupProps} = node.model;
+    if (setupProps.filter((s: SetupProp) => s.value === value).length > 0) {
+      node.model.setupProps = setupProps.filter(
+        (s: any) => s.value !== value
+      );
+    } else {
+      setupProps.forEach((s: SetupProp) => {
+        s.values = s.values.filter(v => v !== value);
+        if (s.values.length === 0) {
+          node.model.setupProps = node.model.setupProps.filter(
+            (p: SetupProp) => p.token !== s.token
+          );
+        }
+      });
+    }
+  });
+}
+
+/**
  * Adds a stone to the current node in the tree.
  *
  * @param currentNode The current node in the tree.
@@ -992,23 +1019,7 @@ export const addStoneToCurrentNode = (
   const prop = findProp(currentNode, token);
   let result = false;
   if (mat[i][j] !== Ki.Empty) {
-    const path = currentNode.getPath();
-    path.forEach(node => {
-      const {setupProps} = node.model;
-      if (setupProps.filter((s: SetupProp) => s.value === value).length > 0) {
-        node.model.setupProps = setupProps.filter(
-          (s: any) => s.value !== value
-        );
-      }
-      setupProps.forEach((s: SetupProp) => {
-        s.values = s.values.filter(v => v !== value);
-        if (s.values.length === 0) {
-          node.model.setupProps = node.model.setupProps.filter(
-            (p: SetupProp) => p.token !== s.token
-          );
-        }
-      });
-    });
+    clearStoneFromCurrentNode(currentNode, value);
   } else {
     if (prop) {
       prop.values = [...prop.values, value];
