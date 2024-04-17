@@ -15,6 +15,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "outDir": "build"
+    "outDir": "build",
+    "paths": {
+      "crypto": ["./node_modules/crypto-js"]
+    }
   }
 }

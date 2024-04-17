@@ -976,7 +976,6 @@ export const handleMove = (
  * @param value
  */
 export const clearStoneFromCurrentNode = (currentNode: TreeModel.Node<SgfNode>, value: string) => {
-  console.log('aaaa');
   const path = currentNode.getPath();
   path.forEach(node => {
     const {setupProps} = node.model;
