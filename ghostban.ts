@@ -499,6 +499,7 @@ export class GhostBan {
     this.drawBoard();
     this.drawStones();
     this.drawMarkup();
+    this.drawCursor();
     if (this.options.showAnalysis) this.drawAnalysis();
   }
 

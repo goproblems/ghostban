@@ -153,7 +153,7 @@ const canCapture = (mat: number[][], i: number, j: number, ki: number) => {
 };
 
 export const canMove = (mat: number[][], i: number, j: number, ki: number) => {
-  const newArray = mat;
+  const newArray = cloneDeep(mat);
   if (mat[i][j] !== 0) {
     return false;
   }

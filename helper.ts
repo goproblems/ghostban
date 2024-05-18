@@ -176,6 +176,28 @@ export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
   return pat?.value === kind;
 };
 
+export const isTargetNode = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return c?.value.includes('CHOICE');
+};
+
+export const isForceNode = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return c?.value.includes('FORCE');
+};
+
+export const isPreventMoveNode = (n: TreeModel.Node<SgfNode>) => {
+  const c = n.model.nodeAnnotationProps?.find(
+    (p: NodeAnnotationProp) => p.token === 'C'
+  );
+  return c?.value.includes('NOTTHIS');
+};
+
+// TODO: Should check if the node is a leaf node
 export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
@@ -200,6 +222,11 @@ export const isWrongLeaf = (n: TreeModel.Node<SgfNode>) => {
 export const inRightPath = (node: TreeModel.Node<SgfNode>) => {
   const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) => isRightLeaf(n));
   return rightLeaves.length > 0;
+};
+
+export const inTargetPath = (node: TreeModel.Node<SgfNode>) => {
+  const targetNodes = node.all((n: TreeModel.Node<SgfNode>) => isTargetNode(n));
+  return targetNodes.length > 0;
 };
 
 export const inVariantPath = (node: TreeModel.Node<SgfNode>) => {
@@ -975,14 +1002,15 @@ export const handleMove = (
  * @param currentNode
  * @param value
  */
-export const clearStoneFromCurrentNode = (currentNode: TreeModel.Node<SgfNode>, value: string) => {
+export const clearStoneFromCurrentNode = (
+  currentNode: TreeModel.Node<SgfNode>,
+  value: string
+) => {
   const path = currentNode.getPath();
   path.forEach(node => {
     const {setupProps} = node.model;
     if (setupProps.filter((s: SetupProp) => s.value === value).length > 0) {
-      node.model.setupProps = setupProps.filter(
-        (s: any) => s.value !== value
-      );
+      node.model.setupProps = setupProps.filter((s: any) => s.value !== value);
     } else {
       setupProps.forEach((s: SetupProp) => {
         s.values = s.values.filter(v => v !== value);
@@ -994,7 +1022,7 @@ export const clearStoneFromCurrentNode = (currentNode: TreeModel.Node<SgfNode>, 
       });
     }
   });
-}
+};
 
 /**
  * Adds a stone to the current node in the tree.
