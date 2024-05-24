@@ -341,7 +341,7 @@ export class GhostBan {
       Math.abs(point.x - this.touchStartPoint.x) > distance ||
       Math.abs(point.y - this.touchStartPoint.y) > distance
     ) {
-      offset = -2;
+      offset = -3;
     }
     this.setCursorWithRender(point, offset);
   };
