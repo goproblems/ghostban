@@ -41,13 +41,16 @@ import {
   RootInfo,
   Markup,
 } from './types';
-import sha256 from 'crypto-js/sha256';
 
 import {Center} from './types';
 
 import {canMove, execCapture} from './boardcore';
 export {canMove, execCapture};
 // export * from './boardcore';
+
+// es6 import style sometimes trigger error 'gg/ghostban/build/index.js" contains a reference to the file "crypto'
+// use require instead
+const sha256 = require('crypto-js/sha256');
 
 export const calcDoubtfulMovesThresholdRange = (threshold: number) => {
   // 8D-9D
