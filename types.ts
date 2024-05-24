@@ -23,6 +23,7 @@ export type GhostBanOptions = {
   defaultNodeColor: string;
   themeResources: ThemeResources;
   moveSound: boolean;
+  starSize: number;
 };
 
 export type GhostBanOptionsParams = {
@@ -46,6 +47,7 @@ export type GhostBanOptionsParams = {
   defaultNodeColor?: string;
   themeResources?: ThemeResources;
   moveSound?: boolean;
+  starSize?: number;
 };
 
 export type ThemeResources = {

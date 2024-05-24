@@ -36,15 +36,15 @@ import {
   CircleSolidMarkup,
 } from './markups';
 
-let devicePixelRatio = 1.0;
-if (typeof window !== 'undefined') {
-  devicePixelRatio = window.devicePixelRatio;
-  // browser code
-}
-
 const images: {
   [key: string]: HTMLImageElement;
 } = {};
+
+function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
 
 function preload(urls: string[], done: () => void) {
   let loaded = 0;
@@ -68,6 +68,12 @@ function preload(urls: string[], done: () => void) {
   }
 }
 
+let dpr = 1.0;
+// browser code
+if (typeof window !== 'undefined') {
+  dpr = window.devicePixelRatio || 1.0;
+}
+
 export class GhostBan {
   defaultOptions: GhostBanOptions = {
     boardSize: 19,
@@ -89,6 +95,7 @@ export class GhostBan {
     defaultNodeColor: '#404040',
     themeResources: THEME_RESOURCES,
     moveSound: false,
+    starSize: 3,
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -101,6 +108,8 @@ export class GhostBan {
   turn: Ki;
   private cursor: Cursor = Cursor.None;
   private cursorValue: string = '';
+  private touchMoving = false;
+  private touchStartPoint: DOMPoint = new DOMPoint();
   public cursorPosition: [number, number];
   public cursorPoint: DOMPoint = new DOMPoint();
   public mat: number[][];
@@ -150,39 +159,40 @@ export class GhostBan {
     const {board, canvas, markupCanvas, cursorCanvas, analysisCanvas} = this;
     const {size, zoom} = this.options;
     if (size) {
-      board.width = size * devicePixelRatio;
-      board.height = size * devicePixelRatio;
-      canvas.width = size * devicePixelRatio;
-      canvas.height = size * devicePixelRatio;
-      markupCanvas.width = size * devicePixelRatio;
-      markupCanvas.height = size * devicePixelRatio;
-      cursorCanvas.width = size * devicePixelRatio;
-      cursorCanvas.height = size * devicePixelRatio;
-      analysisCanvas.width = size * devicePixelRatio;
-      analysisCanvas.height = size * devicePixelRatio;
+      board.width = size * dpr;
+      board.height = size * dpr;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      markupCanvas.width = size * dpr;
+      markupCanvas.height = size * dpr;
+      cursorCanvas.width = size * dpr;
+      cursorCanvas.height = size * dpr;
+      analysisCanvas.width = size * dpr;
+      analysisCanvas.height = size * dpr;
     } else {
       const {clientWidth} = this.dom;
       board.style.width = clientWidth + 'px';
       board.style.height = clientWidth + 'px';
-      board.width = Math.floor(clientWidth * devicePixelRatio);
-      board.height = Math.floor(clientWidth * devicePixelRatio);
+      board.width = Math.floor(clientWidth * dpr);
+      board.height = Math.floor(clientWidth * dpr);
       canvas.style.width = clientWidth + 'px';
       canvas.style.height = clientWidth + 'px';
-      canvas.width = Math.floor(clientWidth * devicePixelRatio);
-      canvas.height = Math.floor(clientWidth * devicePixelRatio);
+      canvas.width = Math.floor(clientWidth * dpr);
+      canvas.height = Math.floor(clientWidth * dpr);
       markupCanvas.style.width = clientWidth + 'px';
       markupCanvas.style.height = clientWidth + 'px';
-      markupCanvas.width = Math.floor(clientWidth * devicePixelRatio);
-      markupCanvas.height = Math.floor(clientWidth * devicePixelRatio);
+      markupCanvas.width = Math.floor(clientWidth * dpr);
+      markupCanvas.height = Math.floor(clientWidth * dpr);
       cursorCanvas.style.width = clientWidth + 'px';
       cursorCanvas.style.height = clientWidth + 'px';
-      cursorCanvas.width = Math.floor(clientWidth * devicePixelRatio);
-      cursorCanvas.height = Math.floor(clientWidth * devicePixelRatio);
+      cursorCanvas.width = Math.floor(clientWidth * dpr);
+      cursorCanvas.height = Math.floor(clientWidth * dpr);
       analysisCanvas.style.width = clientWidth + 'px';
       analysisCanvas.style.height = clientWidth + 'px';
-      analysisCanvas.width = Math.floor(clientWidth * devicePixelRatio);
-      analysisCanvas.height = Math.floor(clientWidth * devicePixelRatio);
+      analysisCanvas.width = Math.floor(clientWidth * dpr);
+      analysisCanvas.height = Math.floor(clientWidth * dpr);
     }
+
     this.render();
   }
 
@@ -245,6 +255,8 @@ export class GhostBan {
 
   setOptions(options: GhostBanOptionsParams) {
     this.options = {...this.options, ...options};
+    // The onMouseMove event needs to be re-added after the options are updated
+    this.renderInteractive();
     this.render();
   }
 
@@ -261,52 +273,102 @@ export class GhostBan {
     this.cursorValue = value;
   }
 
+  setCursorWithRender = (domPoint: DOMPoint, offsetY = 0) => {
+    // space need recalculate every time
+    const {padding} = this.options;
+    const {space} = this.calcSpaceAndPadding();
+    const point = this.transMat.inverse().transformPoint(domPoint);
+    const idx = Math.round((point.x - padding + space / 2) / space);
+    const idy = Math.round((point.y - padding + space / 2) / space) + offsetY;
+    const xx = idx * space;
+    const yy = idy * space;
+    const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
+    if (
+      !isMobileDevice() ||
+      (isMobileDevice() && this.mat[idx - 1][idy - 1] === 0)
+    ) {
+      this.cursorPoint = p;
+      this.cursorPosition = [idx - 1, idy - 1];
+    }
+    this.drawCursor();
+
+    if (isMobileDevice()) this.drawBoard();
+  };
+
+  private onMouseMove = (e: MouseEvent) => {
+    const canvas = this.cursorCanvas;
+    if (!canvas) return;
+
+    e.preventDefault();
+    const point = new DOMPoint(e.offsetX * dpr, e.offsetY * dpr);
+    this.setCursorWithRender(point);
+  };
+
+  private calcTouchPoint = (e: TouchEvent) => {
+    let point = new DOMPoint();
+    const canvas = this.cursorCanvas;
+    if (!canvas) return point;
+    const rect = canvas.getBoundingClientRect();
+    const touches = e.changedTouches;
+    point = new DOMPoint(
+      (touches[0].clientX - rect.left) * dpr,
+      (touches[0].clientY - rect.top) * dpr
+    );
+    return point;
+  };
+
+  private onTouchStart = (e: TouchEvent) => {
+    const canvas = this.cursorCanvas;
+    if (!canvas) return;
+
+    e.preventDefault();
+    this.touchMoving = true;
+    const point = this.calcTouchPoint(e);
+    this.touchStartPoint = point;
+    this.setCursorWithRender(point);
+  };
+
+  private onTouchMove = (e: TouchEvent) => {
+    const canvas = this.cursorCanvas;
+    if (!canvas) return;
+
+    e.preventDefault();
+    this.touchMoving = true;
+    const point = this.calcTouchPoint(e);
+    let offset = 0;
+    let distance = 10;
+    if (
+      Math.abs(point.x - this.touchStartPoint.x) > distance ||
+      Math.abs(point.y - this.touchStartPoint.y) > distance
+    ) {
+      offset = -2;
+    }
+    this.setCursorWithRender(point, offset);
+  };
+
+  private onTouchEnd = () => {
+    this.touchMoving = false;
+  };
+
   renderInteractive() {
     const canvas = this.cursorCanvas;
     if (!canvas) return;
-    const {padding} = this.options;
 
-    const setCursorWithRender = (domPoint: DOMPoint) => {
-      // space need recalculate every time
-      const {space} = this.calcSpaceAndPadding();
-      const point = this.transMat.inverse().transformPoint(domPoint);
-      const idx = Math.round((point.x - padding + space / 2) / space);
-      const idy = Math.round((point.y - padding + space / 2) / space);
-      const xx = idx * space;
-      const yy = idy * space;
-      const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
-      this.cursorPoint = p;
-      this.cursorPosition = [idx - 1, idy - 1];
-      this.drawCursor();
-    };
-    const onTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const touches = e.changedTouches;
-      const point = new DOMPoint(
-        (touches[0].clientX - rect.left) * devicePixelRatio,
-        (touches[0].clientY - rect.top) * devicePixelRatio
-      );
-      setCursorWithRender(point);
-    };
-    const onMouseMove = (e: MouseEvent) => {
-      e.preventDefault();
-      const point = new DOMPoint(
-        e.offsetX * devicePixelRatio,
-        e.offsetY * devicePixelRatio
-      );
-      setCursorWithRender(point);
-    };
+    canvas.removeEventListener('mousemove', this.onMouseMove);
+    canvas.removeEventListener('mouseout', this.onMouseMove);
+    canvas.removeEventListener('touchstart', this.onTouchStart);
+    canvas.removeEventListener('touchmove', this.onTouchMove);
+    canvas.removeEventListener('touchend', this.onTouchEnd);
 
     if (this.options.interactive) {
-      canvas.addEventListener('mousemove', onMouseMove);
-      canvas.addEventListener('touchmove', onTouchMove);
-      canvas.addEventListener('mouseout', onMouseMove);
-    } else {
-      canvas.removeEventListener('mousemove', onMouseMove);
-      canvas.removeEventListener('touchmove', onTouchMove);
-      canvas.removeEventListener('mouseout', onMouseMove);
+      canvas.addEventListener('mousemove', this.onMouseMove);
+      canvas.addEventListener('mouseout', this.onMouseMove);
+      canvas.addEventListener('touchstart', this.onTouchStart);
+      canvas.addEventListener('touchmove', this.onTouchMove);
+      canvas.addEventListener('touchend', this.onTouchEnd);
     }
+
+    this.clearCursorCanvas();
   }
 
   setAnalysis(analysis: Analysis | null) {
@@ -381,7 +443,7 @@ export class GhostBan {
       padding = coordinate ? 30 : 20;
     }
     this.options.padding = padding;
-    this.renderInteractive();
+    // this.renderInteractive();
   }
 
   calcBoardVisibleArea(zoom = false) {
@@ -554,6 +616,7 @@ export class GhostBan {
 
   clearCursorCanvas = () => {
     if (!this.cursorCanvas) return;
+    const size = this.options.boardSize;
     const ctx = this.cursorCanvas.getContext('2d');
     if (ctx) {
       ctx.save();
@@ -778,6 +841,16 @@ export class GhostBan {
       const extendSpace = zoom ? boardLineExtent * space : 0;
 
       ctx.fillStyle = '#000000';
+
+      // const mobileScale = 0.5;
+      let edgeLineWidth = boardEdgeLineWidth;
+      if (!isMobileDevice()) {
+        edgeLineWidth *= dpr;
+      }
+      let lineWidth = boardLineWidth;
+      if (!isMobileDevice()) {
+        lineWidth *= dpr;
+      }
       // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();
@@ -785,15 +858,27 @@ export class GhostBan {
           (visibleArea[0][0] === 0 && i === 0) ||
           (visibleArea[0][1] === boardSize - 1 && i === boardSize - 1)
         ) {
-          ctx.lineWidth = boardEdgeLineWidth * devicePixelRatio;
+          ctx.lineWidth = edgeLineWidth;
         } else {
-          ctx.lineWidth = boardLineWidth * devicePixelRatio;
+          ctx.lineWidth = lineWidth;
         }
-        // let startPointY = scaledPadding + visibleArea[1][0] * space;
+        if (
+          isMobileDevice() &&
+          i === this.cursorPosition[0] &&
+          this.touchMoving
+        ) {
+          ctx.lineWidth = ctx.lineWidth * 2;
+        }
         let startPointY =
           scaledPadding + visibleArea[1][0] * space - boardEdgeLineWidth;
+        if (isMobileDevice()) {
+          startPointY += dpr / 2;
+        }
         let endPointY =
           space * visibleArea[1][1] + scaledPadding + boardEdgeLineWidth;
+        if (isMobileDevice()) {
+          endPointY -= dpr / 2;
+        }
         if (visibleArea[1][0] > 0) startPointY -= extendSpace;
         if (visibleArea[1][1] < boardSize - 1) endPointY += extendSpace;
         ctx.moveTo(i * space + scaledPadding, startPointY);
@@ -808,14 +893,28 @@ export class GhostBan {
           (visibleArea[1][0] === 0 && i === 0) ||
           (visibleArea[1][1] === boardSize - 1 && i === boardSize - 1)
         ) {
-          ctx.lineWidth = boardEdgeLineWidth * devicePixelRatio;
+          ctx.lineWidth = edgeLineWidth;
         } else {
-          ctx.lineWidth = boardLineWidth * devicePixelRatio;
+          ctx.lineWidth = lineWidth;
+        }
+        if (
+          isMobileDevice() &&
+          i === this.cursorPosition[1] &&
+          this.touchMoving
+        ) {
+          ctx.lineWidth = ctx.lineWidth * 2;
         }
         let startPointX =
           scaledPadding + visibleArea[0][0] * space - boardEdgeLineWidth;
         let endPointX =
           space * visibleArea[0][1] + scaledPadding + boardEdgeLineWidth;
+        if (isMobileDevice()) {
+          startPointX += dpr / 2;
+        }
+        if (isMobileDevice()) {
+          endPointX -= dpr / 2;
+        }
+
         if (visibleArea[0][0] > 0) startPointX -= extendSpace;
         if (visibleArea[0][1] < boardSize - 1) endPointX += extendSpace;
         ctx.moveTo(startPointX, i * space + scaledPadding);
@@ -831,6 +930,10 @@ export class GhostBan {
 
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
+    let starSize = this.options.starSize;
+    if (!isMobileDevice()) {
+      starSize = starSize * dpr;
+    }
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       // Drawing star
@@ -847,7 +950,7 @@ export class GhostBan {
             ctx.arc(
               i * space + scaledPadding,
               j * space + scaledPadding,
-              3 * devicePixelRatio,
+              starSize,
               0,
               2 * Math.PI,
               true
