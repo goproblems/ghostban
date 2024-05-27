@@ -1184,18 +1184,20 @@ export const detectST = (node: TreeModel.Node<SgfNode>) => {
  * Calculates the mat and markup arrays based on the currentNode and defaultBoardSize.
  * @param currentNode The current node in the tree.
  * @param defaultBoardSize The default size of the board (optional, default is 19).
- * @returns An object containing the mat and markup/numMarkup arrays.
+ * @returns An object containing the mat/visibleAreaMat/markup/numMarkup arrays.
  */
 export const calcMatAndMarkup = (
   currentNode: TreeModel.Node<SgfNode>,
   defaultBoardSize = 19
 ) => {
   const path = currentNode.getPath();
+  const root = path[0];
 
   let li, lj;
   let setupCount = 0;
   const size = extractBoardSize(currentNode, defaultBoardSize);
   let mat = zeros([size, size]);
+  let visibleAreaMat = zeros([size, size]);
   const markup = empty([size, size]);
   const numMarkup = empty([size, size]);
 
@@ -1244,6 +1246,38 @@ export const calcMatAndMarkup = (
       });
     });
   });
+
+  if (root) {
+    root.all((node: TreeModel.Node<SgfNode>) => {
+      const {moveProps, setupProps, rootProps} = node.model;
+      if (setupProps.length > 0) setupCount += 1;
+      moveProps.forEach((m: MoveProp) => {
+        const i = SGF_LETTERS.indexOf(m.value[0]);
+        const j = SGF_LETTERS.indexOf(m.value[1]);
+        if (i < 0 || j < 0) return;
+        if (i < size && j < size) {
+          li = i;
+          lj = j;
+          visibleAreaMat = move(mat, i, j, Ki.Black);
+        }
+      });
+
+      setupProps.forEach((setup: any) => {
+        setup.values.forEach((value: any) => {
+          const i = SGF_LETTERS.indexOf(value[0]);
+          const j = SGF_LETTERS.indexOf(value[1]);
+          li = i;
+          lj = j;
+          if (i < size && j < size) {
+            visibleAreaMat[i][j] = setup.token;
+            if (setup.token === 'AE') mat[i][j] = 0;
+          }
+        });
+      });
+      return true;
+    });
+  }
+
   const markupProps = currentNode.model.markupProps;
   markupProps.forEach((m: MarkupProp) => {
     const token = m.token;
@@ -1286,7 +1320,7 @@ export const calcMatAndMarkup = (
   //   markup[li][lj] = Markup.Current;
   // }
 
-  return {mat, markup, numMarkup};
+  return {mat, visibleAreaMat, markup, numMarkup};
 };
 
 /**

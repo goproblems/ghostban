@@ -114,6 +114,7 @@ export class GhostBan {
   public cursorPoint: DOMPoint = new DOMPoint();
   public mat: number[][];
   public markup: string[][];
+  public visibleAreaMat: number[][];
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
@@ -126,6 +127,7 @@ export class GhostBan {
     };
     const size = this.options.boardSize;
     this.mat = zeros([size, size]);
+    this.visibleAreaMat = zeros([size, size]);
     this.markup = empty([size, size]);
     this.turn = Ki.Black;
     this.cursorPosition = [size - 1, 0];
@@ -262,6 +264,11 @@ export class GhostBan {
 
   setMat(mat: number[][]) {
     this.mat = mat;
+    this.visibleAreaMat = mat;
+  }
+
+  setVisibleAreaMat(mat: number[][]) {
+    this.visibleAreaMat = mat;
   }
 
   setMarkup(markup: string[][]) {
@@ -451,7 +458,11 @@ export class GhostBan {
     if (!canvas) return;
     const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
       this.options;
-    const zoomedVisibleArea = calcVisibleArea(this.mat, extent, false);
+    const zoomedVisibleArea = calcVisibleArea(
+      this.visibleAreaMat,
+      extent,
+      false
+    );
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
     const cursorCtx = cursorCanvas?.getContext('2d');
