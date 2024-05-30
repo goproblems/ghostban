@@ -1111,6 +1111,8 @@ export class GhostBan {
     if (canvas) {
       this.clearCursorCanvas();
       if (this.cursor === Cursor.None) return;
+      if (isMobileDevice() && !this.touchMoving) return;
+
       const {padding} = this.options;
       const ctx = canvas.getContext('2d');
       const {space} = this.calcSpaceAndPadding();
