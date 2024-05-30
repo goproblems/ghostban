@@ -1,4 +1,4 @@
-import {compact, replace} from 'lodash-es';
+import {compact, replace} from 'lodash';
 import {isCharacterInNode} from './helpers';
 import matchAll from 'string.prototype.matchall';
 

@@ -1,4 +1,4 @@
-import {compact} from 'lodash-es';
+import {compact} from 'lodash';
 import {calcVisibleArea, reverseOffset, zeros, empty, a1ToPos} from './helper';
 import {
   A1_LETTERS,

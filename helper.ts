@@ -8,7 +8,7 @@ import {
   findLastIndex,
   compact,
   sample,
-} from 'lodash-es';
+} from 'lodash';
 import {SgfNode, SgfNodeOptions} from './core/types';
 import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS, MAX_BOARD_SIZE} from './const';
 import {
