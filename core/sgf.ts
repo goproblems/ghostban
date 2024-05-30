@@ -1,6 +1,5 @@
 import {compact, replace} from 'lodash';
 import {isCharacterInNode} from './helpers';
-import matchAll from 'string.prototype.matchall';
 
 import TreeModel from 'tree-model';
 import {
@@ -133,9 +132,7 @@ export class Sgf {
           const customProps: CustomProp[] = [];
 
           const matches = [
-            ...matchAll(
-              content,
-
+            ...content.matchAll(
               // RegExp(/([A-Z]+\[[a-z\[\]]*\]+)/, 'g')
               // RegExp(/([A-Z]+\[.*?\]+)/, 'g')
               // RegExp(/[A-Z]+(\[.*?\]){1,}/, 'g')

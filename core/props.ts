@@ -1,5 +1,3 @@
-import matchAll from 'string.prototype.matchall';
-
 export const MOVE_PROP_LIST = [
   'B',
   // KO is standard in move list but usually be used for komi in gameinfo props
@@ -170,7 +168,7 @@ export class SetupProp extends SgfPropBase {
 
   static from(str: string) {
     const tokenMatch = str.match(TOKEN_REGEX);
-    const valMatches = matchAll(str, /\[([\s\S]*?)\]/g);
+    const valMatches = str.matchAll(/\[([\s\S]*?)\]/g);
 
     let token = '';
     const vals = [...valMatches].map(m => m[1]);
@@ -288,7 +286,7 @@ export class MarkupProp extends SgfPropBase {
   }
   static from(str: string) {
     const tokenMatch = str.match(TOKEN_REGEX);
-    const valMatches = matchAll(str, /\[([\s\S]*?)\]/g);
+    const valMatches = str.matchAll(/\[([\s\S]*?)\]/g);
 
     let token = '';
     const vals = [...valMatches].map(m => m[1]);
