@@ -264,7 +264,6 @@ export class GhostBan {
 
   setMat(mat: number[][]) {
     this.mat = mat;
-    this.visibleAreaMat = mat;
   }
 
   setVisibleAreaMat(mat: number[][]) {
@@ -453,7 +452,7 @@ export class GhostBan {
     // this.renderInteractive();
   }
 
-  calcBoardVisibleArea(zoom = false) {
+  zoomBoard(zoom = false) {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     if (!canvas) return;
     const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
@@ -566,8 +565,8 @@ export class GhostBan {
     if (this.mat && mat[0]) this.options.boardSize = mat[0].length;
 
     // TODO: calc visible area twice is not good, need to refactor
-    this.calcBoardVisibleArea(this.options.zoom);
-    this.calcBoardVisibleArea(this.options.zoom);
+    this.zoomBoard(this.options.zoom);
+    this.zoomBoard(this.options.zoom);
     this.clearAllCanvas();
     this.drawBoard();
     this.drawStones();
