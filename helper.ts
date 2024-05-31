@@ -863,7 +863,7 @@ export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
 };
 
 export function calcVisibleArea(
-  mat: number[][],
+  mat: number[][] = zeros([19, 19]),
   extent: number,
   allowRectangle = false
 ): number[][] {
