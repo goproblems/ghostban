@@ -547,6 +547,10 @@ export class GhostBan {
     }
   }
 
+  calcBoardVisibleArea(zoom = false) {
+    this.zoomBoard(this.options.zoom);
+  }
+
   resetTransform() {
     const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
     const ctx = canvas?.getContext('2d');
