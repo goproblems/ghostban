@@ -115,6 +115,7 @@ export class GhostBan {
   public mat: number[][];
   public markup: string[][];
   public visibleAreaMat: number[][] | undefined;
+  public preventMoveMat: number[][];
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
@@ -127,6 +128,7 @@ export class GhostBan {
     };
     const size = this.options.boardSize;
     this.mat = zeros([size, size]);
+    this.preventMoveMat = zeros([size, size]);
     this.markup = empty([size, size]);
     this.turn = Ki.Black;
     this.cursorPosition = [size - 1, 0];
@@ -272,6 +274,10 @@ export class GhostBan {
     this.visibleAreaMat = mat;
   }
 
+  setPreventMoveMat(mat: number[][]) {
+    this.preventMoveMat = mat;
+  }
+
   setMarkup(markup: string[][]) {
     this.markup = markup;
   }
@@ -291,6 +297,12 @@ export class GhostBan {
     const xx = idx * space;
     const yy = idy * space;
     const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
+    if (this.preventMoveMat?.[idx - 1]?.[idy - 1] === 1) {
+      this.cursorPosition = [-1, -1];
+      this.cursorPoint = new DOMPoint();
+      this.drawCursor();
+      return;
+    }
     if (
       !isMobileDevice() ||
       (isMobileDevice() && this.mat[idx - 1][idy - 1] === 0)

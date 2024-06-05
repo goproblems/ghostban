@@ -208,6 +208,14 @@ export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
   return c?.value.includes('RIGHT');
 };
 
+export const isFirstRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+  const root = n.getPath()[0];
+  const firstRightLeave = root.first((n: TreeModel.Node<SgfNode>) =>
+    isRightLeaf(n)
+  );
+  return firstRightLeave?.model.id === n.model.id;
+};
+
 export const isVariantLeaf = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
@@ -227,8 +235,16 @@ export const inRightPath = (node: TreeModel.Node<SgfNode>) => {
   return rightLeaves.length > 0;
 };
 
+export const inFirstRightPath = (node: TreeModel.Node<SgfNode>) => {
+  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
+    isFirstRightLeaf(n)
+  );
+  return rightLeaves.length > 0;
+};
+
 export const inTargetPath = (node: TreeModel.Node<SgfNode>) => {
   const targetNodes = node.all((n: TreeModel.Node<SgfNode>) => isTargetNode(n));
+
   return targetNodes.length > 0;
 };
 
@@ -714,7 +730,7 @@ export const cutMoveNodes = (
   return node;
 };
 
-export const zeros = (size: [number, number]) =>
+export const zeros = (size: [number, number]): number[][] =>
   new Array(size[0]).fill(0).map(() => new Array(size[1]).fill(0));
 
 export const empty = (size: [number, number]): string[][] =>
@@ -1100,6 +1116,49 @@ export const addMoveToCurrentNode = (
     }
   }
   return node;
+};
+
+export const calcPreventMoveMat = (
+  node: TreeModel.Node<SgfNode>,
+  defaultBoardSize = 19
+) => {
+  if (!node) return zeros([defaultBoardSize, defaultBoardSize]);
+  const size = extractBoardSize(node, defaultBoardSize);
+  const preventMoveMat = zeros([size, size]);
+  let forceNodes = [];
+  let preventMoveNodes = [];
+  if (node.hasChildren()) {
+    preventMoveNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
+      isPreventMoveNode(n)
+    );
+  }
+
+  if (isForceNode(node)) {
+    preventMoveMat.forEach(row => row.fill(1));
+    if (node.hasChildren()) {
+      node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+        n.model.moveProps.forEach((m: MoveProp) => {
+          const i = SGF_LETTERS.indexOf(m.value[0]);
+          const j = SGF_LETTERS.indexOf(m.value[1]);
+          if (i >= 0 && j >= 0 && i < size && j < size) {
+            preventMoveMat[i][j] = 0;
+          }
+        });
+      });
+    }
+
+    preventMoveNodes.forEach((n: TreeModel.Node<SgfNode>) => {
+      n.model.moveProps.forEach((m: MoveProp) => {
+        const i = SGF_LETTERS.indexOf(m.value[0]);
+        const j = SGF_LETTERS.indexOf(m.value[1]);
+        if (i >= 0 && j >= 0 && i < size && j < size) {
+          preventMoveMat[i][j] = 1;
+        }
+      });
+    });
+  }
+
+  return preventMoveMat;
 };
 
 /**
