@@ -40,6 +40,7 @@ import {
   ProblemAnswerType as PAT,
   RootInfo,
   Markup,
+  PathDetectionStrategy,
 } from './types';
 
 import {Center} from './types';
@@ -51,6 +52,8 @@ export {canMove, execCapture};
 // es6 import style sometimes trigger error 'gg/ghostban/build/index.js" contains a reference to the file "crypto'
 // use require instead
 const sha256 = require('crypto-js/sha256');
+
+type Strategy = 'post' | 'pre' | 'both';
 
 export const calcDoubtfulMovesThresholdRange = (threshold: number) => {
   // 8D-9D
@@ -179,12 +182,14 @@ export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
   return pat?.value === kind;
 };
 
-export const isTargetNode = (n: TreeModel.Node<SgfNode>) => {
+export const isChoiceNode = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return c?.value.includes('CHOICE');
 };
+
+export const isTargetNode = isChoiceNode;
 
 export const isForceNode = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
@@ -200,64 +205,122 @@ export const isPreventMoveNode = (n: TreeModel.Node<SgfNode>) => {
   return c?.value.includes('NOTTHIS');
 };
 
-// TODO: Should check if the node is a leaf node
-export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+//   return isRightNode(n) && !n.hasChildren();
+// };
+
+export const isRightNode = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return c?.value.includes('RIGHT');
 };
 
-export const isFirstRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isFirstRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+//   const root = n.getPath()[0];
+//   const firstRightLeave = root.first((n: TreeModel.Node<SgfNode>) =>
+//     isRightLeaf(n)
+//   );
+//   return firstRightLeave?.model.id === n.model.id;
+// };
+
+export const isFirstRightNode = (n: TreeModel.Node<SgfNode>) => {
   const root = n.getPath()[0];
-  const firstRightLeave = root.first((n: TreeModel.Node<SgfNode>) =>
-    isRightLeaf(n)
+  const firstRightNode = root.first((n: TreeModel.Node<SgfNode>) =>
+    isRightNode(n)
   );
-  return firstRightLeave?.model.id === n.model.id;
+  return firstRightNode?.model.id === n.model.id;
 };
 
-export const isVariantLeaf = (n: TreeModel.Node<SgfNode>) => {
+export const isVariantNode = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return c?.value.includes('VARIANT');
 };
 
-export const isWrongLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isVariantLeaf = (n: TreeModel.Node<SgfNode>) => {
+//   return isVariantNode(n) && !n.hasChildren();
+// };
+
+export const isWrongNode = (n: TreeModel.Node<SgfNode>) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return (!c?.value.includes('VARIANT') && !c?.value.includes('RIGHT')) || !c;
 };
 
+// export const isWrongLeaf = (n: TreeModel.Node<SgfNode>) => {
+//   return isWrongNode(n) && !n.hasChildren();
+// };
+
 export const inRightPath = (node: TreeModel.Node<SgfNode>) => {
-  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) => isRightLeaf(n));
+  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) => isRightNode(n));
   return rightLeaves.length > 0;
 };
 
-export const inFirstRightPath = (node: TreeModel.Node<SgfNode>) => {
-  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
-    isFirstRightLeaf(n)
+export const inPath = (
+  node: TreeModel.Node<SgfNode>,
+  detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes: TreeModel.Node<SgfNode>[] | undefined
+) => {
+  const path = preNodes ?? node.getPath();
+  const postRightNodes =
+    postNodes ?? node.all((n: TreeModel.Node<SgfNode>) => detectionMethod(n));
+  const preRightNodes = path.map((n: TreeModel.Node<SgfNode>) =>
+    detectionMethod(n)
   );
-  return rightLeaves.length > 0;
+
+  switch (strategy) {
+    case PathDetectionStrategy.Post:
+      return postRightNodes.length > 0;
+    case PathDetectionStrategy.Pre:
+      return preRightNodes.length > 0;
+    case PathDetectionStrategy.Both:
+      return preRightNodes.length > 0 || postRightNodes.length > 0;
+    default:
+      return false;
+  }
 };
 
-export const inTargetPath = (node: TreeModel.Node<SgfNode>) => {
-  const targetNodes = node.all((n: TreeModel.Node<SgfNode>) => isTargetNode(n));
-
-  return targetNodes.length > 0;
+export const inFirstRightPath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+): boolean => {
+  return inPath(node, isFirstRightNode, strategy, preNodes, postNodes);
 };
 
-export const inVariantPath = (node: TreeModel.Node<SgfNode>) => {
-  const variantLeaves = node.all((n: TreeModel.Node<SgfNode>) =>
-    isVariantLeaf(n)
-  );
-  return variantLeaves.length > 0;
+export const inChoicePath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+): boolean => {
+  return inPath(node, isChoiceNode, strategy, preNodes, postNodes);
 };
 
-export const inWrongPath = (node: TreeModel.Node<SgfNode>) => {
-  const wrongLeaves = node.all((n: TreeModel.Node<SgfNode>) => isWrongLeaf(n));
-  return wrongLeaves.length > 0;
+export const inTargetPath = inChoicePath;
+
+export const inVariantPath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+): boolean => {
+  return inPath(node, isVariantNode, strategy, preNodes, postNodes);
+};
+
+export const inWrongPath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+): boolean => {
+  return inPath(node, isWrongNode, strategy, preNodes, postNodes);
 };
 
 export const getNodeNumber = (
@@ -1476,9 +1539,9 @@ export const genMove = (
     if (node.hasChildren()) return;
 
     const path = getPath(node);
-    if (isRightLeaf(node)) {
+    if (isRightNode(node)) {
       if (onRight) onRight(path);
-    } else if (isVariantLeaf(node)) {
+    } else if (isVariantNode(node)) {
       if (onVariant) onVariant(path);
     } else {
       if (onWrong) onWrong(path);
@@ -1504,7 +1567,7 @@ export const genMove = (
       nextNode = sample(wrongNodes);
     } else if (inVariantPath(variantNodes) && variantNodes.length > 0) {
       nextNode = sample(variantNodes);
-    } else if (isRightLeaf(node)) {
+    } else if (isRightNode(node)) {
       onRight(getPath(nextNode));
     } else {
       onWrong(getPath(nextNode));

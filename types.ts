@@ -180,3 +180,9 @@ export enum ProblemAnswerType {
   Wrong = '2',
   Variant = '3',
 }
+
+export enum PathDetectionStrategy {
+  Post = 'post',
+  Pre = 'pre',
+  Both = 'both',
+}
