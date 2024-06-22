@@ -254,11 +254,6 @@ export const isWrongNode = (n: TreeModel.Node<SgfNode>) => {
 //   return isWrongNode(n) && !n.hasChildren();
 // };
 
-export const inRightPath = (node: TreeModel.Node<SgfNode>) => {
-  const rightLeaves = node.all((n: TreeModel.Node<SgfNode>) => isRightNode(n));
-  return rightLeaves.length > 0;
-};
-
 export const inPath = (
   node: TreeModel.Node<SgfNode>,
   detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean,
@@ -269,7 +264,7 @@ export const inPath = (
   const path = preNodes ?? node.getPath();
   const postRightNodes =
     postNodes ?? node.all((n: TreeModel.Node<SgfNode>) => detectionMethod(n));
-  const preRightNodes = path.map((n: TreeModel.Node<SgfNode>) =>
+  const preRightNodes = path.filter((n: TreeModel.Node<SgfNode>) =>
     detectionMethod(n)
   );
 
@@ -285,6 +280,15 @@ export const inPath = (
   }
 };
 
+export const inRightPath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+) => {
+  return inPath(node, isRightNode, strategy, preNodes, postNodes);
+};
+
 export const inFirstRightPath = (
   node: TreeModel.Node<SgfNode>,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
@@ -292,6 +296,33 @@ export const inFirstRightPath = (
   postNodes?: TreeModel.Node<SgfNode>[] | undefined
 ): boolean => {
   return inPath(node, isFirstRightNode, strategy, preNodes, postNodes);
+};
+
+export const inFirstBranchRightPath = (
+  node: TreeModel.Node<SgfNode>,
+  strategy: PathDetectionStrategy = PathDetectionStrategy.Pre,
+  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
+  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+): boolean => {
+  if (!inRightPath(node)) return false;
+
+  const path = preNodes ?? node.getPath();
+  const postRightNodes = postNodes ?? node.all(() => true);
+
+  let result = [];
+  switch (strategy) {
+    case PathDetectionStrategy.Post:
+      result = postRightNodes.filter(n => n.getIndex() > 0);
+      break;
+    case PathDetectionStrategy.Pre:
+      result = path.filter(n => n.getIndex() > 0);
+      break;
+    case PathDetectionStrategy.Both:
+      result = path.concat(postRightNodes).filter(n => n.getIndex() > 0);
+      break;
+  }
+
+  return result.length === 0;
 };
 
 export const inChoicePath = (
