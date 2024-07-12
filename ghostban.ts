@@ -131,7 +131,7 @@ export class GhostBan {
     this.preventMoveMat = zeros([size, size]);
     this.markup = empty([size, size]);
     this.turn = Ki.Black;
-    this.cursorPosition = [size - 1, 0];
+    this.cursorPosition = [-1, -1];
     this.maxhv = size;
     this.transMat = new DOMMatrix();
     this.analysis = null;
