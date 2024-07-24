@@ -1358,6 +1358,19 @@ export const calcMatAndMarkup = (
     const {moveProps, setupProps, rootProps} = node.model;
     if (setupProps.length > 0) setupCount += 1;
 
+    setupProps.forEach((setup: any) => {
+      setup.values.forEach((value: any) => {
+        const i = SGF_LETTERS.indexOf(value[0]);
+        const j = SGF_LETTERS.indexOf(value[1]);
+        li = i;
+        lj = j;
+        if (i < size && j < size) {
+          mat[i][j] = setup.token === 'AB' ? 1 : -1;
+          if (setup.token === 'AE') mat[i][j] = 0;
+        }
+      });
+    });
+
     moveProps.forEach((m: MoveProp) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1385,48 +1398,32 @@ export const calcMatAndMarkup = (
         if (mat[i][j] === 0) numMarkup[i][j] = '';
       }
     }
-
-    setupProps.forEach((setup: any) => {
-      setup.values.forEach((value: any) => {
-        const i = SGF_LETTERS.indexOf(value[0]);
-        const j = SGF_LETTERS.indexOf(value[1]);
-        li = i;
-        lj = j;
-        if (i < size && j < size) {
-          mat[i][j] = setup.token === 'AB' ? 1 : -1;
-          if (setup.token === 'AE') mat[i][j] = 0;
-        }
-      });
-    });
   });
 
+  // Calculating the visible area
   if (root) {
     root.all((node: TreeModel.Node<SgfNode>) => {
       const {moveProps, setupProps, rootProps} = node.model;
       if (setupProps.length > 0) setupCount += 1;
-      moveProps.forEach((m: MoveProp) => {
-        const i = SGF_LETTERS.indexOf(m.value[0]);
-        const j = SGF_LETTERS.indexOf(m.value[1]);
-        if (i < 0 || j < 0) return;
-        if (i < size && j < size) {
-          li = i;
-          lj = j;
-          visibleAreaMat = move(mat, i, j, Ki.Black);
-        }
-      });
-
       setupProps.forEach((setup: any) => {
         setup.values.forEach((value: any) => {
           const i = SGF_LETTERS.indexOf(value[0]);
           const j = SGF_LETTERS.indexOf(value[1]);
-          li = i;
-          lj = j;
-          if (i < size && j < size) {
-            visibleAreaMat[i][j] = setup.token;
-            if (setup.token === 'AE') mat[i][j] = 0;
+          if (i >= 0 && j >= 0 && i < size && j < size) {
+            visibleAreaMat[i][j] = Ki.Black;
+            if (setup.token === 'AE') visibleAreaMat[i][j] = 0;
           }
         });
       });
+
+      moveProps.forEach((m: MoveProp) => {
+        const i = SGF_LETTERS.indexOf(m.value[0]);
+        const j = SGF_LETTERS.indexOf(m.value[1]);
+        if (i >= 0 && j >= 0 && i < size && j < size) {
+          visibleAreaMat[i][j] = Ki.Black;
+        }
+      });
+
       return true;
     });
   }
@@ -1620,4 +1617,28 @@ export const extractBoardSize = (
     MAX_BOARD_SIZE
   );
   return size;
+};
+
+export const getFirstToMoveColorFromRoot = (root: TreeModel.Node<SgfNode>) => {
+  if (root) {
+    const setupNode = root.first(n => isSetupNode(n));
+    if (setupNode) {
+      const firstMoveNode = setupNode.first(n => isMoveNode(n));
+      if (!firstMoveNode) return Ki.Empty;
+      return getMoveColor(firstMoveNode);
+    }
+  }
+  return Ki.Empty;
+};
+
+export const getMoveColor = (node: TreeModel.Node<SgfNode>) => {
+  const moveProp = node.model?.moveProps?.[0];
+  switch (moveProp?.token) {
+    case 'W':
+      return Ki.White;
+    case 'B':
+      return Ki.Black;
+    default:
+      return Ki.Empty;
+  }
 };
