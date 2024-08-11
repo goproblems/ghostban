@@ -51,7 +51,9 @@ export {canMove, execCapture};
 
 // es6 import style sometimes trigger error 'gg/ghostban/build/index.js" contains a reference to the file "crypto'
 // use require instead
+// import sha256 from 'crypto-js/sha256';
 const sha256 = require('crypto-js/sha256');
+import {Sgf} from './core/sgf';
 
 type Strategy = 'post' | 'pre' | 'both';
 
@@ -263,7 +265,8 @@ export const inPath = (
 ) => {
   const path = preNodes ?? node.getPath();
   const postRightNodes =
-    postNodes ?? node.all((n: TreeModel.Node<SgfNode>) => detectionMethod(n));
+    postNodes?.filter((n: TreeModel.Node<SgfNode>) => detectionMethod(n)) ??
+    node.all((n: TreeModel.Node<SgfNode>) => detectionMethod(n));
   const preRightNodes = path.filter((n: TreeModel.Node<SgfNode>) =>
     detectionMethod(n)
   );
@@ -617,13 +620,13 @@ export const reverseOffsetA1Move = (
 };
 
 export const calcScoreDiffText = (
-  prev?: RootInfo | null,
-  curr?: MoveInfo | RootInfo | null,
+  rootInfo?: RootInfo | null,
+  currInfo?: MoveInfo | RootInfo | null,
   fixed = 1,
   reverse = false
 ) => {
-  if (!prev || !curr) return '';
-  let score = calcScoreDiff(prev, curr);
+  if (!rootInfo || !currInfo) return '';
+  let score = calcScoreDiff(rootInfo, currInfo);
   if (reverse) score = -score;
   const fixedScore = score.toFixed(fixed);
 
@@ -631,13 +634,13 @@ export const calcScoreDiffText = (
 };
 
 export const calcWinrateDiffText = (
-  prev?: RootInfo | null,
-  curr?: MoveInfo | RootInfo | null,
+  rootInfo?: RootInfo | null,
+  currInfo?: MoveInfo | RootInfo | null,
   fixed = 1,
   reverse = false
 ) => {
-  if (!prev || !curr) return '';
-  let winrate = calcWinrateDiff(prev, curr);
+  if (!rootInfo || !currInfo) return '';
+  let winrate = calcWinrateDiff(rootInfo, currInfo);
   if (reverse) winrate = -winrate;
   const fixedWinrate = winrate.toFixed(fixed);
 
@@ -645,23 +648,23 @@ export const calcWinrateDiffText = (
 };
 
 export const calcScoreDiff = (
-  prevInfo: RootInfo,
+  rootInfo: RootInfo,
   currInfo: MoveInfo | RootInfo
 ) => {
-  const sign = prevInfo.currentPlayer === 'B' ? 1 : -1;
+  const sign = rootInfo.currentPlayer === 'B' ? 1 : -1;
   const score =
-    Math.round((currInfo.scoreLead - prevInfo.scoreLead) * sign * 1000) / 1000;
+    Math.round((currInfo.scoreLead - rootInfo.scoreLead) * sign * 1000) / 1000;
 
   return score;
 };
 
 export const calcWinrateDiff = (
-  prevInfo: RootInfo,
+  rootInfo: RootInfo,
   currInfo: MoveInfo | RootInfo
 ) => {
-  const sign = prevInfo.currentPlayer === 'B' ? 1 : -1;
+  const sign = rootInfo.currentPlayer === 'B' ? 1 : -1;
   const score =
-    Math.round((currInfo.winrate - prevInfo.winrate) * sign * 1000 * 100) /
+    Math.round((currInfo.winrate - rootInfo.winrate) * sign * 1000 * 100) /
     1000;
 
   return score;
@@ -892,19 +895,42 @@ export const calcBoardSize = (
 
 export const calcPartialArea = (
   mat: number[][],
-  extent = 2
+  extent = 2,
+  boardSize = 19
 ): [[number, number], [number, number]] => {
   const {leftMost, rightMost, topMost, bottomMost} = calcMost(mat);
 
+  const size = boardSize - 1;
   const x1 = leftMost - extent < 0 ? 0 : leftMost - extent;
   const y1 = topMost - extent < 0 ? 0 : topMost - extent;
-  const x2 = rightMost + extent > 18 ? 18 : rightMost + extent;
-  const y2 = bottomMost + extent > 18 ? 18 : bottomMost + extent;
+  const x2 = rightMost + extent > size ? size : rightMost + extent;
+  const y2 = bottomMost + extent > size ? size : bottomMost + extent;
 
   return [
     [x1, y1],
     [x2, y2],
   ];
+};
+
+export const calcAvoidMovesForPartialAnalysis = (
+  partialArea: [[number, number], [number, number]]
+) => {
+  const result: string[] = [];
+
+  const [[x1, y1], [x2, y2]] = partialArea;
+
+  for (const col of A1_LETTERS) {
+    for (const row of A1_NUMBERS) {
+      const x = A1_LETTERS.indexOf(col);
+      const y = A1_NUMBERS.indexOf(row);
+
+      if (x < x1 || x > x2 || y < y1 || y > y2) {
+        result.push(`${col}${row}`);
+      }
+    }
+  }
+
+  return result;
 };
 
 export const calcOffset = (mat: number[][]) => {
@@ -1619,19 +1645,37 @@ export const extractBoardSize = (
   return size;
 };
 
-export const getFirstToMoveColorFromRoot = (root: TreeModel.Node<SgfNode>) => {
+export const getFirstToMoveColorFromRoot = (
+  root: TreeModel.Node<SgfNode> | undefined | null,
+  defaultMoveColor: Ki = Ki.Black
+) => {
   if (root) {
     const setupNode = root.first(n => isSetupNode(n));
     if (setupNode) {
       const firstMoveNode = setupNode.first(n => isMoveNode(n));
-      if (!firstMoveNode) return Ki.Empty;
+      if (!firstMoveNode) return defaultMoveColor;
       return getMoveColor(firstMoveNode);
     }
   }
-  return Ki.Empty;
+  console.warn('Default first to move color', defaultMoveColor);
+  return defaultMoveColor;
 };
 
-export const getMoveColor = (node: TreeModel.Node<SgfNode>) => {
+export const getFirstToMoveColorFromSgf = (
+  sgf: string,
+  defaultMoveColor: Ki = Ki.Black
+) => {
+  const sgfParser = new Sgf(sgf);
+  if (sgfParser.root)
+    getFirstToMoveColorFromRoot(sgfParser.root, defaultMoveColor);
+  console.warn('Default first to move color', defaultMoveColor);
+  return defaultMoveColor;
+};
+
+export const getMoveColor = (
+  node: TreeModel.Node<SgfNode>,
+  defaultMoveColor: Ki = Ki.Black
+) => {
   const moveProp = node.model?.moveProps?.[0];
   switch (moveProp?.token) {
     case 'W':
@@ -1639,6 +1683,7 @@ export const getMoveColor = (node: TreeModel.Node<SgfNode>) => {
     case 'B':
       return Ki.Black;
     default:
-      return Ki.Empty;
+      // console.warn('Default move color is', defaultMoveColor);
+      return defaultMoveColor;
   }
 };

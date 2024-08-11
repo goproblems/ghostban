@@ -102,19 +102,26 @@ export type MoveInfo = {
   utilityLcb: number;
   visits: number;
   winrate: number;
+  weight: number;
 };
 
 export type RootInfo = {
+  // currentPlayer is not officially part of the GTP results but it is helpful to have it here to avoid passing it through the arguments
   currentPlayer: string;
-  lcb: number;
   scoreLead: number;
   scoreSelfplay: number;
   scoreStdev: number;
-  symHash: string;
-  thisHash: string;
   utility: number;
   visits: number;
   winrate: number;
+  weight?: number;
+  rawStWrError?: number;
+  rawStScoreError?: number;
+  rawVarTimeLeft?: number;
+  // GTP results don't include the following fields
+  lcb?: number;
+  symHash?: string;
+  thisHash?: string;
 };
 
 export enum Ki {

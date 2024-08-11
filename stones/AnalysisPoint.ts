@@ -2,30 +2,18 @@ import {MoveInfo, RootInfo} from '../types';
 import {calcScoreDiff, calcScoreDiffText, nFormatter, round3} from '../helper';
 
 export default class AnalysisPoint {
-  ctx: CanvasRenderingContext2D;
-  x: number;
-  y: number;
-  r: number;
-  rootInfo: RootInfo;
-  moveInfo: MoveInfo;
   // norm: number;
   // detail: boolean;
   constructor(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    r: number,
-    rootInfo: RootInfo,
-    moveInfo: MoveInfo
+    private ctx: CanvasRenderingContext2D,
+    private x: number,
+    private y: number,
+    private r: number,
+    private rootInfo: RootInfo,
+    private moveInfo: MoveInfo
     // norm: number,
     // detail: boolean
   ) {
-    this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.rootInfo = rootInfo;
-    this.moveInfo = moveInfo;
     // this.norm = norm || 0;
     // this.detail = detail;
   }
