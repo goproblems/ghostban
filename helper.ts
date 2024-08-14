@@ -933,6 +933,132 @@ export const calcAvoidMovesForPartialAnalysis = (
   return result;
 };
 
+export const calcTsumegoFrame = (
+  mat: number[][],
+  extent: number,
+  boardSize: number = 19,
+  komi: number = 7.5,
+  turn: Ki = Ki.Black,
+  ko: boolean = false
+): number[][] => {
+  const result = cloneDeep(mat);
+  const partialArea = calcPartialArea(mat, extent);
+  const center = calcCenter(mat);
+  const putBorder = (mat: number[][]) => {
+    const [x1, y1] = partialArea[0];
+    const [x2, y2] = partialArea[1];
+    for (let i = x1; i <= x2; i++) {
+      for (let j = y1; j <= y2; j++) {
+        if (
+          center === Center.TopLeft &&
+          (i === x2 || j === y2 || (i === x1 && i > 0) || (j === y1 && j > 0))
+        ) {
+          mat[i][j] = turn;
+        } else if (
+          (center === Center.TopRight && (i === x1 || j === y2)) ||
+          (i === x2 && i < boardSize - 1) ||
+          (j === y1 && j > 0)
+        ) {
+          mat[i][j] = turn;
+        } else if (
+          center === Center.BottomLeft &&
+          (i === x2 ||
+            j === y1 ||
+            (i === x1 && i > 0) ||
+            (j === y2 && j < boardSize - 1))
+        ) {
+          mat[i][j] = turn;
+        } else if (
+          center === Center.BottomRight &&
+          (i === x1 ||
+            j === y1 ||
+            (i === x2 && i < boardSize - 1) ||
+            (j === y2 && j < boardSize - 1))
+        ) {
+          mat[i][j] = turn;
+        } else if (center === Center.Center) {
+          mat[i][j] = turn;
+        }
+      }
+    }
+  };
+  const putOutside = (mat: number[][]) => {
+    const offenceToWin = 5;
+    const offenseKomi = turn * komi;
+    const [x1, y1] = partialArea[0];
+    const [x2, y2] = partialArea[1];
+    // TODO: Hard code for now
+    const blackToAttack = turn === Ki.Black;
+    const isize = x2 - x1;
+    const jsize = y2 - y1;
+    // TODO: 361 is hardcoded
+    const defenseArea = (361 - offenseKomi - offenceToWin) / 2;
+
+    // outside the frame
+    let count = 0;
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
+        if (i < x1 || i > x2 || j < y1 || j > y2) {
+          count++;
+          let ki = blackToAttack !== count <= defenseArea ? Ki.Black : Ki.White;
+          if ((i + j) % 2 === 0 && Math.abs(count - defenseArea) > isize) {
+            ki = Ki.Empty;
+          }
+
+          mat[i][j] = ki;
+        }
+      }
+    }
+  };
+  // TODO:
+  const putKoThreat = (mat: number[][], ko: boolean) => {};
+
+  putBorder(result);
+  putOutside(result);
+
+  // const flipSpec =
+  //   imin < jmin
+  //     ? [false, false, true]
+  //     : [needFlip(imin, imax, isize), needFlip(jmin, jmax, jsize), false];
+
+  // if (flipSpec.includes(true)) {
+  //   const flipped = flipStones(stones, flipSpec);
+  //   const filled = tsumegoFrameStones(flipped, komi, blackToPlay, ko, margin);
+  //   return flipStones(filled, flipSpec);
+  // }
+
+  // const i0 = imin - margin;
+  // const i1 = imax + margin;
+  // const j0 = jmin - margin;
+  // const j1 = jmax + margin;
+  // const frameRange: Region = [i0, i1, j0, j1];
+  // const blackToAttack = guessBlackToAttack(
+  //   [top, bottom, left, right],
+  //   [isize, jsize]
+  // );
+
+  // putBorder(mat, [isize, jsize], frameRange, blackToAttack);
+  // putOutside(
+  //   stones,
+  //   [isize, jsize],
+  //   frameRange,
+  //   blackToAttack,
+  //   blackToPlay,
+  //   komi
+  // );
+  // putKoThreat(
+  //   stones,
+  //   [isize, jsize],
+  //   frameRange,
+  //   blackToAttack,
+  //   blackToPlay,
+  //   ko
+  // );
+  // return stones;
+
+  return result;
+};
+
 export const calcOffset = (mat: number[][]) => {
   const boardSize = calcBoardSize(mat);
   const ox = 19 - boardSize[0];
