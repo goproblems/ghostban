@@ -143,3 +143,8 @@ export const THEME_RESOURCES: {
     whites: [],
   },
 };
+
+export const LIGHT_GREEN_RGB = 'rgba(136, 170, 60, 1)';
+export const LIGHT_YELLOW_RGB = 'rgba(206, 210, 83, 1)';
+export const YELLOW_RGB = 'rgba(242, 217, 60, 1)';
+export const LIGHT_RED_RGB = 'rgba(236, 146, 73, 1)';

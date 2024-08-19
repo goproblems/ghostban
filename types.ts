@@ -9,6 +9,7 @@ export type GhostBanOptions = {
   zoom?: boolean;
   extent: number;
   theme: Theme;
+  analysisPointTheme: AnalysisPointTheme;
   coordinate: boolean;
   interactive: boolean;
   background: boolean;
@@ -34,6 +35,7 @@ export type GhostBanOptionsParams = {
   zoom?: boolean;
   extent?: number;
   theme?: Theme;
+  analysisPointTheme?: AnalysisPointTheme;
   coordinate?: boolean;
   interactive?: boolean;
   background?: boolean;
@@ -124,6 +126,10 @@ export type RootInfo = {
   thisHash?: string;
 };
 
+export type AnalysisPointOptions = {
+  showOrder?: boolean;
+};
+
 export enum Ki {
   Black = 1,
   White = -1,
@@ -138,6 +144,11 @@ export enum Theme {
   SlateAndShell = 'slate_and_shell',
   Walnut = 'walnut',
   Photorealistic = 'photorealistic',
+}
+
+export enum AnalysisPointTheme {
+  Default = 'default',
+  Problem = 'problem',
 }
 
 export enum Center {

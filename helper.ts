@@ -951,27 +951,32 @@ export const calcTsumegoFrame = (
       for (let j = y1; j <= y2; j++) {
         if (
           center === Center.TopLeft &&
-          (i === x2 || j === y2 || (i === x1 && i > 0) || (j === y1 && j > 0))
+          ((i === x2 && i < boardSize - 1) ||
+            (j === y2 && j < boardSize - 1) ||
+            (i === x1 && i > 0) ||
+            (j === y1 && j > 0))
         ) {
           mat[i][j] = turn;
         } else if (
-          (center === Center.TopRight && (i === x1 || j === y2)) ||
-          (i === x2 && i < boardSize - 1) ||
-          (j === y1 && j > 0)
+          center === Center.TopRight &&
+          ((i === x1 && i > 0) ||
+            (j === y2 && j < boardSize - 1) ||
+            (i === x2 && i < boardSize - 1) ||
+            (j === y1 && j > 0))
         ) {
           mat[i][j] = turn;
         } else if (
           center === Center.BottomLeft &&
-          (i === x2 ||
-            j === y1 ||
+          ((i === x2 && i < boardSize - 1) ||
+            (j === y1 && j > 0) ||
             (i === x1 && i > 0) ||
             (j === y2 && j < boardSize - 1))
         ) {
           mat[i][j] = turn;
         } else if (
           center === Center.BottomRight &&
-          (i === x1 ||
-            j === y1 ||
+          ((i === x1 && i > 0) ||
+            (j === y1 && j > 0) ||
             (i === x2 && i < boardSize - 1) ||
             (j === y2 && j < boardSize - 1))
         ) {

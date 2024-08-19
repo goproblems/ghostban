@@ -16,6 +16,7 @@ import {
   GhostBanOptions,
   GhostBanOptionsParams,
   Center,
+  AnalysisPointTheme,
 } from './types';
 
 import {ImageStone, ColorStone} from './stones';
@@ -83,6 +84,7 @@ export class GhostBan {
     interactive: false,
     coordinate: true,
     theme: Theme.BlackAndWhite,
+    analysisPointTheme: AnalysisPointTheme.Default,
     background: false,
     showAnalysis: false,
     boardEdgeLineWidth: 5,
@@ -672,7 +674,8 @@ export class GhostBan {
 
   drawAnalysis = (analysis = this.analysis) => {
     const canvas = this.analysisCanvas;
-    const {theme = Theme.BlackAndWhite} = this.options;
+    const {theme = Theme.BlackAndWhite, analysisPointTheme} = this.options;
+    const {mat, markup} = this;
     if (!canvas || !analysis) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -682,11 +685,11 @@ export class GhostBan {
     analysis.moveInfos.forEach(m => {
       if (m.move === 'pass') return;
       const idObj = JSON.parse(analysis.id);
-      const {x: ox, y: oy} = reverseOffset(this.mat, idObj.bx, idObj.by);
+      const {x: ox, y: oy} = reverseOffset(mat, idObj.bx, idObj.by);
       let {x: i, y: j} = a1ToPos(m.move);
       i += ox;
       j += oy;
-      if (this.mat[i][j] !== 0) return;
+      if (mat[i][j] !== 0) return;
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       const x = scaledPadding + i * space;
       const y = scaledPadding + j * space;
@@ -707,7 +710,30 @@ export class GhostBan {
         ctx.shadowColor = '#fff';
         ctx.shadowBlur = 0;
       }
-      const point = new AnalysisPoint(ctx, x, y, space * ratio, rootInfo, m);
+
+      let outlineColor;
+      if (markup[i][j].includes(Markup.PositiveNode)) {
+        outlineColor = this.options.positiveNodeColor;
+      }
+
+      if (markup[i][j].includes(Markup.NegativeNode)) {
+        outlineColor = this.options.negativeNodeColor;
+      }
+
+      if (markup[i][j].includes(Markup.NeutralNode)) {
+        outlineColor = this.options.neutralNodeColor;
+      }
+
+      const point = new AnalysisPoint(
+        ctx,
+        x,
+        y,
+        space * ratio,
+        rootInfo,
+        m,
+        analysisPointTheme,
+        outlineColor
+      );
       point.draw();
       ctx.restore();
     });

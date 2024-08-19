@@ -1,55 +1,93 @@
-import {MoveInfo, RootInfo} from '../types';
+import {AnalysisPointTheme, MoveInfo, RootInfo} from '../types';
 import {calcScoreDiff, calcScoreDiffText, nFormatter, round3} from '../helper';
+import {
+  LIGHT_GREEN_RGB,
+  LIGHT_RED_RGB,
+  LIGHT_YELLOW_RGB,
+  YELLOW_RGB,
+} from '../const';
 
 export default class AnalysisPoint {
-  // norm: number;
-  // detail: boolean;
   constructor(
     private ctx: CanvasRenderingContext2D,
     private x: number,
     private y: number,
     private r: number,
     private rootInfo: RootInfo,
-    private moveInfo: MoveInfo
-    // norm: number,
-    // detail: boolean
-  ) {
-    // this.norm = norm || 0;
-    // this.detail = detail;
-  }
+    private moveInfo: MoveInfo,
+    private theme: AnalysisPointTheme = AnalysisPointTheme.Default,
+    private outlineColor?: string
+  ) {}
 
   draw() {
-    const {ctx, x, y, r, rootInfo, moveInfo} = this;
+    const {ctx, x, y, r, rootInfo, moveInfo, theme} = this;
     if (r < 0) return;
-    const {prior, order} = moveInfo;
-    const score = calcScoreDiff(rootInfo, moveInfo);
-
-    let pColor = 'rgba(255, 255, 255, 0.5)';
-    if (
-      prior >= 0.5 ||
-      (prior >= 0.1 && order < 3 && score > -0.3) ||
-      order === 0 ||
-      score >= 0
-    ) {
-      pColor = 'rgba(136, 170, 60, 1)';
-    } else if (
-      (prior > 0.05 && score > -0.5) ||
-      (prior > 0.01 && score > -0.1)
-    ) {
-      pColor = 'rgba(206, 210, 83, 1)';
-    } else if (prior > 0.01 && score > -1) {
-      pColor = 'rgba(242, 217, 60, 1)';
-    } else {
-      pColor = 'rgba(236, 146, 73, 1)';
-    }
 
     ctx.save();
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowColor = '#fff';
     ctx.shadowBlur = 0;
-    // if (score > -1 && (prior > 0.01 || order < 5)) {
-    // console.log('o', rootInfo, order);
+
+    // this.drawDefaultAnalysisPoint();
+    if (theme === AnalysisPointTheme.Default) {
+      this.drawDefaultAnalysisPoint();
+    } else if (theme === AnalysisPointTheme.Problem) {
+      this.drawProblemAnalysisPoint();
+    }
+
+    ctx.restore();
+  }
+
+  private drawProblemAnalysisPoint = () => {
+    const {ctx, x, y, r, rootInfo, moveInfo, outlineColor} = this;
+    const {order} = moveInfo;
+
+    let pColor = this.calcPointColor();
+
+    if (order < 5) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+      ctx.lineWidth = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,0)';
+      const gradient = ctx.createRadialGradient(x, y, r * 0.9, x, y, r);
+      gradient.addColorStop(0, pColor);
+      gradient.addColorStop(0.9, 'rgba(255, 255, 255, 0');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      if (outlineColor) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = outlineColor;
+        ctx.stroke();
+      }
+
+      const fontSize = r / 1.5;
+
+      ctx.font = `${fontSize * 0.8}px Tahoma`;
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+
+      ctx.font = `${fontSize}px Tahoma`;
+      const scoreText = calcScoreDiffText(rootInfo, moveInfo);
+      ctx.fillText(scoreText, x, y);
+
+      ctx.font = `${fontSize * 0.8}px Tahoma`;
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText(nFormatter(moveInfo.visits), x, y + r / 2 + fontSize / 8);
+    } else {
+      this.drawCandidatePoint();
+    }
+  };
+
+  private drawDefaultAnalysisPoint = () => {
+    const {ctx, x, y, r, rootInfo, moveInfo} = this;
+    const {order} = moveInfo;
+
+    let pColor = this.calcPointColor();
+
     if (order < 5) {
       ctx.beginPath();
       ctx.arc(x, y, r, 0, 2 * Math.PI, true);
@@ -78,11 +116,6 @@ export default class AnalysisPoint {
       const scoreText = calcScoreDiffText(rootInfo, moveInfo);
       ctx.fillText(scoreText, x, y + fontSize / 3);
 
-      // ctx.font = `${fontSize * 0.8}px Tahoma`;
-      // ctx.fillStyle = 'black';
-      // ctx.textAlign = 'center';
-      // ctx.fillText(nFormatter(moveInfo.visits), x, y + r / 4 );
-
       ctx.font = `${fontSize * 0.8}px Tahoma`;
       ctx.fillStyle = 'black';
       ctx.textAlign = 'center';
@@ -91,17 +124,47 @@ export default class AnalysisPoint {
       const order = moveInfo.order;
       ctx.fillText((order + 1).toString(), x + r, y - r / 2);
     } else {
-      ctx.beginPath();
-      ctx.arc(x, y, r * 0.6, 0, 2 * Math.PI, true);
-      ctx.lineWidth = 0;
-      ctx.strokeStyle = 'rgba(255,255,255,0)';
-      const gradient = ctx.createRadialGradient(x, y, r * 0.4, x, y, r);
-      gradient.addColorStop(0, pColor);
-      gradient.addColorStop(0.95, 'rgba(255, 255, 255, 0');
-      ctx.fillStyle = gradient;
-      ctx.fill();
-      ctx.stroke();
+      this.drawCandidatePoint();
     }
-    ctx.restore();
-  }
+  };
+
+  private calcPointColor = () => {
+    const {rootInfo, moveInfo} = this;
+    const {prior, order} = moveInfo;
+    const score = calcScoreDiff(rootInfo, moveInfo);
+    let pointColor = 'rgba(255, 255, 255, 0.5)';
+    if (
+      prior >= 0.5 ||
+      (prior >= 0.1 && order < 3 && score > -0.3) ||
+      order === 0 ||
+      score >= 0
+    ) {
+      pointColor = LIGHT_GREEN_RGB;
+    } else if (
+      (prior > 0.05 && score > -0.5) ||
+      (prior > 0.01 && score > -0.1)
+    ) {
+      pointColor = LIGHT_YELLOW_RGB;
+    } else if (prior > 0.01 && score > -1) {
+      pointColor = YELLOW_RGB;
+    } else {
+      pointColor = LIGHT_RED_RGB;
+    }
+    return pointColor;
+  };
+
+  private drawCandidatePoint = () => {
+    const {ctx, x, y, r, rootInfo, moveInfo} = this;
+    const pColor = this.calcPointColor();
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.6, 0, 2 * Math.PI, true);
+    ctx.lineWidth = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,0)';
+    const gradient = ctx.createRadialGradient(x, y, r * 0.4, x, y, r);
+    gradient.addColorStop(0, pColor);
+    gradient.addColorStop(0.95, 'rgba(255, 255, 255, 0');
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    ctx.stroke();
+  };
 }
