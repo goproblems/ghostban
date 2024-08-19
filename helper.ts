@@ -10,7 +10,16 @@ import {
   sample,
 } from 'lodash';
 import {SgfNode, SgfNodeOptions} from './core/types';
-import {A1_LETTERS, A1_NUMBERS, SGF_LETTERS, MAX_BOARD_SIZE} from './const';
+import {
+  A1_LETTERS,
+  A1_NUMBERS,
+  SGF_LETTERS,
+  MAX_BOARD_SIZE,
+  LIGHT_GREEN_RGB,
+  LIGHT_YELLOW_RGB,
+  LIGHT_RED_RGB,
+  YELLOW_RGB,
+} from './const';
 import {
   SetupProp,
   MoveProp,
@@ -619,6 +628,13 @@ export const reverseOffsetA1Move = (
   return `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`;
 };
 
+export const Value = (move: string) => {
+  if (move === 'pass') return '';
+  const inx = A1_LETTERS.indexOf(move[0]);
+  const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0));
+  return `${SGF_LETTERS[inx]}${SGF_LETTERS[iny]}`;
+};
+
 export const calcScoreDiffText = (
   rootInfo?: RootInfo | null,
   currInfo?: MoveInfo | RootInfo | null,
@@ -668,6 +684,27 @@ export const calcWinrateDiff = (
     1000;
 
   return score;
+};
+
+export const calcAnalysisPointColor = (rootInfo: RootInfo, moveInfo: MoveInfo) => {
+  const {prior, order} = moveInfo;
+  const score = calcScoreDiff(rootInfo, moveInfo);
+  let pointColor = 'rgba(255, 255, 255, 0.5)';
+  if (
+    prior >= 0.5 ||
+    (prior >= 0.1 && order < 3 && score > -0.3) ||
+    order === 0 ||
+    score >= 0
+  ) {
+    pointColor = LIGHT_GREEN_RGB;
+  } else if ((prior > 0.05 && score > -0.5) || (prior > 0.01 && score > -0.1)) {
+    pointColor = LIGHT_YELLOW_RGB;
+  } else if (prior > 0.01 && score > -1) {
+    pointColor = YELLOW_RGB;
+  } else {
+    pointColor = LIGHT_RED_RGB;
+  }
+  return pointColor;
 };
 
 // export const GoBanDetection = (pixelData, canvas) => {

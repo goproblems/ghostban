@@ -1,5 +1,11 @@
 import {AnalysisPointTheme, MoveInfo, RootInfo} from '../types';
-import {calcScoreDiff, calcScoreDiffText, nFormatter, round3} from '../helper';
+import {
+  calcAnalysisPointColor,
+  calcScoreDiff,
+  calcScoreDiffText,
+  nFormatter,
+  round3,
+} from '../helper';
 import {
   LIGHT_GREEN_RGB,
   LIGHT_RED_RGB,
@@ -43,7 +49,7 @@ export default class AnalysisPoint {
     const {ctx, x, y, r, rootInfo, moveInfo, outlineColor} = this;
     const {order} = moveInfo;
 
-    let pColor = this.calcPointColor();
+    let pColor = calcAnalysisPointColor(rootInfo, moveInfo);
 
     if (order < 5) {
       ctx.beginPath();
@@ -86,7 +92,7 @@ export default class AnalysisPoint {
     const {ctx, x, y, r, rootInfo, moveInfo} = this;
     const {order} = moveInfo;
 
-    let pColor = this.calcPointColor();
+    let pColor = calcAnalysisPointColor(rootInfo, moveInfo);
 
     if (order < 5) {
       ctx.beginPath();
@@ -128,34 +134,9 @@ export default class AnalysisPoint {
     }
   };
 
-  private calcPointColor = () => {
-    const {rootInfo, moveInfo} = this;
-    const {prior, order} = moveInfo;
-    const score = calcScoreDiff(rootInfo, moveInfo);
-    let pointColor = 'rgba(255, 255, 255, 0.5)';
-    if (
-      prior >= 0.5 ||
-      (prior >= 0.1 && order < 3 && score > -0.3) ||
-      order === 0 ||
-      score >= 0
-    ) {
-      pointColor = LIGHT_GREEN_RGB;
-    } else if (
-      (prior > 0.05 && score > -0.5) ||
-      (prior > 0.01 && score > -0.1)
-    ) {
-      pointColor = LIGHT_YELLOW_RGB;
-    } else if (prior > 0.01 && score > -1) {
-      pointColor = YELLOW_RGB;
-    } else {
-      pointColor = LIGHT_RED_RGB;
-    }
-    return pointColor;
-  };
-
   private drawCandidatePoint = () => {
     const {ctx, x, y, r, rootInfo, moveInfo} = this;
-    const pColor = this.calcPointColor();
+    const pColor = calcAnalysisPointColor(rootInfo, moveInfo);
     ctx.beginPath();
     ctx.arc(x, y, r * 0.6, 0, 2 * Math.PI, true);
     ctx.lineWidth = 0;
