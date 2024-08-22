@@ -686,7 +686,10 @@ export const calcWinrateDiff = (
   return score;
 };
 
-export const calcAnalysisPointColor = (rootInfo: RootInfo, moveInfo: MoveInfo) => {
+export const calcAnalysisPointColor = (
+  rootInfo: RootInfo,
+  moveInfo: MoveInfo
+) => {
   const {prior, order} = moveInfo;
   const score = calcScoreDiff(rootInfo, moveInfo);
   let pointColor = 'rgba(255, 255, 255, 0.5)';
@@ -1025,16 +1028,23 @@ export const calcTsumegoFrame = (
     }
   };
   const putOutside = (mat: number[][]) => {
-    const offenceToWin = 5;
+    const offenceToWin = 10;
     const offenseKomi = turn * komi;
     const [x1, y1] = partialArea[0];
     const [x2, y2] = partialArea[1];
     // TODO: Hard code for now
+    // const blackToAttack = turn === Ki.Black;
     const blackToAttack = turn === Ki.Black;
     const isize = x2 - x1;
     const jsize = y2 - y1;
     // TODO: 361 is hardcoded
-    const defenseArea = (361 - offenseKomi - offenceToWin) / 2;
+    // const defenseArea = Math.floor(
+    //   (361 - isize * jsize - offenseKomi - offenceToWin) / 2
+    // );
+    const defenseArea =
+      Math.floor((361 - isize * jsize) / 2) - offenseKomi - offenceToWin;
+
+    // const defenseArea = 30;
 
     // outside the frame
     let count = 0;
@@ -1042,8 +1052,16 @@ export const calcTsumegoFrame = (
       for (let j = 0; j < boardSize; j++) {
         if (i < x1 || i > x2 || j < y1 || j > y2) {
           count++;
-          let ki = blackToAttack !== count <= defenseArea ? Ki.Black : Ki.White;
-          if ((i + j) % 2 === 0 && Math.abs(count - defenseArea) > isize) {
+          let ki = Ki.Empty;
+          if (center === Center.TopLeft || center === Center.BottomLeft) {
+            ki = blackToAttack !== count <= defenseArea ? Ki.White : Ki.Black;
+          } else if (
+            center === Center.TopRight ||
+            center === Center.BottomRight
+          ) {
+            ki = blackToAttack !== count <= defenseArea ? Ki.Black : Ki.White;
+          }
+          if ((i + j) % 2 === 0 && Math.abs(count - defenseArea) > boardSize) {
             ki = Ki.Empty;
           }
 
