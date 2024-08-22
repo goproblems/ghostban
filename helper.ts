@@ -867,6 +867,14 @@ export const cutMoveNodes = (
   return node;
 };
 
+export const getRoot = (node: TreeModel.Node<SgfNode>) => {
+  let root = node;
+  while (root && root.parent && !root.isRoot()) {
+    root = root.parent;
+  }
+  return root;
+};
+
 export const zeros = (size: [number, number]): number[][] =>
   new Array(size[0]).fill(0).map(() => new Array(size[1]).fill(0));
 
