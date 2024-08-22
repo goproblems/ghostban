@@ -1,5 +1,12 @@
 import {compact} from 'lodash';
-import {calcVisibleArea, reverseOffset, zeros, empty, a1ToPos} from './helper';
+import {
+  calcVisibleArea,
+  reverseOffset,
+  zeros,
+  empty,
+  a1ToPos,
+  offsetA1Move,
+} from './helper';
 import {
   A1_LETTERS,
   A1_NUMBERS,
@@ -674,7 +681,12 @@ export class GhostBan {
 
   drawAnalysis = (analysis = this.analysis) => {
     const canvas = this.analysisCanvas;
-    const {theme = Theme.BlackAndWhite, analysisPointTheme} = this.options;
+    const {
+      theme = Theme.BlackAndWhite,
+      analysisPointTheme,
+      boardSize,
+      forceAnalysisBoardSize,
+    } = this.options;
     const {mat, markup} = this;
     if (!canvas || !analysis) return;
     const ctx = canvas.getContext('2d');
@@ -685,10 +697,18 @@ export class GhostBan {
     analysis.moveInfos.forEach(m => {
       if (m.move === 'pass') return;
       const idObj = JSON.parse(analysis.id);
-      const {x: ox, y: oy} = reverseOffset(mat, idObj.bx, idObj.by);
-      let {x: i, y: j} = a1ToPos(m.move);
-      i += ox;
-      j += oy;
+      // const {x: ox, y: oy} = reverseOffset(mat, idObj.bx, idObj.by);
+      // let {x: i, y: j} = a1ToPos(m.move);
+      // i += ox;
+      // j += oy;
+      // let analysisBoardSize = forceAnalysisBoardSize || boardSize;
+      let analysisBoardSize = boardSize;
+      const offsetedMove = offsetA1Move(
+        m.move,
+        0,
+        analysisBoardSize - idObj.by
+      );
+      let {x: i, y: j} = a1ToPos(offsetedMove);
       if (mat[i][j] !== 0) return;
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       const x = scaledPadding + i * space;

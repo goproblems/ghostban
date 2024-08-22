@@ -19,6 +19,7 @@ import {
   LIGHT_YELLOW_RGB,
   LIGHT_RED_RGB,
   YELLOW_RGB,
+  DEFAULT_BOARD_SIZE,
 } from './const';
 import {
   SetupProp,
@@ -554,8 +555,14 @@ export const posToSgf = (x: number, y: number, ki: number) => {
   return '';
 };
 
-export const matToPosition = (mat: number[][], xOffset = 0, yOffset = 0) => {
+export const matToPosition = (
+  mat: number[][],
+  xOffset?: number,
+  yOffset?: number
+) => {
   let result = '';
+  xOffset = xOffset ?? 0;
+  yOffset = yOffset ?? DEFAULT_BOARD_SIZE - mat.length;
   for (let i = 0; i < mat.length; i++) {
     for (let j = 0; j < mat[i].length; j++) {
       const value = mat[i][j];
@@ -615,24 +622,27 @@ export const convertStepsForAI = (steps: any, offset = 0) => {
   return `${header}${res.join(';')})`;
 };
 
-export const reverseOffsetA1Move = (
-  move: string,
-  mat: number[][],
-  analysis: Analysis
-) => {
+export const offsetA1Move = (move: string, ox = 0, oy = 0) => {
   if (move === 'pass') return move;
-  const idObj = JSON.parse(analysis.id);
-  const {x, y} = reverseOffset(mat, idObj.bx, idObj.by);
-  const inx = A1_LETTERS.indexOf(move[0]) + x;
-  const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0)) + y;
+  // console.log('oxy', ox, oy);
+  const inx = A1_LETTERS.indexOf(move[0]) + ox;
+  const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0)) + oy;
+  // console.log('inxy', inx, iny, `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`);
   return `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`;
 };
 
-export const Value = (move: string) => {
-  if (move === 'pass') return '';
-  const inx = A1_LETTERS.indexOf(move[0]);
-  const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0));
-  return `${SGF_LETTERS[inx]}${SGF_LETTERS[iny]}`;
+export const reverseOffsetA1Move = (
+  move: string,
+  mat: number[][],
+  analysis: Analysis,
+  boardSize = 19
+) => {
+  if (move === 'pass') return move;
+  const idObj = JSON.parse(analysis.id);
+  const {x, y} = reverseOffset(mat, idObj.bx, idObj.by, boardSize);
+  const inx = A1_LETTERS.indexOf(move[0]) + x;
+  const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0)) + y;
+  return `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`;
 };
 
 export const calcScoreDiffText = (
@@ -961,14 +971,15 @@ export const calcPartialArea = (
 };
 
 export const calcAvoidMovesForPartialAnalysis = (
-  partialArea: [[number, number], [number, number]]
+  partialArea: [[number, number], [number, number]],
+  boardSize = 19
 ) => {
   const result: string[] = [];
 
   const [[x1, y1], [x2, y2]] = partialArea;
 
-  for (const col of A1_LETTERS) {
-    for (const row of A1_NUMBERS) {
+  for (const col of A1_LETTERS.slice(0, boardSize)) {
+    for (const row of A1_NUMBERS.slice(-boardSize)) {
       const x = A1_LETTERS.indexOf(col);
       const y = A1_NUMBERS.indexOf(row);
 
@@ -990,7 +1001,7 @@ export const calcTsumegoFrame = (
   ko: boolean = false
 ): number[][] => {
   const result = cloneDeep(mat);
-  const partialArea = calcPartialArea(mat, extent);
+  const partialArea = calcPartialArea(mat, extent, boardSize);
   const center = calcCenter(mat);
   const putBorder = (mat: number[][]) => {
     const [x1, y1] = partialArea[0];
@@ -1160,9 +1171,14 @@ export const calcOffset = (mat: number[][]) => {
   return {x: oox, y: ooy};
 };
 
-export const reverseOffset = (mat: number[][], bx = 19, by = 19) => {
-  const ox = 19 - bx;
-  const oy = 19 - by;
+export const reverseOffset = (
+  mat: number[][],
+  bx = 19,
+  by = 19,
+  boardSize = 19
+) => {
+  const ox = boardSize - bx;
+  const oy = boardSize - by;
   const center = calcCenter(mat);
 
   let oox = ox;

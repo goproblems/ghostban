@@ -4,6 +4,7 @@ import {Theme} from './types';
 const settings = {cdn: 'https://s.shaowq.com'};
 
 export const MAX_BOARD_SIZE = 29;
+export const DEFAULT_BOARD_SIZE = 19;
 export const A1_LETTERS = [
   'A',
   'B',

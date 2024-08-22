@@ -25,6 +25,7 @@ export type GhostBanOptions = {
   themeResources: ThemeResources;
   moveSound: boolean;
   starSize: number;
+  forceAnalysisBoardSize?: number;
 };
 
 export type GhostBanOptionsParams = {
@@ -50,6 +51,7 @@ export type GhostBanOptionsParams = {
   themeResources?: ThemeResources;
   moveSound?: boolean;
   starSize?: number;
+  forceAnalysisBoardSize?: number;
 };
 
 export type ThemeResources = {
