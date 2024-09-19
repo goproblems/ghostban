@@ -69,4 +69,3 @@ typings/
 !.yarn/versions
 
 -/config.ts
-build/
