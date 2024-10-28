@@ -995,10 +995,10 @@ export const calcAvoidMovesForPartialAnalysis = (
 export const calcTsumegoFrame = (
   mat: number[][],
   extent: number,
-  boardSize: number = 19,
-  komi: number = 7.5,
+  boardSize = 19,
+  komi = 7.5,
   turn: Ki = Ki.Black,
-  ko: boolean = false
+  ko = false
 ): number[][] => {
   const result = cloneDeep(mat);
   const partialArea = calcPartialArea(mat, extent, boardSize);
@@ -1240,10 +1240,10 @@ export function calcVisibleArea(
   }
 
   if (!allowRectangle) {
-    let minRowWithExtent = Math.max(minRow - extent, 0);
-    let maxRowWithExtent = Math.min(maxRow + extent, mat.length - 1);
-    let minColWithExtent = Math.max(minCol - extent, 0);
-    let maxColWithExtent = Math.min(maxCol + extent, mat[0].length - 1);
+    const minRowWithExtent = Math.max(minRow - extent, 0);
+    const maxRowWithExtent = Math.min(maxRow + extent, mat.length - 1);
+    const minColWithExtent = Math.max(minCol - extent, 0);
+    const maxColWithExtent = Math.min(maxCol + extent, mat[0].length - 1);
 
     const maxRange = Math.max(
       maxRowWithExtent - minRowWithExtent,
@@ -1391,7 +1391,7 @@ export const addStoneToCurrentNode = (
   ki: Ki
 ) => {
   const value = SGF_LETTERS[i] + SGF_LETTERS[j];
-  let token = ki === Ki.White ? 'AW' : 'AB';
+  const token = ki === Ki.White ? 'AW' : 'AB';
   const prop = findProp(currentNode, token);
   let result = false;
   if (mat[i][j] !== Ki.Empty) {
@@ -1455,7 +1455,7 @@ export const calcPreventMoveMat = (
   if (!node) return zeros([defaultBoardSize, defaultBoardSize]);
   const size = extractBoardSize(node, defaultBoardSize);
   const preventMoveMat = zeros([size, size]);
-  let forceNodes = [];
+  const forceNodes = [];
   let preventMoveNodes = [];
   if (node.hasChildren()) {
     preventMoveNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
@@ -1503,7 +1503,7 @@ export const calcVariationsMarkup = (
   policy: 'append' | 'prepend' | 'replace' = 'append',
   defaultBoardSize = 19
 ) => {
-  let res = calcMatAndMarkup(node);
+  const res = calcMatAndMarkup(node);
   const {mat, markup} = res;
   const size = extractBoardSize(node, defaultBoardSize);
 
@@ -1546,7 +1546,7 @@ export const detectST = (node: TreeModel.Node<SgfNode>) => {
   let showChildrenMarkup = false;
   let showSiblingsMarkup = false;
 
-  let st = stProp?.value || '0';
+  const st = stProp?.value || '0';
   if (st) {
     if (st === '0') {
       showSiblingsMarkup = false;
@@ -1586,7 +1586,7 @@ export const calcMatAndMarkup = (
   let setupCount = 0;
   const size = extractBoardSize(currentNode, defaultBoardSize);
   let mat = zeros([size, size]);
-  let visibleAreaMat = zeros([size, size]);
+  const visibleAreaMat = zeros([size, size]);
   const markup = empty([size, size]);
   const numMarkup = empty([size, size]);
 
