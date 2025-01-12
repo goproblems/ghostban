@@ -193,6 +193,7 @@ export class Sgf {
               this.currentNode.addChild(node);
 
               node.model.number = getNodeNumber(node);
+              // TODO: maybe unnecessary?
               node.model.children = [node];
             } else {
               this.root = node;
