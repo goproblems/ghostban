@@ -94,6 +94,7 @@ export class GhostBan {
     analysisPointTheme: AnalysisPointTheme.Default,
     background: false,
     showAnalysis: false,
+    adaptiveBoardLine: true,
     boardEdgeLineWidth: 5,
     boardLineWidth: 1,
     boardLineExtent: 0.5,
@@ -104,6 +105,7 @@ export class GhostBan {
     defaultNodeColor: '#404040',
     themeResources: THEME_RESOURCES,
     moveSound: false,
+    adaptiveStarSize: true,
     starSize: 3,
   };
   options: GhostBanOptions;
@@ -907,6 +909,7 @@ export class GhostBan {
       boardLineWidth,
       boardEdgeLineWidth,
       boardLineExtent,
+      adaptiveBoardLine,
     } = options;
     const ctx = board.getContext('2d');
     if (ctx) {
@@ -916,15 +919,20 @@ export class GhostBan {
 
       ctx.fillStyle = '#000000';
 
-      // const mobileScale = 0.5;
-      let edgeLineWidth = boardEdgeLineWidth;
-      if (!isMobileDevice()) {
+      let edgeLineWidth = adaptiveBoardLine
+        ? board.width * 0.001
+        : boardEdgeLineWidth;
+
+      if (adaptiveBoardLine || (!adaptiveBoardLine && !isMobileDevice())) {
         edgeLineWidth *= dpr;
       }
-      let lineWidth = boardLineWidth;
-      if (!isMobileDevice()) {
+
+      let lineWidth = adaptiveBoardLine ? board.width * 0.0005 : boardLineWidth;
+
+      if (adaptiveBoardLine || !isMobileDevice()) {
         lineWidth *= dpr;
       }
+
       // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();
@@ -944,12 +952,16 @@ export class GhostBan {
           ctx.lineWidth = ctx.lineWidth * 2;
         }
         let startPointY =
-          scaledPadding + visibleArea[1][0] * space - boardEdgeLineWidth;
+          i === 0 || i === boardSize - 1
+            ? scaledPadding + visibleArea[1][0] * space - edgeLineWidth / 2
+            : scaledPadding + visibleArea[1][0] * space;
         if (isMobileDevice()) {
           startPointY += dpr / 2;
         }
         let endPointY =
-          space * visibleArea[1][1] + scaledPadding + boardEdgeLineWidth;
+          i === 0 || i === boardSize - 1
+            ? space * visibleArea[1][1] + scaledPadding + edgeLineWidth / 2
+            : space * visibleArea[1][1] + scaledPadding;
         if (isMobileDevice()) {
           endPointY -= dpr / 2;
         }
@@ -979,9 +991,13 @@ export class GhostBan {
           ctx.lineWidth = ctx.lineWidth * 2;
         }
         let startPointX =
-          scaledPadding + visibleArea[0][0] * space - boardEdgeLineWidth;
+          i === 0 || i === boardSize - 1
+            ? scaledPadding + visibleArea[0][0] * space - edgeLineWidth / 2
+            : scaledPadding + visibleArea[0][0] * space;
         let endPointX =
-          space * visibleArea[0][1] + scaledPadding + boardEdgeLineWidth;
+          i === 0 || i === boardSize - 1
+            ? space * visibleArea[0][1] + scaledPadding + edgeLineWidth / 2
+            : space * visibleArea[0][1] + scaledPadding;
         if (isMobileDevice()) {
           startPointX += dpr / 2;
         }
@@ -1002,10 +1018,12 @@ export class GhostBan {
     if (!board) return;
     if (this.options.boardSize !== 19) return;
 
+    let {starSize: starSizeOptions, adaptiveStarSize} = this.options;
+
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
-    let starSize = this.options.starSize;
-    if (!isMobileDevice()) {
+    let starSize = adaptiveStarSize ? board.width * 0.0018 : starSizeOptions;
+    if (!isMobileDevice() || !adaptiveStarSize) {
       starSize = starSize * dpr;
     }
     if (ctx) {

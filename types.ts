@@ -14,6 +14,7 @@ export type GhostBanOptions = {
   interactive: boolean;
   background: boolean;
   showAnalysis: boolean;
+  adaptiveBoardLine: boolean;
   boardEdgeLineWidth: number;
   boardLineWidth: number;
   boardLineExtent: number;
@@ -25,6 +26,7 @@ export type GhostBanOptions = {
   themeResources: ThemeResources;
   moveSound: boolean;
   starSize: number;
+  adaptiveStarSize: boolean;
   forceAnalysisBoardSize?: number;
 };
 
@@ -41,6 +43,7 @@ export type GhostBanOptionsParams = {
   interactive?: boolean;
   background?: boolean;
   showAnalysis?: boolean;
+  adaptiveBoardLine?: boolean;
   boardEdgeLineWidth?: number;
   boardLineWidth?: number;
   themeFlatBoardColor?: string;
@@ -51,6 +54,7 @@ export type GhostBanOptionsParams = {
   themeResources?: ThemeResources;
   moveSound?: boolean;
   starSize?: number;
+  adaptiveStarSize?: boolean;
   forceAnalysisBoardSize?: number;
 };
 

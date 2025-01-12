@@ -372,7 +372,6 @@ export class GameInfoProp extends SgfPropBase {
     return new GameInfoProp('', '');
   }
 
-  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
   get value(): string {
     return this._value;
   }
@@ -411,7 +410,6 @@ export class CustomProp extends SgfPropBase {
     return new CustomProp('', '');
   }
 
-  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
   get value(): string {
     return this._value;
   }
@@ -441,7 +439,6 @@ export class TimingProp extends SgfPropBase {
     this.type = 'Timing';
   }
 
-  // Duplicated code: https://github.com/microsoft/TypeScript/issues/338
   get value(): string {
     return this._value;
   }
