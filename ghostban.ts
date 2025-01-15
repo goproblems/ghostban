@@ -920,18 +920,18 @@ export class GhostBan {
       ctx.fillStyle = '#000000';
 
       let edgeLineWidth = adaptiveBoardLine
-        ? board.width * 0.001
+        ? board.width * 0.002
         : boardEdgeLineWidth;
 
-      if (adaptiveBoardLine || (!adaptiveBoardLine && !isMobileDevice())) {
-        edgeLineWidth *= dpr;
-      }
+      // if (adaptiveBoardLine || (!adaptiveBoardLine && !isMobileDevice())) {
+      //  edgeLineWidth *= dpr;
+      // }
 
-      let lineWidth = adaptiveBoardLine ? board.width * 0.0005 : boardLineWidth;
+      let lineWidth = adaptiveBoardLine ? board.width * 0.001 : boardLineWidth;
 
-      if (adaptiveBoardLine || !isMobileDevice()) {
-        lineWidth *= dpr;
-      }
+      // if (adaptiveBoardLine ||  (!adaptiveBoardLine && !isMobileDevice())) {
+      //   lineWidth *= dpr;
+      // }
 
       // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
@@ -1022,10 +1022,10 @@ export class GhostBan {
 
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
-    let starSize = adaptiveStarSize ? board.width * 0.0018 : starSizeOptions;
-    if (!isMobileDevice() || !adaptiveStarSize) {
-      starSize = starSize * dpr;
-    }
+    let starSize = adaptiveStarSize ? board.width * 0.0035 : starSizeOptions;
+    // if (!isMobileDevice() || !adaptiveStarSize) {
+    //   starSize = starSize * dpr;
+    // }
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       // Drawing star
