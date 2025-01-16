@@ -2,7 +2,7 @@
   /**
    * @license
    * author: BAI TIANLIANG
-   * ghostban.js v3.0.0-alpha.106
+   * ghostban.js v3.0.0-alpha.107
    * Released under the MIT license.
    */
 
