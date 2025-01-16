@@ -456,24 +456,27 @@ export class GhostBan {
   };
 
   calcDynamicPadding(visibleAreaSize: number) {
-    const {coordinate} = this.options;
-    let padding = 30;
-    if (visibleAreaSize <= 3) {
-      padding = coordinate ? 120 : 100;
-    } else if (visibleAreaSize <= 6) {
-      padding = coordinate ? 80 : 60;
-    } else if (visibleAreaSize <= 9) {
-      padding = coordinate ? 60 : 50;
-    } else if (visibleAreaSize <= 12) {
-      padding = coordinate ? 50 : 40;
-    } else if (visibleAreaSize <= 15) {
-      padding = coordinate ? 40 : 30;
-    } else if (visibleAreaSize <= 17) {
-      padding = coordinate ? 35 : 25;
-    } else if (visibleAreaSize <= 19) {
-      padding = coordinate ? 30 : 20;
-    }
-    this.options.padding = padding;
+    // const {coordinate} = this.options;
+    // let padding = 30;
+    // if (visibleAreaSize <= 3) {
+    //   padding = coordinate ? 120 : 100;
+    // } else if (visibleAreaSize <= 6) {
+    //   padding = coordinate ? 80 : 60;
+    // } else if (visibleAreaSize <= 9) {
+    //   padding = coordinate ? 60 : 50;
+    // } else if (visibleAreaSize <= 12) {
+    //   padding = coordinate ? 50 : 40;
+    // } else if (visibleAreaSize <= 15) {
+    //   padding = coordinate ? 40 : 30;
+    // } else if (visibleAreaSize <= 17) {
+    //   padding = coordinate ? 35 : 25;
+    // } else if (visibleAreaSize <= 19) {
+    //   padding = coordinate ? 30 : 20;
+    // }
+
+    const {canvas} = this;
+    if (!canvas) return;
+    this.options.padding = canvas.width / (visibleAreaSize + 2) / 2;
     // this.renderInteractive();
   }
 
@@ -864,7 +867,7 @@ export class GhostBan {
   };
 
   drawBan = (board = this.board) => {
-    const {theme, themeResources} = this.options;
+    const {theme, themeResources, padding} = this.options;
     if (board) {
       board.style.borderRadius = '2px';
       const ctx = board.getContext('2d');
@@ -872,10 +875,20 @@ export class GhostBan {
         if (theme === Theme.BlackAndWhite) {
           board.style.boxShadow = '0px 0px 0px #000000';
           ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, board.width, board.height);
+          ctx.fillRect(
+            -padding,
+            -padding,
+            board.width + padding,
+            board.height + padding
+          );
         } else if (theme === Theme.Flat) {
           ctx.fillStyle = this.options.themeFlatBoardColor;
-          ctx.fillRect(0, 0, board.width, board.height);
+          ctx.fillRect(
+            -padding,
+            -padding,
+            board.width + padding,
+            board.height + padding
+          );
         } else if (
           theme === Theme.Walnut &&
           themeResources[theme].board !== undefined
@@ -883,7 +896,13 @@ export class GhostBan {
           const boardUrl = themeResources[theme].board || '';
           const boardRes = images[boardUrl];
           if (boardRes) {
-            ctx.drawImage(boardRes, 0, 0, board.width, board.height);
+            ctx.drawImage(
+              boardRes,
+              -padding,
+              -padding,
+              board.width + padding,
+              board.height + padding
+            );
           }
         } else {
           const boardUrl = themeResources[theme].board || '';
