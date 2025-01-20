@@ -1,6 +1,6 @@
 {
   "name": "ghostban",
-  "version": "3.0.0-alpha.107",
+  "version": "3.0.0-alpha.108",
   "description": "A Goban library",
   "main": "build/index.js",
   "browser": "build/index.js",
