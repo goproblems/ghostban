@@ -456,7 +456,7 @@ export class GhostBan {
   };
 
   calcDynamicPadding(visibleAreaSize: number) {
-    // const {coordinate} = this.options;
+    const {coordinate} = this.options;
     // let padding = 30;
     // if (visibleAreaSize <= 3) {
     //   padding = coordinate ? 120 : 100;
@@ -476,7 +476,10 @@ export class GhostBan {
 
     const {canvas} = this;
     if (!canvas) return;
-    this.options.padding = canvas.width / (visibleAreaSize + 2) / 2;
+    const padding = canvas.width / (visibleAreaSize + 2) / 2;
+    const paddingWithoutCoordinate = canvas.width / (visibleAreaSize + 2) / 4;
+
+    this.options.padding = coordinate ? padding : paddingWithoutCoordinate;
     // this.renderInteractive();
   }
 
@@ -1085,10 +1088,10 @@ export class GhostBan {
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
       ctx.fillStyle = '#000000';
-      ctx.font = `bold ${space / 2.8}px Helvetica`;
+      ctx.font = `bold ${space / 3}px Helvetica`;
 
       const center = this.calcCenter();
-      let offset = space / 2;
+      let offset = space / 1.5;
 
       if (
         center === Center.Center &&
