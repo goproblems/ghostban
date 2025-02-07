@@ -1,3 +1,4 @@
+import TreeModel from 'tree-model';
 import { MoveProp, SetupProp, RootProp, NodeAnnotationProp, MoveAnnotationProp, MarkupProp, GameInfoProp, CustomProp } from './props';
 export type SgfNode = {
     id: string;
@@ -26,3 +27,4 @@ export type SgfNodeOptions = {
     moveAnnotationProps?: MoveAnnotationProp[];
     customProps?: CustomProp[];
 };
+export type TNode = TreeModel.Node<SgfNode>;
