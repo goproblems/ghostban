@@ -15,7 +15,9 @@ export declare class GhostBan {
     private touchMoving;
     private touchStartPoint;
     cursorPosition: [number, number];
+    actualCursorPosition: [number, number];
     cursorPoint: DOMPoint;
+    actualCursorPoint: DOMPoint;
     mat: number[][];
     markup: string[][];
     visibleAreaMat: number[][] | undefined;

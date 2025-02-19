@@ -122,7 +122,9 @@ export class GhostBan {
   private touchMoving = false;
   private touchStartPoint: DOMPoint = new DOMPoint();
   public cursorPosition: [number, number];
+  public actualCursorPosition: [number, number];
   public cursorPoint: DOMPoint = new DOMPoint();
+  public actualCursorPoint: DOMPoint = new DOMPoint();
   public mat: number[][];
   public markup: string[][];
   public visibleAreaMat: number[][] | undefined;
@@ -143,6 +145,7 @@ export class GhostBan {
     this.markup = empty([size, size]);
     this.turn = Ki.Black;
     this.cursorPosition = [-1, -1];
+    this.actualCursorPosition = [-1, -1];
     this.maxhv = size;
     this.transMat = new DOMMatrix();
     this.analysis = null;
@@ -308,19 +311,23 @@ export class GhostBan {
     const xx = idx * space;
     const yy = idy * space;
     const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
+    this.actualCursorPoint = p;
+    this.actualCursorPosition = [idx - 1, idy - 1];
+
     if (this.preventMoveMat?.[idx - 1]?.[idy - 1] === 1) {
       this.cursorPosition = [-1, -1];
       this.cursorPoint = new DOMPoint();
       this.drawCursor();
       return;
     }
-    if (
-      !isMobileDevice() ||
-      (isMobileDevice() && this.mat[idx - 1][idy - 1] === 0)
-    ) {
-      this.cursorPoint = p;
-      this.cursorPosition = [idx - 1, idy - 1];
-    }
+
+    // if (
+    //   !isMobileDevice() ||
+    //   (isMobileDevice() && this.mat?.[idx - 1]?.[idy - 1] === 0)
+    // ) {
+    // }
+    this.cursorPoint = p;
+    this.cursorPosition = [idx - 1, idy - 1];
     this.drawCursor();
 
     if (isMobileDevice()) this.drawBoard();
