@@ -1598,9 +1598,10 @@ export const calcMatAndMarkup = (
       setup.values.forEach((value: any) => {
         const i = SGF_LETTERS.indexOf(value[0]);
         const j = SGF_LETTERS.indexOf(value[1]);
-        li = i;
-        lj = j;
+        if (i < 0 || j < 0) return;
         if (i < size && j < size) {
+          li = i;
+          lj = j;
           mat[i][j] = setup.token === 'AB' ? 1 : -1;
           if (setup.token === 'AE') mat[i][j] = 0;
         }
