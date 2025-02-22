@@ -24,6 +24,7 @@ import {
   GhostBanOptionsParams,
   Center,
   AnalysisPointTheme,
+  Effect,
 } from './types';
 
 import {ImageStone, ColorStone} from './stones';
@@ -43,6 +44,7 @@ import {
   PositiveNodeMarkup,
   CircleSolidMarkup,
 } from './markups';
+import {BanEffect} from './effects';
 
 const images: {
   [key: string]: HTMLImageElement;
@@ -115,6 +117,7 @@ export class GhostBan {
   analysisCanvas?: HTMLCanvasElement;
   cursorCanvas?: HTMLCanvasElement;
   markupCanvas?: HTMLCanvasElement;
+  effectCanvas?: HTMLCanvasElement;
   moveSoundAudio?: HTMLAudioElement;
   turn: Ki;
   private cursor: Cursor = Cursor.None;
@@ -129,6 +132,7 @@ export class GhostBan {
   public markup: string[][];
   public visibleAreaMat: number[][] | undefined;
   public preventMoveMat: number[][];
+  public effectMat: string[][];
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
@@ -143,6 +147,7 @@ export class GhostBan {
     this.mat = zeros([size, size]);
     this.preventMoveMat = zeros([size, size]);
     this.markup = empty([size, size]);
+    this.effectMat = empty([size, size]);
     this.turn = Ki.Black;
     this.cursorPosition = [-1, -1];
     this.actualCursorPosition = [-1, -1];
@@ -170,47 +175,45 @@ export class GhostBan {
       !this.dom ||
       !this.board ||
       !this.markupCanvas ||
-      !this.analysisCanvas
+      !this.analysisCanvas ||
+      !this.effectCanvas
     )
       return;
-    const {board, canvas, markupCanvas, cursorCanvas, analysisCanvas} = this;
-    const {size, zoom} = this.options;
-    if (size) {
-      board.width = size * dpr;
-      board.height = size * dpr;
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
-      markupCanvas.width = size * dpr;
-      markupCanvas.height = size * dpr;
-      cursorCanvas.width = size * dpr;
-      cursorCanvas.height = size * dpr;
-      analysisCanvas.width = size * dpr;
-      analysisCanvas.height = size * dpr;
-    } else {
-      const {clientWidth} = this.dom;
-      board.style.width = clientWidth + 'px';
-      board.style.height = clientWidth + 'px';
-      board.width = Math.floor(clientWidth * dpr);
-      board.height = Math.floor(clientWidth * dpr);
-      canvas.style.width = clientWidth + 'px';
-      canvas.style.height = clientWidth + 'px';
-      canvas.width = Math.floor(clientWidth * dpr);
-      canvas.height = Math.floor(clientWidth * dpr);
-      markupCanvas.style.width = clientWidth + 'px';
-      markupCanvas.style.height = clientWidth + 'px';
-      markupCanvas.width = Math.floor(clientWidth * dpr);
-      markupCanvas.height = Math.floor(clientWidth * dpr);
-      cursorCanvas.style.width = clientWidth + 'px';
-      cursorCanvas.style.height = clientWidth + 'px';
-      cursorCanvas.width = Math.floor(clientWidth * dpr);
-      cursorCanvas.height = Math.floor(clientWidth * dpr);
-      analysisCanvas.style.width = clientWidth + 'px';
-      analysisCanvas.style.height = clientWidth + 'px';
-      analysisCanvas.width = Math.floor(clientWidth * dpr);
-      analysisCanvas.height = Math.floor(clientWidth * dpr);
-    }
+
+    const canvases = [
+      this.board,
+      this.canvas,
+      this.markupCanvas,
+      this.cursorCanvas,
+      this.analysisCanvas,
+      this.effectCanvas,
+    ];
+
+    const {size} = this.options;
+    const {clientWidth} = this.dom;
+
+    canvases.forEach(canvas => {
+      if (size) {
+        canvas.width = size * dpr;
+        canvas.height = size * dpr;
+      } else {
+        canvas.style.width = clientWidth + 'px';
+        canvas.style.height = clientWidth + 'px';
+        canvas.width = Math.floor(clientWidth * dpr);
+        canvas.height = Math.floor(clientWidth * dpr);
+      }
+    });
 
     this.render();
+  }
+  private createCanvas(id: string, pointerEvents = true): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'absolute';
+    canvas.id = id;
+    if (!pointerEvents) {
+      canvas.style.pointerEvents = 'none';
+    }
+    return canvas;
   }
 
   init(dom: HTMLElement) {
@@ -219,46 +222,21 @@ export class GhostBan {
     this.markup = empty([size, size]);
     this.transMat = new DOMMatrix();
 
-    const board = document.createElement('canvas');
-    board.style.position = 'absolute';
-    board.id = 'ghostban-board';
-    this.board = board;
-
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'absolute';
-    canvas.id = 'ghostban-canvas';
-    this.canvas = canvas;
-
-    const markupCanvas = document.createElement('canvas');
-    markupCanvas.style.position = 'absolute';
-    markupCanvas.id = 'ghostban-markup';
-    markupCanvas.style.pointerEvents = 'none';
-    this.markupCanvas = markupCanvas;
-
-    const cursorCanvas = document.createElement('canvas');
-    cursorCanvas.style.position = 'absolute';
-    cursorCanvas.id = 'ghostban-cursor';
-    this.cursorCanvas = cursorCanvas;
-
-    const analysisCanvas = document.createElement('canvas');
-    analysisCanvas.style.position = 'absolute';
-    analysisCanvas.style.pointerEvents = 'none';
-    analysisCanvas.id = 'ghostban-analysis';
-    this.analysisCanvas = analysisCanvas;
+    this.board = this.createCanvas('ghostban-board');
+    this.canvas = this.createCanvas('ghostban-canvas');
+    this.markupCanvas = this.createCanvas('ghostban-markup', false);
+    this.cursorCanvas = this.createCanvas('ghostban-cursor');
+    this.analysisCanvas = this.createCanvas('ghostban-analysis', false);
+    this.effectCanvas = this.createCanvas('ghostban-effect', false);
 
     this.dom = dom;
-
-    dom.firstChild?.remove();
-    dom.firstChild?.remove();
-    dom.firstChild?.remove();
-    dom.firstChild?.remove();
-    dom.firstChild?.remove();
-
-    dom.appendChild(board);
-    dom.appendChild(canvas);
-    dom.appendChild(markupCanvas);
-    dom.appendChild(analysisCanvas);
-    dom.appendChild(cursorCanvas);
+    dom.innerHTML = ''; // Clear existing children
+    dom.appendChild(this.board);
+    dom.appendChild(this.canvas);
+    dom.appendChild(this.markupCanvas);
+    dom.appendChild(this.analysisCanvas);
+    dom.appendChild(this.cursorCanvas);
+    dom.appendChild(this.effectCanvas);
 
     this.resize();
     this.renderInteractive();
@@ -292,6 +270,10 @@ export class GhostBan {
     this.preventMoveMat = mat;
   }
 
+  setEffectMat(mat: string[][]) {
+    this.effectMat = mat;
+  }
+
   setMarkup(markup: string[][]) {
     this.markup = markup;
   }
@@ -310,7 +292,8 @@ export class GhostBan {
     const idy = Math.round((point.y - padding + space / 2) / space) + offsetY;
     const xx = idx * space;
     const yy = idy * space;
-    const p = this.transMat.transformPoint(new DOMPoint(xx, yy));
+    const pointOnCanvas = new DOMPoint(xx, yy);
+    const p = this.transMat.transformPoint(pointOnCanvas);
     this.actualCursorPoint = p;
     this.actualCursorPosition = [idx - 1, idy - 1];
 
@@ -491,7 +474,14 @@ export class GhostBan {
   }
 
   zoomBoard(zoom = false) {
-    const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
+    const {
+      canvas,
+      analysisCanvas,
+      board,
+      cursorCanvas,
+      markupCanvas,
+      effectCanvas,
+    } = this;
     if (!canvas) return;
     const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
       this.options;
@@ -505,6 +495,7 @@ export class GhostBan {
     const cursorCtx = cursorCanvas?.getContext('2d');
     const markupCtx = markupCanvas?.getContext('2d');
     const analysisCtx = analysisCanvas?.getContext('2d');
+    const effectCtx = effectCanvas?.getContext('2d');
     const visibleArea = zoom
       ? zoomedVisibleArea
       : [
@@ -575,6 +566,7 @@ export class GhostBan {
         analysisCtx?.setTransform(this.transMat);
         cursorCtx?.setTransform(this.transMat);
         markupCtx?.setTransform(this.transMat);
+        effectCtx?.setTransform(this.transMat);
       } else {
         this.resetTransform();
       }
@@ -588,18 +580,27 @@ export class GhostBan {
   }
 
   resetTransform() {
-    const {canvas, analysisCanvas, board, cursorCanvas, markupCanvas} = this;
+    const {
+      canvas,
+      analysisCanvas,
+      board,
+      cursorCanvas,
+      markupCanvas,
+      effectCanvas,
+    } = this;
     const ctx = canvas?.getContext('2d');
     const boardCtx = board?.getContext('2d');
     const cursorCtx = cursorCanvas?.getContext('2d');
     const markupCtx = markupCanvas?.getContext('2d');
     const analysisCtx = analysisCanvas?.getContext('2d');
+    const effectCtx = effectCanvas?.getContext('2d');
     this.transMat = new DOMMatrix();
     ctx?.resetTransform();
     boardCtx?.resetTransform();
     analysisCtx?.resetTransform();
     cursorCtx?.resetTransform();
     markupCtx?.resetTransform();
+    effectCtx?.resetTransform();
   }
 
   render() {
@@ -628,6 +629,7 @@ export class GhostBan {
     this.clearCanvas(this.board);
     this.clearCanvas();
     this.clearCanvas(this.markupCanvas);
+    this.clearCanvas(this.effectCanvas);
     this.clearCursorCanvas();
     this.clearAnalysisCanvas();
   };
@@ -1214,6 +1216,38 @@ export class GhostBan {
       scaledPadding = padding + space / 2;
     }
     return {space, scaledPadding, scaledBoardExtent};
+  };
+
+  playEffect = (mat = this.mat, effectMat = this.effectMat, clear = true) => {
+    const canvas = this.effectCanvas;
+
+    if (canvas) {
+      if (clear) this.clearCanvas(canvas);
+      for (let i = 0; i < effectMat.length; i++) {
+        for (let j = 0; j < effectMat[i].length; j++) {
+          const value = effectMat[i][j];
+          const {space, scaledPadding} = this.calcSpaceAndPadding();
+          const x = scaledPadding + i * space;
+          const y = scaledPadding + j * space;
+          const ki = mat[i][j];
+          let effect;
+          const ctx = canvas.getContext('2d');
+
+          if (ctx) {
+            switch (value) {
+              case Effect.Ban: {
+                effect = new BanEffect(ctx, x, y, space, ki);
+                effect.play();
+                break;
+              }
+            }
+            effectMat[i][j] = Effect.None;
+          }
+        }
+      }
+      const {boardSize} = this.options;
+      this.setEffectMat(empty([boardSize, boardSize]));
+    }
   };
 
   drawCursor = () => {

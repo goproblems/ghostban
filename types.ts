@@ -169,6 +169,13 @@ export enum Center {
   Center = 'c',
 }
 
+export enum Effect {
+  None = '',
+  Ban = 'ban',
+  Dim = 'dim',
+  Highlight = 'highlight',
+}
+
 export enum Markup {
   Current = 'cu',
   Circle = 'ci',

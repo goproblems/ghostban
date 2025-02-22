@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
+    "js-base64": "^3.7.7",
     "lodash": "^4.17.21",
     "tree-model": "^1.0.7"
   }

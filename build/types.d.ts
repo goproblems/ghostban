@@ -157,6 +157,12 @@ export declare enum Center {
     BottomRight = "br",
     Center = "c"
 }
+export declare enum Effect {
+    None = "",
+    Ban = "ban",
+    Dim = "dim",
+    Highlight = "highlight"
+}
 export declare enum Markup {
     Current = "cu",
     Circle = "ci",

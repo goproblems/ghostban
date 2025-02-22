@@ -4139,6 +4139,7 @@ __metadata:
     eslint: ^8.56.0
     gts: ^5.3.0
     jest: ^29.7.0
+    js-base64: ^3.7.7
     lodash: ^4.17.21
     rollup: ^3.29.4
     rollup-plugin-analyzer: ^4.0.0
@@ -5192,6 +5193,13 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 17ca8d67504a7dbb1998cf3c3077ec9031ba3eb512da8d71cb91bcabb2b8995c4e4b292b740cb9bf1cbff5ce3e110b3f7c777b0cefb6f41ab05445f248d0ee0b
+  languageName: node
+  linkType: hard
+
+"js-base64@npm:^3.7.7":
+  version: 3.7.7
+  resolution: "js-base64@npm:3.7.7"
+  checksum: d1b02971db9dc0fd35baecfaf6ba499731fb44fe3373e7e1d6681fbd3ba665f29e8d9d17910254ef8104e2cb8b44117fe4202d3dc54c7cafe9ba300fe5433358
   languageName: node
   linkType: hard
 

@@ -8,6 +8,7 @@ export declare class GhostBan {
     analysisCanvas?: HTMLCanvasElement;
     cursorCanvas?: HTMLCanvasElement;
     markupCanvas?: HTMLCanvasElement;
+    effectCanvas?: HTMLCanvasElement;
     moveSoundAudio?: HTMLAudioElement;
     turn: Ki;
     private cursor;
@@ -22,6 +23,7 @@ export declare class GhostBan {
     markup: string[][];
     visibleAreaMat: number[][] | undefined;
     preventMoveMat: number[][];
+    effectMat: string[][];
     maxhv: number;
     transMat: DOMMatrix;
     analysis: Analysis | null;
@@ -30,11 +32,13 @@ export declare class GhostBan {
     setTurn(turn: Ki): void;
     setBoardSize(size: number): void;
     resize(): void;
+    private createCanvas;
     init(dom: HTMLElement): void;
     setOptions(options: GhostBanOptionsParams): void;
     setMat(mat: number[][]): void;
     setVisibleAreaMat(mat: number[][]): void;
     setPreventMoveMat(mat: number[][]): void;
+    setEffectMat(mat: string[][]): void;
     setMarkup(markup: string[][]): void;
     setCursor(cursor: Cursor, value?: string): void;
     setCursorWithRender: (domPoint: DOMPoint, offsetY?: number) => void;
@@ -71,6 +75,7 @@ export declare class GhostBan {
         scaledPadding: number;
         scaledBoardExtent: number;
     };
+    playEffect: (mat?: number[][], effectMat?: string[][], clear?: boolean) => void;
     drawCursor: () => void;
     drawStones: (mat?: number[][], canvas?: HTMLCanvasElement | undefined, clear?: boolean) => void;
 }
