@@ -1448,6 +1448,29 @@ export const addMoveToCurrentNode = (
   return node;
 };
 
+export const calcPreventMoveMatForDisplayOnly = (
+  node: TreeModel.Node<SgfNode>,
+  defaultBoardSize = 19
+) => {
+  if (!node) return zeros([defaultBoardSize, defaultBoardSize]);
+  const size = extractBoardSize(node, defaultBoardSize);
+  const preventMoveMat = zeros([size, size]);
+
+  preventMoveMat.forEach(row => row.fill(1));
+  if (node.hasChildren()) {
+    node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+      n.model.moveProps.forEach((m: MoveProp) => {
+        const i = SGF_LETTERS.indexOf(m.value[0]);
+        const j = SGF_LETTERS.indexOf(m.value[1]);
+        if (i >= 0 && j >= 0 && i < size && j < size) {
+          preventMoveMat[i][j] = 0;
+        }
+      });
+    });
+  }
+  return preventMoveMat;
+};
+
 export const calcPreventMoveMat = (
   node: TreeModel.Node<SgfNode>,
   defaultBoardSize = 19

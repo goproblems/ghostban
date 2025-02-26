@@ -147,8 +147,20 @@ export declare const calcMost: (mat: number[][], boardSize?: number) => {
 };
 export declare const calcCenter: (mat: number[][], boardSize?: number) => Center.TopRight | Center.TopLeft | Center.BottomLeft | Center.BottomRight | Center.Center;
 export declare const calcBoardSize: (mat: number[][], boardSize?: number, extent?: number) => number[];
-export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[number, number], [number, number]];
-export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[number, number], [number, number]], boardSize?: number) => string[];
+export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[
+    number,
+    number
+], [
+    number,
+    number
+]];
+export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[
+    number,
+    number
+], [
+    number,
+    number
+]], boardSize?: number) => string[];
 export declare const calcTsumegoFrame: (mat: number[][], extent: number, boardSize?: number, komi?: number, turn?: Ki, ko?: boolean) => number[][];
 export declare const calcOffset: (mat: number[][]) => {
     x: number;
@@ -194,6 +206,7 @@ export declare const addStoneToCurrentNode: (currentNode: TreeModel.Node<SgfNode
  * @returns The corresponding node in the tree, or null if no move is added.
  */
 export declare const addMoveToCurrentNode: (currentNode: TreeModel.Node<SgfNode>, mat: number[][], i: number, j: number, ki: Ki) => any;
+export declare const calcPreventMoveMatForDisplayOnly: (node: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => number[][];
 export declare const calcPreventMoveMat: (node: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => number[][];
 /**
  * Calculates the markup matrix for variations in a given SGF node.
