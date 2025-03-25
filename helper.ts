@@ -1499,17 +1499,17 @@ export const calcPreventMoveMat = (
         });
       });
     }
-
-    preventMoveNodes.forEach((n: TreeModel.Node<SgfNode>) => {
-      n.model.moveProps.forEach((m: MoveProp) => {
-        const i = SGF_LETTERS.indexOf(m.value[0]);
-        const j = SGF_LETTERS.indexOf(m.value[1]);
-        if (i >= 0 && j >= 0 && i < size && j < size) {
-          preventMoveMat[i][j] = 1;
-        }
-      });
-    });
   }
+
+  preventMoveNodes.forEach((n: TreeModel.Node<SgfNode>) => {
+    n.model.moveProps.forEach((m: MoveProp) => {
+      const i = SGF_LETTERS.indexOf(m.value[0]);
+      const j = SGF_LETTERS.indexOf(m.value[1]);
+      if (i >= 0 && j >= 0 && i < size && j < size) {
+        preventMoveMat[i][j] = 1;
+      }
+    });
+  });
 
   return preventMoveMat;
 };
