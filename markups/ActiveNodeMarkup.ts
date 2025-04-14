@@ -1,6 +1,6 @@
 import Markup from './MarkupBase';
 
-export class PositiveNodeMarkup extends Markup {
+export class ActiveNodeMarkup extends Markup {
   draw() {
     const {ctx, x, y, s, ki, color, globalAlpha} = this;
     const radius = s * 0.5;

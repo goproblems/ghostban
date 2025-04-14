@@ -1524,6 +1524,7 @@ export const calcPreventMoveMat = (
 export const calcVariationsMarkup = (
   node: TreeModel.Node<SgfNode>,
   policy: 'append' | 'prepend' | 'replace' = 'append',
+  activeIndex: number = 0,
   defaultBoardSize = 19
 ) => {
   const res = calcMatAndMarkup(node);
@@ -1538,8 +1539,18 @@ export const calcVariationsMarkup = (
         if (i < 0 || j < 0) return;
         if (i < size && j < size) {
           let mark = Markup.NeutralNode;
-          if (inWrongPath(n)) mark = Markup.NegativeNode;
-          if (inRightPath(n)) mark = Markup.PositiveNode;
+          if (inWrongPath(n)) {
+            mark =
+              n.getIndex() === activeIndex
+                ? Markup.NegativeActiveNode
+                : Markup.NegativeNode;
+          }
+          if (inRightPath(n)) {
+            mark =
+              n.getIndex() === activeIndex
+                ? Markup.PositiveActiveNode
+                : Markup.PositiveNode;
+          }
           if (mat[i][j] === Ki.Empty) {
             switch (policy) {
               case 'prepend':
@@ -1891,7 +1902,7 @@ export const getFirstToMoveColorFromRoot = (
       return getMoveColor(firstMoveNode);
     }
   }
-  console.warn('Default first to move color', defaultMoveColor);
+  // console.warn('Default first to move color', defaultMoveColor);
   return defaultMoveColor;
 };
 
@@ -1902,7 +1913,7 @@ export const getFirstToMoveColorFromSgf = (
   const sgfParser = new Sgf(sgf);
   if (sgfParser.root)
     getFirstToMoveColorFromRoot(sgfParser.root, defaultMoveColor);
-  console.warn('Default first to move color', defaultMoveColor);
+  // console.warn('Default first to move color', defaultMoveColor);
   return defaultMoveColor;
 };
 

@@ -187,10 +187,13 @@ export enum Markup {
   Number = 'num',
   Letter = 'le',
   PositiveNode = 'pos',
+  PositiveActiveNode = 'posa',
   NegativeNode = 'neg',
+  NegativeActiveNode = 'nega',
   NeutralNode = 'neu',
+  NeutralActiveNode = 'neua',
   Node = 'node',
-
+  ActiveNode = 'nodea',
   None = '',
 }
 

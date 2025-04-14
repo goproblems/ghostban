@@ -41,7 +41,7 @@ import {
   SquareMarkup,
   TriangleMarkup,
   NodeMarkup,
-  PositiveNodeMarkup,
+  ActiveNodeMarkup,
   CircleSolidMarkup,
 } from './markups';
 import {BanEffect} from './effects';
@@ -807,8 +807,19 @@ export class GhostBan {
                     markup = new CircleSolidMarkup(ctx, x, y, space, ki);
                     break;
                   }
-                  case Markup.PositiveNode: {
-                    markup = new PositiveNodeMarkup(
+                  case Markup.PositiveActiveNode:
+                  case Markup.NegativeActiveNode:
+                  case Markup.NeutralActiveNode: {
+                    let color = this.options.defaultNodeColor;
+                    if (value === Markup.NegativeActiveNode) {
+                      color = this.options.negativeNodeColor;
+                    } else if (value === Markup.PositiveActiveNode) {
+                      color = this.options.positiveNodeColor;
+                    } else if (value === Markup.NeutralActiveNode) {
+                      color = this.options.neutralNodeColor;
+                    }
+
+                    markup = new ActiveNodeMarkup(
                       ctx,
                       x,
                       y,
@@ -816,15 +827,18 @@ export class GhostBan {
                       ki,
                       Markup.Circle
                     );
-                    markup.setColor(this.options.positiveNodeColor);
+                    markup.setColor(color);
                     break;
                   }
+                  case Markup.PositiveNode:
                   case Markup.NegativeNode:
                   case Markup.NeutralNode:
                   case Markup.Node: {
                     let color = this.options.defaultNodeColor;
                     if (value === Markup.NegativeNode) {
                       color = this.options.negativeNodeColor;
+                    } else if (value === Markup.PositiveNode) {
+                      color = this.options.positiveNodeColor;
                     } else if (value === Markup.NeutralNode) {
                       color = this.options.neutralNodeColor;
                     }

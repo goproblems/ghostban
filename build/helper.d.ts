@@ -203,7 +203,7 @@ export declare const calcPreventMoveMat: (node: TreeModel.Node<SgfNode>, default
  * @param policy - The policy for handling the markup. Defaults to 'append'.
  * @returns The calculated markup for the variations.
  */
-export declare const calcVariationsMarkup: (node: TreeModel.Node<SgfNode>, policy?: 'append' | 'prepend' | 'replace', defaultBoardSize?: number) => string[][];
+export declare const calcVariationsMarkup: (node: TreeModel.Node<SgfNode>, policy?: 'append' | 'prepend' | 'replace', activeIndex?: number, defaultBoardSize?: number) => string[][];
 export declare const detectST: (node: TreeModel.Node<SgfNode>) => {
     showVariationsMarkup: boolean;
     showChildrenMarkup: boolean;
