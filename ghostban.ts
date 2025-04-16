@@ -109,6 +109,7 @@ export class GhostBan {
     moveSound: false,
     adaptiveStarSize: true,
     starSize: 3,
+    mobileIndicatorOffset: 0,
   };
   options: GhostBanOptions;
   dom: HTMLElement | undefined;
@@ -362,7 +363,7 @@ export class GhostBan {
       Math.abs(point.x - this.touchStartPoint.x) > distance ||
       Math.abs(point.y - this.touchStartPoint.y) > distance
     ) {
-      offset = -3;
+      offset = this.options.mobileIndicatorOffset;
     }
     this.setCursorWithRender(point, offset);
   };

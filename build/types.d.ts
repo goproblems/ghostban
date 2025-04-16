@@ -27,6 +27,7 @@ export type GhostBanOptions = {
     moveSound: boolean;
     starSize: number;
     adaptiveStarSize: boolean;
+    mobileIndicatorOffset: number;
     forceAnalysisBoardSize?: number;
 };
 export type GhostBanOptionsParams = {
@@ -55,6 +56,7 @@ export type GhostBanOptionsParams = {
     starSize?: number;
     adaptiveStarSize?: boolean;
     forceAnalysisBoardSize?: number;
+    mobileIndicatorOffset?: number;
 };
 export type ThemeResources = {
     [key in Theme]: {
