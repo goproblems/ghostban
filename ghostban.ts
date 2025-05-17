@@ -167,7 +167,7 @@ export class GhostBan {
       [0, size - 1],
     ];
 
-    const defaultDashedLineDash = [8, 4];
+    const defaultDashedLineDash = [8, 6];
     const defaultDottedLineDash = [4, 4];
 
     this.nodeMarkupStyles = {
