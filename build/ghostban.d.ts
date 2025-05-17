@@ -28,6 +28,12 @@ export declare class GhostBan {
     transMat: DOMMatrix;
     analysis: Analysis | null;
     visibleArea: number[][];
+    nodeMarkupStyles: {
+        [key: string]: {
+            color: string;
+            lineDash: number[];
+        };
+    };
     constructor(options?: GhostBanOptionsParams);
     setTurn(turn: Ki): void;
     setBoardSize(size: number): void;

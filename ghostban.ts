@@ -105,6 +105,7 @@ export class GhostBan {
     negativeNodeColor: '#b91c1c',
     neutralNodeColor: '#a16207',
     defaultNodeColor: '#404040',
+    warningNodeColor: '#ffdf20',
     themeResources: THEME_RESOURCES,
     moveSound: false,
     adaptiveStarSize: true,
@@ -138,6 +139,12 @@ export class GhostBan {
   transMat: DOMMatrix;
   analysis: Analysis | null;
   visibleArea: number[][];
+  nodeMarkupStyles: {
+    [key: string]: {
+      color: string;
+      lineDash: number[];
+    };
+  };
 
   constructor(options: GhostBanOptionsParams = {}) {
     this.options = {
@@ -159,6 +166,132 @@ export class GhostBan {
       [0, size - 1],
       [0, size - 1],
     ];
+
+    const defaultDashedLineDash = [8, 4];
+    const defaultDottedLineDash = [4, 4];
+
+    this.nodeMarkupStyles = {
+      [Markup.PositiveNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: [],
+      },
+      [Markup.NegativeNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: [],
+      },
+      [Markup.NeutralNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: [],
+      },
+      [Markup.DefaultNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: [],
+      },
+      [Markup.WarningNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: [],
+      },
+      [Markup.PositiveDashedNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.NegativeDashedNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.NeutralDashedNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.DefaultDashedNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.WarningDashedNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.PositiveDottedNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.NegativeDottedNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.NeutralDottedNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.DefaultDottedNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.WarningDottedNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.PositiveActiveNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: [],
+      },
+      [Markup.NegativeActiveNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: [],
+      },
+      [Markup.NeutralActiveNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: [],
+      },
+      [Markup.DefaultActiveNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: [],
+      },
+      [Markup.WarningActiveNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: [],
+      },
+      [Markup.PositiveDashedActiveNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.NegativeDashedActiveNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.NeutralDashedActiveNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.DefaultDashedActiveNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.WarningDashedActiveNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: defaultDashedLineDash,
+      },
+      [Markup.PositiveDottedActiveNode]: {
+        color: this.options.positiveNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.NegativeDottedActiveNode]: {
+        color: this.options.negativeNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.NeutralDottedActiveNode]: {
+        color: this.options.neutralNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.DefaultDottedActiveNode]: {
+        color: this.options.defaultNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+      [Markup.WarningDottedActiveNode]: {
+        color: this.options.warningNodeColor,
+        lineDash: defaultDottedLineDash,
+      },
+    };
   }
 
   setTurn(turn: Ki) {
@@ -809,16 +942,21 @@ export class GhostBan {
                     break;
                   }
                   case Markup.PositiveActiveNode:
+                  case Markup.PositiveDashedActiveNode:
+                  case Markup.PositiveDottedActiveNode:
                   case Markup.NegativeActiveNode:
-                  case Markup.NeutralActiveNode: {
-                    let color = this.options.defaultNodeColor;
-                    if (value === Markup.NegativeActiveNode) {
-                      color = this.options.negativeNodeColor;
-                    } else if (value === Markup.PositiveActiveNode) {
-                      color = this.options.positiveNodeColor;
-                    } else if (value === Markup.NeutralActiveNode) {
-                      color = this.options.neutralNodeColor;
-                    }
+                  case Markup.NegativeDashedActiveNode:
+                  case Markup.NegativeDottedActiveNode:
+                  case Markup.NeutralActiveNode:
+                  case Markup.NeutralDashedActiveNode:
+                  case Markup.NeutralDottedActiveNode:
+                  case Markup.WarningActiveNode:
+                  case Markup.WarningDashedActiveNode:
+                  case Markup.WarningDottedActiveNode:
+                  case Markup.DefaultActiveNode:
+                  case Markup.DefaultDashedActiveNode:
+                  case Markup.DefaultDottedActiveNode: {
+                    let {color, lineDash} = this.nodeMarkupStyles[value];
 
                     markup = new ActiveNodeMarkup(
                       ctx,
@@ -829,21 +967,26 @@ export class GhostBan {
                       Markup.Circle
                     );
                     markup.setColor(color);
+                    markup.setLineDash(lineDash);
                     break;
                   }
                   case Markup.PositiveNode:
+                  case Markup.PositiveDashedNode:
+                  case Markup.PositiveDottedNode:
                   case Markup.NegativeNode:
+                  case Markup.NegativeDashedNode:
+                  case Markup.NegativeDottedNode:
                   case Markup.NeutralNode:
+                  case Markup.NeutralDashedNode:
+                  case Markup.NeutralDottedNode:
+                  case Markup.WarningNode:
+                  case Markup.WarningDashedNode:
+                  case Markup.WarningDottedNode:
+                  case Markup.DefaultNode:
+                  case Markup.DefaultDashedNode:
+                  case Markup.DefaultDottedNode:
                   case Markup.Node: {
-                    let color = this.options.defaultNodeColor;
-                    if (value === Markup.NegativeNode) {
-                      color = this.options.negativeNodeColor;
-                    } else if (value === Markup.PositiveNode) {
-                      color = this.options.positiveNodeColor;
-                    } else if (value === Markup.NeutralNode) {
-                      color = this.options.neutralNodeColor;
-                    }
-
+                    let {color, lineDash} = this.nodeMarkupStyles[value];
                     markup = new NodeMarkup(
                       ctx,
                       x,
@@ -853,6 +996,7 @@ export class GhostBan {
                       Markup.Circle
                     );
                     markup.setColor(color);
+                    markup.setLineDash(lineDash);
                     break;
                   }
                   case Markup.Square: {

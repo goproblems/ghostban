@@ -9,6 +9,7 @@ export class CircleMarkup extends Markup {
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
     ctx.lineWidth = 2;
+    ctx.setLineDash(this.lineDash);
     if (ki === 1) {
       ctx.strokeStyle = '#fff';
     } else if (ki === -1) {

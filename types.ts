@@ -23,6 +23,7 @@ export type GhostBanOptions = {
   negativeNodeColor: string;
   neutralNodeColor: string;
   defaultNodeColor: string;
+  warningNodeColor: string;
   themeResources: ThemeResources;
   moveSound: boolean;
   starSize: number;
@@ -52,6 +53,7 @@ export type GhostBanOptionsParams = {
   negativeNodeColor?: string;
   neutralNodeColor?: string;
   defaultNodeColor?: string;
+  warningNodeColor?: string;
   themeResources?: ThemeResources;
   moveSound?: boolean;
   starSize?: number;
@@ -190,12 +192,39 @@ export enum Markup {
   Letter = 'le',
   PositiveNode = 'pos',
   PositiveActiveNode = 'posa',
+  PositiveDashedNode = 'posda',
+  PositiveDottedNode = 'posdt',
+  PositiveDashedActiveNode = 'posdaa',
+  PositiveDottedActiveNode = 'posdta',
   NegativeNode = 'neg',
   NegativeActiveNode = 'nega',
+  NegativeDashedNode = 'negda',
+  NegativeDottedNode = 'negdt',
+  NegativeDashedActiveNode = 'negdaa',
+  NegativeDottedActiveNode = 'negdta',
   NeutralNode = 'neu',
   NeutralActiveNode = 'neua',
+  NeutralDashedNode = 'neuda',
+  NeutralDottedNode = 'neudt',
+  NeutralDashedActiveNode = 'neudta',
+  NeutralDottedActiveNode = 'neudaa',
+  WarningNode = 'wa',
+  WarningActiveNode = 'waa',
+  WarningDashedNode = 'wada',
+  WarningDottedNode = 'wadt',
+  WarningDashedActiveNode = 'wadaa',
+  WarningDottedActiveNode = 'wadta',
+  DefaultNode = 'de',
+  DefaultActiveNode = 'dea',
+  DefaultDashedNode = 'deda',
+  DefaultDottedNode = 'dedt',
+  DefaultDashedActiveNode = 'dedaa',
+  DefaultDottedActiveNode = 'dedta',
   Node = 'node',
-  ActiveNode = 'nodea',
+  DashedNode = 'danode',
+  DottedNode = 'dtnode',
+  ActiveNode = 'anode',
+  DashedActiveNode = 'danode',
   None = '',
 }
 

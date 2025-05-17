@@ -46,7 +46,7 @@ export declare const isRightNode: (n: TreeModel.Node<SgfNode>) => any;
 export declare const isFirstRightNode: (n: TreeModel.Node<SgfNode>) => boolean;
 export declare const isVariantNode: (n: TreeModel.Node<SgfNode>) => any;
 export declare const isWrongNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const inPath: (node: TreeModel.Node<SgfNode>, detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean, strategy: PathDetectionStrategy | undefined, preNodes: TreeModel.Node<SgfNode>[] | undefined, postNodes: TreeModel.Node<SgfNode>[] | undefined) => boolean;
+export declare const inPath: (node: TreeModel.Node<SgfNode>, detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[], postNodes?: TreeModel.Node<SgfNode>[]) => boolean;
 export declare const inRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
 export declare const inFirstRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
 export declare const inFirstBranchRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;

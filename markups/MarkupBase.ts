@@ -1,6 +1,7 @@
 export default class Markup {
   protected globalAlpha = 1;
   protected color = '';
+  protected lineDash: number[] = [];
 
   constructor(
     protected ctx: CanvasRenderingContext2D,
@@ -21,5 +22,9 @@ export default class Markup {
 
   setColor(color: string) {
     this.color = color;
+  }
+
+  setLineDash(lineDash: number[]) {
+    this.lineDash = lineDash;
   }
 }

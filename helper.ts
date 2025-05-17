@@ -270,8 +270,8 @@ export const inPath = (
   node: TreeModel.Node<SgfNode>,
   detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TreeModel.Node<SgfNode>[],
+  postNodes?: TreeModel.Node<SgfNode>[]
 ) => {
   const path = preNodes ?? node.getPath();
   const postRightNodes =

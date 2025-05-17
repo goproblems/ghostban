@@ -10,6 +10,7 @@ export class NodeMarkup extends Markup {
     ctx.globalAlpha = globalAlpha;
     ctx.lineWidth = 4;
     ctx.strokeStyle = color;
+    ctx.setLineDash(this.lineDash);
     if (size > 0) {
       ctx.arc(x, y, size, 0, 2 * Math.PI, true);
       ctx.stroke();

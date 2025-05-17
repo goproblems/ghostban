@@ -9,6 +9,7 @@ export class CircleSolidMarkup extends Markup {
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
     ctx.lineWidth = 2;
+    ctx.setLineDash(this.lineDash);
     if (ki === 1) {
       ctx.fillStyle = '#fff';
     } else if (ki === -1) {

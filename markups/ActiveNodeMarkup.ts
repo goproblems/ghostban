@@ -11,6 +11,7 @@ export class ActiveNodeMarkup extends Markup {
     ctx.lineWidth = 4;
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
+    ctx.setLineDash(this.lineDash);
     if (size > 0) {
       ctx.arc(x, y, size, 0, 2 * Math.PI, true);
       ctx.stroke();
