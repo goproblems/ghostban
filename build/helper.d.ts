@@ -146,20 +146,8 @@ export declare const calcMost: (mat: number[][], boardSize?: number) => {
 };
 export declare const calcCenter: (mat: number[][], boardSize?: number) => Center.TopRight | Center.TopLeft | Center.BottomLeft | Center.BottomRight | Center.Center;
 export declare const calcBoardSize: (mat: number[][], boardSize?: number, extent?: number) => number[];
-export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[
-    number,
-    number
-], [
-    number,
-    number
-]];
-export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[
-    number,
-    number
-], [
-    number,
-    number
-]], boardSize?: number) => string[];
+export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[number, number], [number, number]];
+export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[number, number], [number, number]], boardSize?: number) => string[];
 export declare const calcTsumegoFrame: (mat: number[][], extent: number, boardSize?: number, komi?: number, turn?: Ki, ko?: boolean) => number[][];
 export declare const calcOffset: (mat: number[][]) => {
     x: number;
