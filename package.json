@@ -18,7 +18,7 @@
     "fix": "gts fix",
     "start": "npx http-server ./build",
     "watch-pub-up": "watchman-make -p 'build/index.min.js' --run 'sh publish-dev.sh'",
-    "bump-alpha": "npm version prerelease --preid=alpha"
+    "bump-alpha": "npm version prerelease --preid=alpha --no-git-tag-version && yarn build && git add . && git commit --amend --no-edit && git tag -f v$npm_package_version && git push --force origin main --tags"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
