@@ -1,5 +1,5 @@
 import {compact, replace} from 'lodash';
-import {isCharacterInNode} from './helpers';
+import {buildNodeRanges, isInAnyRange} from './helpers';
 
 import TreeModel from 'tree-model';
 import {
@@ -22,8 +22,7 @@ import {
   CUSTOM_PROP_LIST,
 } from './props';
 import type {SgfNode} from './types';
-import {getDeduplicatedProps, getNodeNumber} from '../helper';
-import {calcSHA} from '../helper';
+import {calcHash, getDeduplicatedProps, getNodeNumber} from '../helper';
 
 /**
  * Represents an SGF (Smart Game Format) file.
@@ -117,9 +116,13 @@ export class Sgf {
     let counter = 0;
     const stack: TreeModel.Node<SgfNode>[] = [];
 
+    const inNodeRanges = buildNodeRanges(sgf).sort((a, b) => a[0] - b[0]);
+
     for (let i = 0; i < sgf.length; i++) {
       const c = sgf[i];
-      if (this.NODE_DELIMITERS.includes(c) && !isCharacterInNode(sgf, i)) {
+      const insideProp = isInAnyRange(i, inNodeRanges);
+
+      if (this.NODE_DELIMITERS.includes(c) && !insideProp) {
         const content = sgf.slice(nodeStart, i);
         if (content !== '') {
           const moveProps: MoveProp[] = [];
@@ -173,10 +176,10 @@ export class Sgf {
           });
 
           if (matches.length > 0) {
-            const sha = calcSHA(this.currentNode, moveProps);
+            const hash = calcHash(this.currentNode, moveProps);
             const node = this.tree.parse<SgfNode>({
-              id: sha,
-              name: sha,
+              id: hash,
+              name: hash,
               index: counter,
               number: 0,
               moveProps,
@@ -204,18 +207,18 @@ export class Sgf {
           }
         }
       }
-      if (c === '(' && this.currentNode && !isCharacterInNode(sgf, i)) {
+      if (c === '(' && this.currentNode && !insideProp) {
         // console.log(`${sgf[i]}${sgf[i + 1]}${sgf[i + 2]}`);
         stack.push(this.currentNode);
       }
-      if (c === ')' && !isCharacterInNode(sgf, i) && stack.length > 0) {
+      if (c === ')' && !insideProp && stack.length > 0) {
         const node = stack.pop();
         if (node) {
           this.currentNode = node;
         }
       }
 
-      if (this.NODE_DELIMITERS.includes(c) && !isCharacterInNode(sgf, i)) {
+      if (this.NODE_DELIMITERS.includes(c) && !insideProp) {
         nodeStart = i;
       }
     }

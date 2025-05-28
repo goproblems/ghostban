@@ -1,25 +1,58 @@
-import TreeModel from 'tree-model';
-import {RootProp} from './props';
-import {SgfNode} from './types';
-
-const tree: TreeModel = new TreeModel();
-
 export function isCharacterInNode(
   sgf: string,
   n: number,
   nodes = ['C', 'TM', 'GN']
-) {
-  const res = nodes.map(node => {
-    const indexOf = sgf.slice(0, n).lastIndexOf(node);
-    if (indexOf === -1) return false;
+): boolean {
+  const pattern = new RegExp(`(${nodes.join('|')})\\[([^\\]]*)\\]`, 'g');
+  let match: RegExpExecArray | null;
 
-    const startIndex = indexOf + node.length;
-    const endIndex = sgf.indexOf(']', startIndex);
+  while ((match = pattern.exec(sgf)) !== null) {
+    const contentStart = match.index + match[1].length + 1; // +1 for the '['
+    const contentEnd = contentStart + match[2].length;
+    if (n >= contentStart && n <= contentEnd) {
+      return true;
+    }
+  }
 
-    if (endIndex === -1) return false;
+  return false;
+}
 
-    return n >= startIndex && n <= endIndex;
-  });
+type Range = [number, number];
 
-  return res.includes(true);
+export function buildNodeRanges(
+  sgf: string,
+  keys: string[] = ['C', 'TM', 'GN']
+): Range[] {
+  const ranges: Range[] = [];
+  const pattern = new RegExp(`\\b(${keys.join('|')})\\[([^\\]]*)\\]`, 'g');
+
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(sgf)) !== null) {
+    const start = match.index + match[1].length + 1;
+    const end = start + match[2].length;
+    ranges.push([start, end]);
+  }
+
+  return ranges;
+}
+
+export function isInAnyRange(index: number, ranges: Range[]): boolean {
+  // ranges must be sorted
+  let left = 0;
+  let right = ranges.length - 1;
+
+  while (left <= right) {
+    const mid = (left + right) >> 1;
+    const [start, end] = ranges[mid];
+
+    if (index < start) {
+      right = mid - 1;
+    } else if (index > end) {
+      left = mid + 1;
+    } else {
+      return true;
+    }
+  }
+
+  return false;
 }

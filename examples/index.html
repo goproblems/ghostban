@@ -14,7 +14,7 @@
     let GB = window.ghostban;
     const {
       GhostBan, Sgf, Ki, SGF_LETTERS,
-      canMove, MoveProp, calcSHA, genMove,
+      canMove, MoveProp, calcHash, genMove,
       buildMoveNode, calcMatAndMarkup, Theme,
       Cursor
     } = GB;
@@ -498,7 +498,7 @@
         g.setTurn(-turn)
         const token = turn === Ki.Black ? 'B' : 'W';
         if (turn !== 0) {
-          const sha = calcSHA(currentNode, [
+          const sha = calcHash(currentNode, [
             MoveProp.from(`${token}[${value}]`),
           ]);
           const filtered = currentNode.children.filter(

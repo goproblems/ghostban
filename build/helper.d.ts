@@ -55,7 +55,7 @@ export declare const inTargetPath: (node: TreeModel.Node<SgfNode>, strategy?: Pa
 export declare const inVariantPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
 export declare const inWrongPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
 export declare const getNodeNumber: (n: TreeModel.Node<SgfNode>, parent?: TreeModel.Node<SgfNode>) => number;
-export declare const calcSHA: (node: TreeModel.Node<SgfNode> | null | undefined, moveProps?: MoveProp[]) => any;
+export declare const calcHash: (node: TreeModel.Node<SgfNode> | null | undefined, moveProps?: MoveProp[]) => any;
 export declare const __calcSHA_Deprecated: (node: TreeModel.Node<SgfNode> | null | undefined, moveProps?: any, setupProps?: any) => any;
 export declare const nFormatter: (num: number, fixed?: number) => string;
 export declare const pathToIndexes: (path: TreeModel.Node<SgfNode>[]) => number[];
@@ -99,7 +99,6 @@ export declare const initNodeData: (sha: string, number?: number) => SgfNode;
  * @returns The initial root node.
  */
 export declare const initialRootNode: (rootProps?: string[]) => TreeModel.Node<{
-    id: string;
     name: number;
     index: number;
     number: number;
@@ -147,8 +146,20 @@ export declare const calcMost: (mat: number[][], boardSize?: number) => {
 };
 export declare const calcCenter: (mat: number[][], boardSize?: number) => Center.TopRight | Center.TopLeft | Center.BottomLeft | Center.BottomRight | Center.Center;
 export declare const calcBoardSize: (mat: number[][], boardSize?: number, extent?: number) => number[];
-export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[number, number], [number, number]];
-export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[number, number], [number, number]], boardSize?: number) => string[];
+export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[
+    number,
+    number
+], [
+    number,
+    number
+]];
+export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[
+    number,
+    number
+], [
+    number,
+    number
+]], boardSize?: number) => string[];
 export declare const calcTsumegoFrame: (mat: number[][], extent: number, boardSize?: number, komi?: number, turn?: Ki, ko?: boolean) => number[][];
 export declare const calcOffset: (mat: number[][]) => {
     x: number;

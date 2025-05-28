@@ -9,7 +9,7 @@ import {
   compact,
   sample,
 } from 'lodash';
-import {SgfNode, SgfNodeOptions} from './core/types';
+import {SgfNode, SgfNodeOptions, TNode} from './core/types';
 import {
   A1_LETTERS,
   A1_NUMBERS,
@@ -63,6 +63,8 @@ export {canMove, execCapture};
 // use require instead
 // import sha256 from 'crypto-js/sha256';
 const sha256 = require('crypto-js/sha256');
+const MD5 = require('crypto-js/MD5');
+
 import {Sgf} from './core/sgf';
 
 type Strategy = 'post' | 'pre' | 'both';
@@ -379,7 +381,7 @@ export const getNodeNumber = (
   return movesCount;
 };
 
-export const calcSHA = (
+export const calcHash = (
   node: TreeModel.Node<SgfNode> | null | undefined,
   moveProps: MoveProp[] = []
 ) => {
@@ -398,8 +400,8 @@ export const calcSHA = (
     }
   }
 
-  const sha = sha256(fullname).toString().slice(0, 6);
-  return sha;
+  const hash = MD5(fullname).toString().slice(0, 6);
+  return hash;
 };
 
 export const __calcSHA_Deprecated = (
@@ -798,7 +800,6 @@ export const initialRootNode = (
   const tree: TreeModel = new TreeModel();
   const root = tree.parse({
     // '1b16b1' is the SHA256 hash of the 'n'
-    id: '1b16b1',
     name: 0,
     index: 0,
     number: 0,
@@ -811,10 +812,9 @@ export const initialRootNode = (
     moveAnnotationProps: [],
     customProps: [],
   });
-  // const sha = calcSHA(root);
-  // root.model.id = sha;
-  // console.log('root', root);
-  // console.log(sha);
+  const hash = calcHash(root);
+  root.model.id = hash;
+
   return root;
 };
 
@@ -833,10 +833,10 @@ export const buildMoveNode = (
 ) => {
   const tree: TreeModel = new TreeModel();
   const moveProp = MoveProp.from(move);
-  const sha = calcSHA(parentNode, [moveProp]);
+  const hash = calcHash(parentNode, [moveProp]);
   let number = 1;
   if (parentNode) number = getNodeNumber(parentNode) + 1;
-  const nodeData = initNodeData(sha, number);
+  const nodeData = initNodeData(hash, number);
   nodeData.moveProps = [moveProp];
   // TODO: Should I add this?
   // nodeData.nodeAnnotationProps = [NodeAnnotationProp.from(`N[${sha}]`)];
@@ -1329,9 +1329,9 @@ export const handleMove = (
     // dispatch(uiSlice.actions.setTurn(-turn));
     const value = SGF_LETTERS[i] + SGF_LETTERS[j];
     const token = turn === Ki.Black ? 'B' : 'W';
-    const sha = calcSHA(currentNode, [MoveProp.from(`${token}[${value}]`)]);
+    const hash = calcHash(currentNode, [MoveProp.from(`${token}[${value}]`)]);
     const filtered = currentNode.children.filter(
-      (n: any) => n.model.id === sha
+      (n: TNode) => n.model.id === hash
     );
     let node;
     if (filtered.length > 0) {
@@ -1434,9 +1434,9 @@ export const addMoveToCurrentNode = (
   if (canMove(mat, i, j, ki)) {
     const value = SGF_LETTERS[i] + SGF_LETTERS[j];
     const token = ki === Ki.Black ? 'B' : 'W';
-    const sha = calcSHA(currentNode, [MoveProp.from(`${token}[${value}]`)]);
+    const hash = calcHash(currentNode, [MoveProp.from(`${token}[${value}]`)]);
     const filtered = currentNode.children.filter(
-      (n: any) => n.model.id === sha
+      (n: TNode) => n.model.id === hash
     );
     if (filtered.length > 0) {
       node = filtered[0];
