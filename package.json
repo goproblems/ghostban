@@ -1,6 +1,6 @@
 {
   "name": "ghostban",
-  "version": "3.0.0-alpha.119",
+  "version": "3.0.0-alpha.120",
   "description": "A Goban library",
   "main": "build/index.js",
   "browser": "build/index.js",
@@ -29,7 +29,6 @@
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
-    "@types/crypto-js": "^4.2.1",
     "@types/jest": "^29.5.11",
     "@types/lodash": "^4.17.4",
     "@types/node": "^20.10.5",
@@ -48,9 +47,9 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
     "js-base64": "^3.7.7",
     "lodash": "^4.17.21",
+    "spark-md5": "^3.0.2",
     "tree-model": "^1.0.7"
   },
   "packageManager": "yarn@4.7.0+sha512.5a0afa1d4c1d844b3447ee3319633797bcd6385d9a44be07993ae52ff4facabccafb4af5dcd1c2f9a94ac113e5e9ff56f6130431905884414229e284e37bb7c9"

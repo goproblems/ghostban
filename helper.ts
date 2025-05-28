@@ -54,20 +54,14 @@ import {
 } from './types';
 
 import {Center} from './types';
-
 import {canMove, execCapture} from './boardcore';
 export {canMove, execCapture};
-// export * from './boardcore';
-
-// es6 import style sometimes trigger error 'gg/ghostban/build/index.js" contains a reference to the file "crypto'
-// use require instead
-// import sha256 from 'crypto-js/sha256';
-const sha256 = require('crypto-js/sha256');
-const MD5 = require('crypto-js/MD5');
 
 import {Sgf} from './core/sgf';
 
 type Strategy = 'post' | 'pre' | 'both';
+
+const SparkMD5 = require('spark-md5');
 
 export const calcDoubtfulMovesThresholdRange = (threshold: number) => {
   // 8D-9D
@@ -384,51 +378,19 @@ export const getNodeNumber = (
 export const calcHash = (
   node: TreeModel.Node<SgfNode> | null | undefined,
   moveProps: MoveProp[] = []
-) => {
+): string => {
   let fullname = 'n';
   if (moveProps.length > 0) {
     fullname += `${moveProps[0].token}${moveProps[0].value}`;
   }
-
   if (node) {
     const path = node.getPath();
-
     if (path.length > 0) {
-      fullname =
-        path.map((n: TreeModel.Node<SgfNode>) => n.model.id).join('=>') +
-        `=>${fullname}`;
+      fullname = path.map(n => n.model.id).join('=>') + `=>${fullname}`;
     }
   }
 
-  const hash = MD5(fullname).toString().slice(0, 6);
-  return hash;
-};
-
-export const __calcSHA_Deprecated = (
-  node: TreeModel.Node<SgfNode> | null | undefined,
-  moveProps: any = [],
-  setupProps: any = []
-) => {
-  let nodeType = 'r';
-  if (moveProps.length > 0) nodeType = 'm';
-  if (setupProps.length > 0) nodeType = 's';
-
-  let n = `${nodeType}`;
-  if (moveProps.length > 0) n += `${moveProps[0].token}${moveProps[0].value}`;
-
-  let fullname = n;
-  if (node) {
-    fullname =
-      node
-        .getPath()
-        .map((n: TreeModel.Node<SgfNode>) => n.model.id)
-        .join('=>') +
-      '=>' +
-      n;
-  }
-
-  const sha = sha256(fullname).toString().slice(0, 6);
-  return sha;
+  return SparkMD5.hash(fullname).slice(0, 6);
 };
 
 export const nFormatter = (num: number, fixed = 1) => {

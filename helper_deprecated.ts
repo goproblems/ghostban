@@ -1,8 +1,4 @@
-import TreeModel from 'tree-model';
 import {calcMost} from './helper';
-import {SgfNode} from './core/types';
-import sha256 from 'crypto-js/sha256';
-
 import {Center} from './types';
 
 import {canMove, execCapture} from './boardcore';
@@ -46,33 +42,6 @@ export const calcBoardSize = (
   result[1] = Math.min(result[1], boardSize);
 
   return result;
-};
-
-export const calcSHA_deprecated = (
-  node: TreeModel.Node<SgfNode> | null | undefined,
-  moveProps: any = [],
-  setupProps: any = []
-) => {
-  let nodeType = 'r';
-  if (moveProps.length > 0) nodeType = 'm';
-  if (setupProps.length > 0) nodeType = 's';
-
-  let n = `${nodeType}`;
-  if (moveProps.length > 0) n += `${moveProps[0].token}${moveProps[0].value}`;
-
-  let fullname = n;
-  if (node) {
-    fullname =
-      node
-        .getPath()
-        .map((n: TreeModel.Node<SgfNode>) => n.model.id)
-        .join('=>') +
-      '=>' +
-      n;
-  }
-
-  const sha = sha256(fullname).toString().slice(0, 6);
-  return sha;
 };
 
 export const calcSpaceAndScaledPadding = (
