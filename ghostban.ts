@@ -340,6 +340,7 @@ export class GhostBan {
 
     this.render();
   }
+
   private createCanvas(id: string, pointerEvents = true): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     canvas.style.position = 'absolute';
@@ -522,8 +523,6 @@ export class GhostBan {
       canvas.addEventListener('touchmove', this.onTouchMove);
       canvas.addEventListener('touchend', this.onTouchEnd);
     }
-
-    this.clearCursorCanvas();
   }
 
   setAnalysis(analysis: Analysis | null) {
@@ -1480,7 +1479,6 @@ export class GhostBan {
               const {space, scaledPadding} = this.calcSpaceAndPadding();
               const x = scaledPadding + i * space;
               const y = scaledPadding + j * space;
-
               const ratio = 0.45;
               ctx.save();
               if (
