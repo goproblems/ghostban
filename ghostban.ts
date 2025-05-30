@@ -387,7 +387,6 @@ export class GhostBan {
     this.options = {...this.options, ...options};
     // The onMouseMove event needs to be re-added after the options are updated
     this.renderInteractive();
-    this.render();
   }
 
   setMat(mat: number[][]) {
