@@ -1,5 +1,4 @@
-import TreeModel from 'tree-model';
-import type { SgfNode } from './types';
+import { TreeModel, TNode } from './tree';
 /**
  * Represents an SGF (Smart Game Format) file.
  */
@@ -12,17 +11,17 @@ export declare class Sgf {
     LIST_IDENTITIES: string[];
     NODE_DELIMITERS: string[];
     tree: TreeModel;
-    root: TreeModel.Node<SgfNode> | null;
-    node: TreeModel.Node<SgfNode> | null;
-    currentNode: TreeModel.Node<SgfNode> | null;
-    parentNode: TreeModel.Node<SgfNode> | null;
+    root: TNode | null;
+    node: TNode | null;
+    currentNode: TNode | null;
+    parentNode: TNode | null;
     nodeProps: Map<string, string>;
     /**
      * Constructs a new instance of the Sgf class.
-     * @param content The content of the Sgf, either as a string or as a TreeModel.Node<SgfNode>(Root node).
+     * @param content The content of the Sgf, either as a string or as a TNode(Root node).
      * @param parseOptions The options for parsing the Sgf content.
      */
-    constructor(content?: string | TreeModel.Node<SgfNode> | undefined, parseOptions?: {
+    constructor(content?: string | TNode | undefined, parseOptions?: {
         ignorePropList: never[];
     });
     /**
@@ -31,7 +30,7 @@ export declare class Sgf {
      * @param root The root node to set.
      * @returns The updated SGF instance.
      */
-    setRoot(root: TreeModel.Node<SgfNode>): this;
+    setRoot(root: TNode): this;
     /**
      * Converts the current SGF tree to an SGF string representation.
      * @returns The SGF string representation of the tree.

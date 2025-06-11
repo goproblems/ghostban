@@ -1,3 +1,27 @@
+import {filter, findLastIndex} from 'lodash';
+import {TNode} from './tree';
+import {MoveProp, SgfPropBase} from './props';
+
+const SparkMD5 = require('spark-md5');
+
+export const calcHash = (
+  node: TNode | null | undefined,
+  moveProps: MoveProp[] = []
+): string => {
+  let fullname = 'n';
+  if (moveProps.length > 0) {
+    fullname += `${moveProps[0].token}${moveProps[0].value}`;
+  }
+  if (node) {
+    const path = node.getPath();
+    if (path.length > 0) {
+      fullname = path.map(n => n.model.id).join('=>') + `=>${fullname}`;
+    }
+  }
+
+  return SparkMD5.hash(fullname).slice(0, 6);
+};
+
 export function isCharacterInNode(
   sgf: string,
   n: number,
@@ -56,3 +80,37 @@ export function isInAnyRange(index: number, ranges: Range[]): boolean {
 
   return false;
 }
+
+export const getDeduplicatedProps = (targetProps: SgfPropBase[]) => {
+  return filter(
+    targetProps,
+    (prop: SgfPropBase, index: number) =>
+      index ===
+      findLastIndex(
+        targetProps,
+        (lastPro: SgfPropBase) =>
+          prop.token === lastPro.token && prop.value === lastPro.value
+      )
+  );
+};
+
+export const isMoveNode = (n: TNode) => {
+  return n.model.moveProps.length > 0;
+};
+
+export const isRootNode = (n: TNode) => {
+  return n.model.rootProps.length > 0 || n.isRoot();
+};
+
+export const isSetupNode = (n: TNode) => {
+  return n.model.setupProps.length > 0;
+};
+
+export const getNodeNumber = (n: TNode, parent?: TNode) => {
+  const path = n.getPath();
+  let movesCount = path.filter(n => isMoveNode(n)).length;
+  if (parent) {
+    movesCount += parent.getPath().filter(n => isMoveNode(n)).length;
+  }
+  return movesCount;
+};

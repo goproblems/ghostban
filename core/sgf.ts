@@ -1,7 +1,13 @@
 import {compact, replace} from 'lodash';
-import {buildNodeRanges, isInAnyRange} from './helpers';
+import {
+  buildNodeRanges,
+  isInAnyRange,
+  calcHash,
+  getDeduplicatedProps,
+  getNodeNumber,
+} from './helpers';
 
-import TreeModel from 'tree-model';
+import {TreeModel, TNode} from './tree';
 import {
   MoveProp,
   SetupProp,
@@ -21,8 +27,6 @@ import {
   GAME_INFO_PROP_LIST,
   CUSTOM_PROP_LIST,
 } from './props';
-import type {SgfNode} from './types';
-import {calcHash, getDeduplicatedProps, getNodeNumber} from '../helper';
 
 /**
  * Represents an SGF (Smart Game Format) file.
@@ -51,19 +55,19 @@ export class Sgf {
   NODE_DELIMITERS = [this.NEW_NODE].concat(this.BRANCHING);
 
   tree: TreeModel = new TreeModel();
-  root: TreeModel.Node<SgfNode> | null = null;
-  node: TreeModel.Node<SgfNode> | null = null;
-  currentNode: TreeModel.Node<SgfNode> | null = null;
-  parentNode: TreeModel.Node<SgfNode> | null = null;
+  root: TNode | null = null;
+  node: TNode | null = null;
+  currentNode: TNode | null = null;
+  parentNode: TNode | null = null;
   nodeProps: Map<string, string> = new Map();
 
   /**
    * Constructs a new instance of the Sgf class.
-   * @param content The content of the Sgf, either as a string or as a TreeModel.Node<SgfNode>(Root node).
+   * @param content The content of the Sgf, either as a string or as a TNode(Root node).
    * @param parseOptions The options for parsing the Sgf content.
    */
   constructor(
-    private content?: string | TreeModel.Node<SgfNode>,
+    private content?: string | TNode,
     private parseOptions = {
       ignorePropList: [],
     }
@@ -81,7 +85,7 @@ export class Sgf {
    * @param root The root node to set.
    * @returns The updated SGF instance.
    */
-  setRoot(root: TreeModel.Node<SgfNode>) {
+  setRoot(root: TNode) {
     this.root = root;
     return this;
   }
@@ -114,7 +118,7 @@ export class Sgf {
     sgf = sgf.replace(/\s+(?![^\[\]]*])/gm, '');
     let nodeStart = 0;
     let counter = 0;
-    const stack: TreeModel.Node<SgfNode>[] = [];
+    const stack: TNode[] = [];
 
     const inNodeRanges = buildNodeRanges(sgf).sort((a, b) => a[0] - b[0]);
 
@@ -177,7 +181,7 @@ export class Sgf {
 
           if (matches.length > 0) {
             const hash = calcHash(this.currentNode, moveProps);
-            const node = this.tree.parse<SgfNode>({
+            const node = this.tree.parse({
               id: hash,
               name: hash,
               index: counter,
@@ -196,8 +200,6 @@ export class Sgf {
               this.currentNode.addChild(node);
 
               node.model.number = getNodeNumber(node);
-              // TODO: maybe unnecessary?
-              node.model.children = [node];
             } else {
               this.root = node;
               this.parentNode = node;
@@ -232,7 +234,7 @@ export class Sgf {
    */
   private nodeToString(node: any) {
     let content = '';
-    node.walk((n: TreeModel.Node<SgfNode>) => {
+    node.walk((n: TNode) => {
       const {
         rootProps,
         moveProps,
@@ -258,7 +260,7 @@ export class Sgf {
         content += n.toString();
       });
       if (n.children.length > 1) {
-        n.children.forEach((child: SgfPropBase) => {
+        n.children.forEach((child: TNode) => {
           content += `(${this.nodeToString(child)})`;
         });
       }

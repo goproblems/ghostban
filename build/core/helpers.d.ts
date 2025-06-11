@@ -1,5 +1,13 @@
+import { TNode } from './tree';
+import { MoveProp, SgfPropBase } from './props';
+export declare const calcHash: (node: TNode | null | undefined, moveProps?: MoveProp[]) => string;
 export declare function isCharacterInNode(sgf: string, n: number, nodes?: string[]): boolean;
 type Range = [number, number];
 export declare function buildNodeRanges(sgf: string, keys?: string[]): Range[];
 export declare function isInAnyRange(index: number, ranges: Range[]): boolean;
+export declare const getDeduplicatedProps: (targetProps: SgfPropBase[]) => SgfPropBase[];
+export declare const isMoveNode: (n: TNode) => boolean;
+export declare const isRootNode: (n: TNode) => boolean;
+export declare const isSetupNode: (n: TNode) => boolean;
+export declare const getNodeNumber: (n: TNode, parent?: TNode) => number;
 export {};

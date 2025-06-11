@@ -1,5 +1,18 @@
 import {cloneDeep} from 'lodash';
-import {sgfToPos} from './helper';
+import {SGF_LETTERS} from './const';
+
+// TODO: Duplicate with helpers.ts to avoid circular dependency
+export const sgfToPos = (str: string) => {
+  const ki = str[0] === 'B' ? 1 : -1;
+  const tempStr = /\[(.*)\]/.exec(str);
+  if (tempStr) {
+    const pos = tempStr[1];
+    const x = SGF_LETTERS.indexOf(pos[0]);
+    const y = SGF_LETTERS.indexOf(pos[1]);
+    return {x, y, ki};
+  }
+  return {x: -1, y: -1, ki: 0};
+};
 
 let liberties = 0;
 let recursionPath: string[] = [];

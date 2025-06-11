@@ -1,6 +1,8 @@
-import TreeModel from 'tree-model';
+import { TNode } from './core/tree';
 import { SgfNode, SgfNodeOptions } from './core/types';
-import { SetupProp, MoveProp, CustomProp, SgfPropBase, NodeAnnotationProp, GameInfoProp, MoveAnnotationProp, RootProp, MarkupProp } from './core/props';
+import { isMoveNode, isSetupNode, calcHash, getNodeNumber, isRootNode } from './core/helpers';
+export { isMoveNode, isSetupNode, calcHash, getNodeNumber, isRootNode };
+import { SetupProp, MoveProp, NodeAnnotationProp, GameInfoProp, MoveAnnotationProp, RootProp, MarkupProp } from './core/props';
 import { Analysis, Ki, MoveInfo, ProblemAnswerType as PAT, RootInfo, PathDetectionStrategy } from './types';
 import { Center } from './types';
 import { canMove, execCapture } from './boardcore';
@@ -33,35 +35,29 @@ export declare const calcDoubtfulMovesThresholdRange: (threshold: number) => {
 };
 export declare const round2: (v: number, scale?: number, fixed?: number) => string;
 export declare const round3: (v: number, scale?: number, fixed?: number) => string;
-export declare const getDeduplicatedProps: (targetProps: SgfPropBase[]) => SgfPropBase[];
-export declare const isMoveNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const isRootNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const isSetupNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const isAnswerNode: (n: TreeModel.Node<SgfNode>, kind: PAT) => boolean;
-export declare const isChoiceNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isTargetNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isForceNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isPreventMoveNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isRightNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isFirstRightNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const isVariantNode: (n: TreeModel.Node<SgfNode>) => any;
-export declare const isWrongNode: (n: TreeModel.Node<SgfNode>) => boolean;
-export declare const inPath: (node: TreeModel.Node<SgfNode>, detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[], postNodes?: TreeModel.Node<SgfNode>[]) => boolean;
-export declare const inRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inFirstRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inFirstBranchRightPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inChoicePath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inTargetPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inVariantPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const inWrongPath: (node: TreeModel.Node<SgfNode>, strategy?: PathDetectionStrategy, preNodes?: TreeModel.Node<SgfNode>[] | undefined, postNodes?: TreeModel.Node<SgfNode>[] | undefined) => boolean;
-export declare const getNodeNumber: (n: TreeModel.Node<SgfNode>, parent?: TreeModel.Node<SgfNode>) => number;
-export declare const calcHash: (node: TreeModel.Node<SgfNode> | null | undefined, moveProps?: MoveProp[]) => string;
+export declare const isAnswerNode: (n: TNode, kind: PAT) => boolean;
+export declare const isChoiceNode: (n: TNode) => boolean;
+export declare const isTargetNode: (n: TNode) => boolean;
+export declare const isForceNode: (n: TNode) => boolean | undefined;
+export declare const isPreventMoveNode: (n: TNode) => boolean | undefined;
+export declare const isRightNode: (n: TNode) => boolean;
+export declare const isFirstRightNode: (n: TNode) => boolean;
+export declare const isVariantNode: (n: TNode) => boolean;
+export declare const isWrongNode: (n: TNode) => boolean;
+export declare const inPath: (node: TNode, detectionMethod: (n: TNode) => boolean, strategy?: PathDetectionStrategy, preNodes?: TNode[], postNodes?: TNode[]) => boolean;
+export declare const inRightPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inFirstRightPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inFirstBranchRightPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inChoicePath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inTargetPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inVariantPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
+export declare const inWrongPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
 export declare const nFormatter: (num: number, fixed?: number) => string;
-export declare const pathToIndexes: (path: TreeModel.Node<SgfNode>[]) => number[];
-export declare const pathToInitialStones: (path: TreeModel.Node<SgfNode>[], xOffset?: number, yOffset?: number) => string[][];
-export declare const pathToAiMoves: (path: TreeModel.Node<SgfNode>[], xOffset?: number, yOffset?: number) => any[][];
+export declare const pathToIndexes: (path: TNode[]) => string[];
+export declare const pathToInitialStones: (path: TNode[], xOffset?: number, yOffset?: number) => string[];
+export declare const pathToAiMoves: (path: TNode[], xOffset?: number, yOffset?: number) => string[][];
 export declare const getIndexFromAnalysis: (a: Analysis) => any;
-export declare const isMainPath: (node: TreeModel.Node<SgfNode>) => boolean;
+export declare const isMainPath: (node: TNode) => boolean;
 export declare const sgfToPos: (str: string) => {
     x: number;
     y: number;
@@ -87,9 +83,9 @@ export declare const calcWinrateDiffText: (rootInfo?: RootInfo | null, currInfo?
 export declare const calcScoreDiff: (rootInfo: RootInfo, currInfo: MoveInfo | RootInfo) => number;
 export declare const calcWinrateDiff: (rootInfo: RootInfo, currInfo: MoveInfo | RootInfo) => number;
 export declare const calcAnalysisPointColor: (rootInfo: RootInfo, moveInfo: MoveInfo) => string;
-export declare const extractPAI: (n: TreeModel.Node<SgfNode>) => any;
-export declare const extractAnswerType: (n: TreeModel.Node<SgfNode>) => PAT | undefined;
-export declare const extractPI: (n: TreeModel.Node<SgfNode>) => any;
+export declare const extractPAI: (n: TNode) => any;
+export declare const extractAnswerType: (n: TNode) => string | undefined;
+export declare const extractPI: (n: TNode) => any;
 export declare const initNodeData: (sha: string, number?: number) => SgfNode;
 /**
  * Creates the initial root node of the tree.
@@ -97,19 +93,7 @@ export declare const initNodeData: (sha: string, number?: number) => SgfNode;
  * @param rootProps - The root properties.
  * @returns The initial root node.
  */
-export declare const initialRootNode: (rootProps?: string[]) => TreeModel.Node<{
-    name: number;
-    index: number;
-    number: number;
-    rootProps: RootProp[];
-    moveProps: never[];
-    setupProps: never[];
-    markupProps: never[];
-    gameInfoProps: never[];
-    nodeAnnotationProps: never[];
-    moveAnnotationProps: never[];
-    customProps: never[];
-}>;
+export declare const initialRootNode: (rootProps?: string[]) => TNode;
 /**
  * Builds a new tree node with the given move, parent node, and additional properties.
  *
@@ -118,23 +102,10 @@ export declare const initialRootNode: (rootProps?: string[]) => TreeModel.Node<{
  * @param props - Additional properties to be added to the new node. Optional.
  * @returns The newly created tree node.
  */
-export declare const buildMoveNode: (move: string, parentNode?: TreeModel.Node<SgfNode>, props?: SgfNodeOptions) => TreeModel.Node<{
-    id: string;
-    name: string;
-    number: number;
-    moveProps: MoveProp[];
-    setupProps: SetupProp[];
-    rootProps: RootProp[];
-    markupProps: MarkupProp[];
-    gameInfoProps: GameInfoProp[];
-    nodeAnnotationProps: NodeAnnotationProp[];
-    moveAnnotationProps: MoveAnnotationProp[];
-    customProps: CustomProp[];
-    index?: number | undefined;
-}>;
-export declare const getLastIndex: (root: TreeModel.Node<SgfNode>) => any;
-export declare const cutMoveNodes: (root: TreeModel.Node<SgfNode>, returnRoot?: boolean) => TreeModel.Node<SgfNode>;
-export declare const getRoot: (node: TreeModel.Node<SgfNode>) => TreeModel.Node<SgfNode>;
+export declare const buildMoveNode: (move: string, parentNode?: TNode, props?: SgfNodeOptions) => TNode;
+export declare const getLastIndex: (root: TNode) => number | undefined;
+export declare const cutMoveNodes: (root: TNode, returnRoot?: boolean) => TNode;
+export declare const getRoot: (node: TNode) => TNode;
 export declare const zeros: (size: [number, number]) => number[][];
 export declare const empty: (size: [number, number]) => string[][];
 export declare const calcMost: (mat: number[][], boardSize?: number) => {
@@ -162,13 +133,13 @@ export declare function showKi(mat: number[][], steps: string[], isCaptured?: bo
     arrangement: number[][];
     hasMoved: boolean;
 };
-export declare const handleMove: (mat: number[][], i: number, j: number, turn: Ki, currentNode: TreeModel.Node<SgfNode>, onAfterMove: (node: TreeModel.Node<SgfNode>, isMoved: boolean) => void) => void;
+export declare const handleMove: (mat: number[][], i: number, j: number, turn: Ki, currentNode: TNode, onAfterMove: (node: TNode, isMoved: boolean) => void) => void;
 /**
  * Clear stone from the currentNode
  * @param currentNode
  * @param value
  */
-export declare const clearStoneFromCurrentNode: (currentNode: TreeModel.Node<SgfNode>, value: string) => void;
+export declare const clearStoneFromCurrentNode: (currentNode: TNode, value: string) => void;
 /**
  * Adds a stone to the current node in the tree.
  *
@@ -179,7 +150,7 @@ export declare const clearStoneFromCurrentNode: (currentNode: TreeModel.Node<Sgf
  * @param ki The color of the stone (Ki.White or Ki.Black).
  * @returns True if the stone was removed from previous nodes, false otherwise.
  */
-export declare const addStoneToCurrentNode: (currentNode: TreeModel.Node<SgfNode>, mat: number[][], i: number, j: number, ki: Ki) => boolean;
+export declare const addStoneToCurrentNode: (currentNode: TNode, mat: number[][], i: number, j: number, ki: Ki) => boolean;
 /**
  * Adds a move to the given matrix and returns the corresponding node in the tree.
  * If the ki is empty, no move is added and null is returned.
@@ -191,9 +162,9 @@ export declare const addStoneToCurrentNode: (currentNode: TreeModel.Node<SgfNode
  * @param ki - The type of move (Ki).
  * @returns The corresponding node in the tree, or null if no move is added.
  */
-export declare const addMoveToCurrentNode: (currentNode: TreeModel.Node<SgfNode>, mat: number[][], i: number, j: number, ki: Ki) => any;
-export declare const calcPreventMoveMatForDisplayOnly: (node: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => number[][];
-export declare const calcPreventMoveMat: (node: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => number[][];
+export declare const addMoveToCurrentNode: (currentNode: TNode, mat: number[][], i: number, j: number, ki: Ki) => TNode | undefined;
+export declare const calcPreventMoveMatForDisplayOnly: (node: TNode, defaultBoardSize?: number) => number[][];
+export declare const calcPreventMoveMat: (node: TNode, defaultBoardSize?: number) => number[][];
 /**
  * Calculates the markup matrix for variations in a given SGF node.
  *
@@ -201,8 +172,8 @@ export declare const calcPreventMoveMat: (node: TreeModel.Node<SgfNode>, default
  * @param policy - The policy for handling the markup. Defaults to 'append'.
  * @returns The calculated markup for the variations.
  */
-export declare const calcVariationsMarkup: (node: TreeModel.Node<SgfNode>, policy?: 'append' | 'prepend' | 'replace', activeIndex?: number, defaultBoardSize?: number) => string[][];
-export declare const detectST: (node: TreeModel.Node<SgfNode>) => {
+export declare const calcVariationsMarkup: (node: TNode, policy?: 'append' | 'prepend' | 'replace', activeIndex?: number, defaultBoardSize?: number) => string[][];
+export declare const detectST: (node: TNode) => {
     showVariationsMarkup: boolean;
     showChildrenMarkup: boolean;
     showSiblingsMarkup: boolean;
@@ -213,7 +184,7 @@ export declare const detectST: (node: TreeModel.Node<SgfNode>) => {
  * @param defaultBoardSize The default size of the board (optional, default is 19).
  * @returns An object containing the mat/visibleAreaMat/markup/numMarkup arrays.
  */
-export declare const calcMatAndMarkup: (currentNode: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => {
+export declare const calcMatAndMarkup: (currentNode: TNode, defaultBoardSize?: number) => {
     mat: number[][];
     visibleAreaMat: number[][];
     markup: string[][];
@@ -225,16 +196,16 @@ export declare const calcMatAndMarkup: (currentNode: TreeModel.Node<SgfNode>, de
  * @param token The token of the property to find.
  * @returns The found property or null if not found.
  */
-export declare const findProp: (node: TreeModel.Node<SgfNode>, token: string) => any;
+export declare const findProp: (node: TNode, token: string) => MoveProp | SetupProp | NodeAnnotationProp | MoveAnnotationProp | MarkupProp | RootProp | GameInfoProp | null | undefined;
 /**
  * Finds properties in a given node based on the provided token.
  * @param node - The node to search for properties.
  * @param token - The token to match against the properties.
  * @returns An array of properties that match the provided token.
  */
-export declare const findProps: (node: TreeModel.Node<SgfNode>, token: string) => any;
-export declare const genMove: (node: TreeModel.Node<SgfNode>, onRight: (path: string) => void, onWrong: (path: string) => void, onVariant: (path: string) => void, onOffPath: (path: string) => void) => TreeModel.Node<SgfNode>;
-export declare const extractBoardSize: (node: TreeModel.Node<SgfNode>, defaultBoardSize?: number) => number;
-export declare const getFirstToMoveColorFromRoot: (root: TreeModel.Node<SgfNode> | undefined | null, defaultMoveColor?: Ki) => Ki;
+export declare const findProps: (node: TNode, token: string) => MoveProp[];
+export declare const genMove: (node: TNode, onRight: (path: string) => void, onWrong: (path: string) => void, onVariant: (path: string) => void, onOffPath: (path: string) => void) => TNode | undefined;
+export declare const extractBoardSize: (node: TNode, defaultBoardSize?: number) => number;
+export declare const getFirstToMoveColorFromRoot: (root: TNode | undefined | null, defaultMoveColor?: Ki) => Ki;
 export declare const getFirstToMoveColorFromSgf: (sgf: string, defaultMoveColor?: Ki) => Ki;
-export declare const getMoveColor: (node: TreeModel.Node<SgfNode>, defaultMoveColor?: Ki) => Ki;
+export declare const getMoveColor: (node: TNode, defaultMoveColor?: Ki) => Ki;

@@ -1,4 +1,3 @@
-import TreeModel from 'tree-model';
 import {
   MoveProp,
   SetupProp,
@@ -14,11 +13,7 @@ export type SgfNode = {
   id: string;
   name: string;
   number: number;
-  // index is for backward compatibility
   index?: number;
-  // attributes: {
-  //   [key: string]: string;
-  // };
   moveProps: MoveProp[];
   setupProps: SetupProp[];
   rootProps: RootProp[];
@@ -42,5 +37,3 @@ export type SgfNodeOptions = {
   moveAnnotationProps?: MoveAnnotationProp[];
   customProps?: CustomProp[];
 };
-
-export type TNode = TreeModel.Node<SgfNode>;

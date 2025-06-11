@@ -1,15 +1,14 @@
-import TreeModel from 'tree-model';
+import {TreeModel, TNode} from './core/tree';
+import {cloneDeep, flattenDepth, clone, sum, compact, sample} from 'lodash';
+import {SgfNode, SgfNodeOptions} from './core/types';
 import {
-  cloneDeep,
-  flattenDepth,
-  clone,
-  sum,
-  filter,
-  findLastIndex,
-  compact,
-  sample,
-} from 'lodash';
-import {SgfNode, SgfNodeOptions, TNode} from './core/types';
+  isMoveNode,
+  isSetupNode,
+  calcHash,
+  getNodeNumber,
+  isRootNode,
+} from './core/helpers';
+export {isMoveNode, isSetupNode, calcHash, getNodeNumber, isRootNode};
 import {
   A1_LETTERS,
   A1_NUMBERS,
@@ -160,122 +159,93 @@ export const round3 = (v: number, scale = 1, fixed = 3) => {
   return ((Math.round(v * 1000) / 1000) * scale).toFixed(fixed);
 };
 
-export const getDeduplicatedProps = (targetProps: SgfPropBase[]) => {
-  return filter(
-    targetProps,
-    (prop: SgfPropBase, index: number) =>
-      index ===
-      findLastIndex(
-        targetProps,
-        (lastPro: SgfPropBase) =>
-          prop.token === lastPro.token && prop.value === lastPro.value
-      )
-  );
-};
-
-export const isMoveNode = (n: TreeModel.Node<SgfNode>) => {
-  return n.model.moveProps.length > 0;
-};
-
-export const isRootNode = (n: TreeModel.Node<SgfNode>) => {
-  return n.model.rootProps.length > 0 || n.isRoot();
-};
-
-export const isSetupNode = (n: TreeModel.Node<SgfNode>) => {
-  return n.model.setupProps.length > 0;
-};
-
-export const isAnswerNode = (n: TreeModel.Node<SgfNode>, kind: PAT) => {
+export const isAnswerNode = (n: TNode, kind: PAT) => {
   const pat = n.model.customProps?.find((p: CustomProp) => p.token === 'PAT');
   return pat?.value === kind;
 };
 
-export const isChoiceNode = (n: TreeModel.Node<SgfNode>) => {
+export const isChoiceNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
-  return c?.value.includes('CHOICE');
+  return !!c?.value.includes('CHOICE');
 };
 
 export const isTargetNode = isChoiceNode;
 
-export const isForceNode = (n: TreeModel.Node<SgfNode>) => {
+export const isForceNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return c?.value.includes('FORCE');
 };
 
-export const isPreventMoveNode = (n: TreeModel.Node<SgfNode>) => {
+export const isPreventMoveNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return c?.value.includes('NOTTHIS');
 };
 
-// export const isRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isRightLeaf = (n: TNode) => {
 //   return isRightNode(n) && !n.hasChildren();
 // };
 
-export const isRightNode = (n: TreeModel.Node<SgfNode>) => {
+export const isRightNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
-  return c?.value.includes('RIGHT');
+  return !!c?.value.includes('RIGHT');
 };
 
-// export const isFirstRightLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isFirstRightLeaf = (n: TNode) => {
 //   const root = n.getPath()[0];
-//   const firstRightLeave = root.first((n: TreeModel.Node<SgfNode>) =>
+//   const firstRightLeave = root.first((n: TNode) =>
 //     isRightLeaf(n)
 //   );
 //   return firstRightLeave?.model.id === n.model.id;
 // };
 
-export const isFirstRightNode = (n: TreeModel.Node<SgfNode>) => {
+export const isFirstRightNode = (n: TNode) => {
   const root = n.getPath()[0];
-  const firstRightNode = root.first((n: TreeModel.Node<SgfNode>) =>
-    isRightNode(n)
-  );
+  const firstRightNode = root.first(n => isRightNode(n));
   return firstRightNode?.model.id === n.model.id;
 };
 
-export const isVariantNode = (n: TreeModel.Node<SgfNode>) => {
+export const isVariantNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
-  return c?.value.includes('VARIANT');
+  return !!c?.value.includes('VARIANT');
 };
 
-// export const isVariantLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isVariantLeaf = (n: TNode) => {
 //   return isVariantNode(n) && !n.hasChildren();
 // };
 
-export const isWrongNode = (n: TreeModel.Node<SgfNode>) => {
+export const isWrongNode = (n: TNode) => {
   const c = n.model.nodeAnnotationProps?.find(
     (p: NodeAnnotationProp) => p.token === 'C'
   );
   return (!c?.value.includes('VARIANT') && !c?.value.includes('RIGHT')) || !c;
 };
 
-// export const isWrongLeaf = (n: TreeModel.Node<SgfNode>) => {
+// export const isWrongLeaf = (n: TNode) => {
 //   return isWrongNode(n) && !n.hasChildren();
 // };
 
 export const inPath = (
-  node: TreeModel.Node<SgfNode>,
-  detectionMethod: (n: TreeModel.Node<SgfNode>) => boolean,
+  node: TNode,
+  detectionMethod: (n: TNode) => boolean,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[],
-  postNodes?: TreeModel.Node<SgfNode>[]
+  preNodes?: TNode[],
+  postNodes?: TNode[]
 ) => {
   const path = preNodes ?? node.getPath();
   const postRightNodes =
-    postNodes?.filter((n: TreeModel.Node<SgfNode>) => detectionMethod(n)) ??
-    node.all((n: TreeModel.Node<SgfNode>) => detectionMethod(n));
-  const preRightNodes = path.filter((n: TreeModel.Node<SgfNode>) =>
-    detectionMethod(n)
-  );
+    postNodes?.filter((n: TNode) => detectionMethod(n)) ??
+    node.all((n: TNode) => detectionMethod(n));
+  const preRightNodes = path.filter((n: TNode) => detectionMethod(n));
 
   switch (strategy) {
     case PathDetectionStrategy.Post:
@@ -290,28 +260,28 @@ export const inPath = (
 };
 
 export const inRightPath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ) => {
   return inPath(node, isRightNode, strategy, preNodes, postNodes);
 };
 
 export const inFirstRightPath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ): boolean => {
   return inPath(node, isFirstRightNode, strategy, preNodes, postNodes);
 };
 
 export const inFirstBranchRightPath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Pre,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ): boolean => {
   if (!inRightPath(node)) return false;
 
@@ -335,10 +305,10 @@ export const inFirstBranchRightPath = (
 };
 
 export const inChoicePath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ): boolean => {
   return inPath(node, isChoiceNode, strategy, preNodes, postNodes);
 };
@@ -346,51 +316,21 @@ export const inChoicePath = (
 export const inTargetPath = inChoicePath;
 
 export const inVariantPath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ): boolean => {
   return inPath(node, isVariantNode, strategy, preNodes, postNodes);
 };
 
 export const inWrongPath = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   strategy: PathDetectionStrategy = PathDetectionStrategy.Post,
-  preNodes?: TreeModel.Node<SgfNode>[] | undefined,
-  postNodes?: TreeModel.Node<SgfNode>[] | undefined
+  preNodes?: TNode[] | undefined,
+  postNodes?: TNode[] | undefined
 ): boolean => {
   return inPath(node, isWrongNode, strategy, preNodes, postNodes);
-};
-
-export const getNodeNumber = (
-  n: TreeModel.Node<SgfNode>,
-  parent?: TreeModel.Node<SgfNode>
-) => {
-  const path = n.getPath();
-  let movesCount = path.filter(n => isMoveNode(n)).length;
-  if (parent) {
-    movesCount += parent.getPath().filter(n => isMoveNode(n)).length;
-  }
-  return movesCount;
-};
-
-export const calcHash = (
-  node: TreeModel.Node<SgfNode> | null | undefined,
-  moveProps: MoveProp[] = []
-): string => {
-  let fullname = 'n';
-  if (moveProps.length > 0) {
-    fullname += `${moveProps[0].token}${moveProps[0].value}`;
-  }
-  if (node) {
-    const path = node.getPath();
-    if (path.length > 0) {
-      fullname = path.map(n => n.model.id).join('=>') + `=>${fullname}`;
-    }
-  }
-
-  return SparkMD5.hash(fullname).slice(0, 6);
 };
 
 export const nFormatter = (num: number, fixed = 1) => {
@@ -415,15 +355,15 @@ export const nFormatter = (num: number, fixed = 1) => {
     : '0';
 };
 
-export const pathToIndexes = (path: TreeModel.Node<SgfNode>[]): number[] => {
+export const pathToIndexes = (path: TNode[]): string[] => {
   return path.map(n => n.model.id);
 };
 
 export const pathToInitialStones = (
-  path: TreeModel.Node<SgfNode>[],
+  path: TNode[],
   xOffset = 0,
   yOffset = 0
-): string[][] => {
+): string[] => {
   const inits = path
     .filter(n => n.model.setupProps.length > 0)
     .map(n => {
@@ -439,11 +379,7 @@ export const pathToInitialStones = (
   return flattenDepth(inits[0], 1);
 };
 
-export const pathToAiMoves = (
-  path: TreeModel.Node<SgfNode>[],
-  xOffset = 0,
-  yOffset = 0
-) => {
+export const pathToAiMoves = (path: TNode[], xOffset = 0, yOffset = 0) => {
   const moves = path
     .filter(n => n.model.moveProps.length > 0)
     .map(n => {
@@ -462,7 +398,7 @@ export const getIndexFromAnalysis = (a: Analysis) => {
   return '';
 };
 
-export const isMainPath = (node: TreeModel.Node<SgfNode>) => {
+export const isMainPath = (node: TNode) => {
   return sum(node.getPath().map(n => n.getIndex())) === 0;
 };
 
@@ -704,7 +640,7 @@ export const calcAnalysisPointColor = (
 // }
 // };
 
-export const extractPAI = (n: TreeModel.Node<SgfNode>) => {
+export const extractPAI = (n: TNode) => {
   const pai = n.model.customProps.find((p: CustomProp) => p.token === 'PAI');
   if (!pai) return;
   const data = JSON.parse(pai.value);
@@ -712,14 +648,12 @@ export const extractPAI = (n: TreeModel.Node<SgfNode>) => {
   return data;
 };
 
-export const extractAnswerType = (
-  n: TreeModel.Node<SgfNode>
-): PAT | undefined => {
+export const extractAnswerType = (n: TNode): string | undefined => {
   const pat = n.model.customProps.find((p: CustomProp) => p.token === 'PAT');
   return pat?.value;
 };
 
-export const extractPI = (n: TreeModel.Node<SgfNode>) => {
+export const extractPI = (n: TNode) => {
   const pi = n.model.customProps.find((p: CustomProp) => p.token === 'PI');
   if (!pi) return;
   const data = JSON.parse(pi.value);
@@ -759,10 +693,11 @@ export const initialRootNode = (
     'ST[0]',
   ]
 ) => {
-  const tree: TreeModel = new TreeModel();
+  const tree = new TreeModel();
   const root = tree.parse({
     // '1b16b1' is the SHA256 hash of the 'n'
-    name: 0,
+    id: '',
+    name: '',
     index: 0,
     number: 0,
     rootProps: rootProps.map(p => RootProp.from(p)),
@@ -790,18 +725,16 @@ export const initialRootNode = (
  */
 export const buildMoveNode = (
   move: string,
-  parentNode?: TreeModel.Node<SgfNode>,
+  parentNode?: TNode,
   props?: SgfNodeOptions
 ) => {
-  const tree: TreeModel = new TreeModel();
+  const tree = new TreeModel();
   const moveProp = MoveProp.from(move);
   const hash = calcHash(parentNode, [moveProp]);
   let number = 1;
   if (parentNode) number = getNodeNumber(parentNode) + 1;
   const nodeData = initNodeData(hash, number);
   nodeData.moveProps = [moveProp];
-  // TODO: Should I add this?
-  // nodeData.nodeAnnotationProps = [NodeAnnotationProp.from(`N[${sha}]`)];
 
   const node = tree.parse({
     ...nodeData,
@@ -810,7 +743,7 @@ export const buildMoveNode = (
   return node;
 };
 
-export const getLastIndex = (root: TreeModel.Node<SgfNode>) => {
+export const getLastIndex = (root: TNode) => {
   let lastNode = root;
   root.walk(node => {
     // Halt the traversal by returning false
@@ -820,10 +753,7 @@ export const getLastIndex = (root: TreeModel.Node<SgfNode>) => {
   return lastNode.model.index;
 };
 
-export const cutMoveNodes = (
-  root: TreeModel.Node<SgfNode>,
-  returnRoot?: boolean
-) => {
+export const cutMoveNodes = (root: TNode, returnRoot?: boolean) => {
   let node = cloneDeep(root);
   while (node && node.hasChildren() && node.model.moveProps.length === 0) {
     node = node.children[0];
@@ -839,7 +769,7 @@ export const cutMoveNodes = (
   return node;
 };
 
-export const getRoot = (node: TreeModel.Node<SgfNode>) => {
+export const getRoot = (node: TNode) => {
   let root = node;
   while (root && root.parent && !root.isRoot()) {
     root = root.parent;
@@ -1283,8 +1213,8 @@ export const handleMove = (
   i: number,
   j: number,
   turn: Ki,
-  currentNode: TreeModel.Node<SgfNode>,
-  onAfterMove: (node: TreeModel.Node<SgfNode>, isMoved: boolean) => void
+  currentNode: TNode,
+  onAfterMove: (node: TNode, isMoved: boolean) => void
 ) => {
   if (turn === Ki.Empty) return;
   if (canMove(mat, i, j, turn)) {
@@ -1295,7 +1225,7 @@ export const handleMove = (
     const filtered = currentNode.children.filter(
       (n: TNode) => n.model.id === hash
     );
-    let node;
+    let node: TNode;
     if (filtered.length > 0) {
       node = filtered[0];
     } else {
@@ -1314,7 +1244,7 @@ export const handleMove = (
  * @param value
  */
 export const clearStoneFromCurrentNode = (
-  currentNode: TreeModel.Node<SgfNode>,
+  currentNode: TNode,
   value: string
 ) => {
   const path = currentNode.getPath();
@@ -1346,7 +1276,7 @@ export const clearStoneFromCurrentNode = (
  * @returns True if the stone was removed from previous nodes, false otherwise.
  */
 export const addStoneToCurrentNode = (
-  currentNode: TreeModel.Node<SgfNode>,
+  currentNode: TNode,
   mat: number[][],
   i: number,
   j: number,
@@ -1385,7 +1315,7 @@ export const addStoneToCurrentNode = (
  */
 // TODO: The params here is weird
 export const addMoveToCurrentNode = (
-  currentNode: TreeModel.Node<SgfNode>,
+  currentNode: TNode,
   mat: number[][],
   i: number,
   j: number,
@@ -1411,7 +1341,7 @@ export const addMoveToCurrentNode = (
 };
 
 export const calcPreventMoveMatForDisplayOnly = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   defaultBoardSize = 19
 ) => {
   if (!node) return zeros([defaultBoardSize, defaultBoardSize]);
@@ -1420,7 +1350,7 @@ export const calcPreventMoveMatForDisplayOnly = (
 
   preventMoveMat.forEach(row => row.fill(1));
   if (node.hasChildren()) {
-    node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+    node.children.forEach((n: TNode) => {
       n.model.moveProps.forEach((m: MoveProp) => {
         const i = SGF_LETTERS.indexOf(m.value[0]);
         const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1433,25 +1363,20 @@ export const calcPreventMoveMatForDisplayOnly = (
   return preventMoveMat;
 };
 
-export const calcPreventMoveMat = (
-  node: TreeModel.Node<SgfNode>,
-  defaultBoardSize = 19
-) => {
+export const calcPreventMoveMat = (node: TNode, defaultBoardSize = 19) => {
   if (!node) return zeros([defaultBoardSize, defaultBoardSize]);
   const size = extractBoardSize(node, defaultBoardSize);
   const preventMoveMat = zeros([size, size]);
   const forceNodes = [];
-  let preventMoveNodes = [];
+  let preventMoveNodes: TNode[] = [];
   if (node.hasChildren()) {
-    preventMoveNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
-      isPreventMoveNode(n)
-    );
+    preventMoveNodes = node.children.filter((n: TNode) => isPreventMoveNode(n));
   }
 
   if (isForceNode(node)) {
     preventMoveMat.forEach(row => row.fill(1));
     if (node.hasChildren()) {
-      node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+      node.children.forEach((n: TNode) => {
         n.model.moveProps.forEach((m: MoveProp) => {
           const i = SGF_LETTERS.indexOf(m.value[0]);
           const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1463,7 +1388,7 @@ export const calcPreventMoveMat = (
     }
   }
 
-  preventMoveNodes.forEach((n: TreeModel.Node<SgfNode>) => {
+  preventMoveNodes.forEach((n: TNode) => {
     n.model.moveProps.forEach((m: MoveProp) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1484,7 +1409,7 @@ export const calcPreventMoveMat = (
  * @returns The calculated markup for the variations.
  */
 export const calcVariationsMarkup = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   policy: 'append' | 'prepend' | 'replace' = 'append',
   activeIndex: number = 0,
   defaultBoardSize = 19
@@ -1494,7 +1419,7 @@ export const calcVariationsMarkup = (
   const size = extractBoardSize(node, defaultBoardSize);
 
   if (node.hasChildren()) {
-    node.children.forEach((n: TreeModel.Node<SgfNode>) => {
+    node.children.forEach((n: TNode) => {
       n.model.moveProps.forEach((m: MoveProp) => {
         const i = SGF_LETTERS.indexOf(m.value[0]);
         const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1534,7 +1459,7 @@ export const calcVariationsMarkup = (
   return markup;
 };
 
-export const detectST = (node: TreeModel.Node<SgfNode>) => {
+export const detectST = (node: TNode) => {
   // Reference: https://www.red-bean.com/sgf/properties.html#ST
   const root = node.getPath()[0];
   const stProp = root.model.rootProps.find((p: RootProp) => p.token === 'ST');
@@ -1571,10 +1496,7 @@ export const detectST = (node: TreeModel.Node<SgfNode>) => {
  * @param defaultBoardSize The default size of the board (optional, default is 19).
  * @returns An object containing the mat/visibleAreaMat/markup/numMarkup arrays.
  */
-export const calcMatAndMarkup = (
-  currentNode: TreeModel.Node<SgfNode>,
-  defaultBoardSize = 19
-) => {
+export const calcMatAndMarkup = (currentNode: TNode, defaultBoardSize = 19) => {
   const path = currentNode.getPath();
   const root = path[0];
 
@@ -1635,7 +1557,7 @@ export const calcMatAndMarkup = (
 
   // Calculating the visible area
   if (root) {
-    root.all((node: TreeModel.Node<SgfNode>) => {
+    root.all((node: TNode) => {
       const {moveProps, setupProps, rootProps} = node.model;
       if (setupProps.length > 0) setupCount += 1;
       setupProps.forEach((setup: any) => {
@@ -1712,7 +1634,7 @@ export const calcMatAndMarkup = (
  * @param token The token of the property to find.
  * @returns The found property or null if not found.
  */
-export const findProp = (node: TreeModel.Node<SgfNode>, token: string) => {
+export const findProp = (node: TNode, token: string) => {
   if (!node) return;
   if (MOVE_PROP_LIST.includes(token)) {
     return node.model.moveProps.find((p: MoveProp) => p.token === token);
@@ -1750,7 +1672,7 @@ export const findProp = (node: TreeModel.Node<SgfNode>, token: string) => {
  * @param token - The token to match against the properties.
  * @returns An array of properties that match the provided token.
  */
-export const findProps = (node: TreeModel.Node<SgfNode>, token: string) => {
+export const findProps = (node: TNode, token: string) => {
   if (MOVE_PROP_LIST.includes(token)) {
     return node.model.moveProps.filter((p: MoveProp) => p.token === token);
   }
@@ -1782,21 +1704,21 @@ export const findProps = (node: TreeModel.Node<SgfNode>, token: string) => {
 };
 
 export const genMove = (
-  node: TreeModel.Node<SgfNode>,
+  node: TNode,
   onRight: (path: string) => void,
   onWrong: (path: string) => void,
   onVariant: (path: string) => void,
   onOffPath: (path: string) => void
-): TreeModel.Node<SgfNode> => {
+): TNode | undefined => {
   let nextNode;
-  const getPath = (node: TreeModel.Node<SgfNode>) => {
+  const getPath = (node: TNode) => {
     const newPath = compact(
       node.getPath().map(n => n.model.moveProps[0]?.toString())
     ).join(';');
     return newPath;
   };
 
-  const checkResult = (node: TreeModel.Node<SgfNode>) => {
+  const checkResult = (node: TNode) => {
     if (node.hasChildren()) return;
 
     const path = getPath(node);
@@ -1810,15 +1732,9 @@ export const genMove = (
   };
 
   if (node.hasChildren()) {
-    const rightNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
-      inRightPath(n)
-    );
-    const wrongNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
-      inWrongPath(n)
-    );
-    const variantNodes = node.children.filter((n: TreeModel.Node<SgfNode>) =>
-      inVariantPath(n)
-    );
+    const rightNodes = node.children.filter((n: TNode) => inRightPath(n));
+    const wrongNodes = node.children.filter((n: TNode) => inWrongPath(n));
+    const variantNodes = node.children.filter((n: TNode) => inVariantPath(n));
 
     nextNode = node;
 
@@ -1826,34 +1742,31 @@ export const genMove = (
       nextNode = sample(rightNodes);
     } else if (inWrongPath(node) && wrongNodes.length > 0) {
       nextNode = sample(wrongNodes);
-    } else if (inVariantPath(variantNodes) && variantNodes.length > 0) {
+    } else if (inVariantPath(node) && variantNodes.length > 0) {
       nextNode = sample(variantNodes);
     } else if (isRightNode(node)) {
       onRight(getPath(nextNode));
     } else {
       onWrong(getPath(nextNode));
     }
-    checkResult(nextNode);
+    if (nextNode) checkResult(nextNode);
   } else {
     checkResult(node);
   }
   return nextNode;
 };
 
-export const extractBoardSize = (
-  node: TreeModel.Node<SgfNode>,
-  defaultBoardSize = 19
-) => {
+export const extractBoardSize = (node: TNode, defaultBoardSize = 19) => {
   const root = node.getPath()[0];
   const size = Math.min(
-    parseInt(findProp(root, 'SZ')?.value || defaultBoardSize),
+    parseInt(String(findProp(root, 'SZ')?.value || defaultBoardSize)),
     MAX_BOARD_SIZE
   );
   return size;
 };
 
 export const getFirstToMoveColorFromRoot = (
-  root: TreeModel.Node<SgfNode> | undefined | null,
+  root: TNode | undefined | null,
   defaultMoveColor: Ki = Ki.Black
 ) => {
   if (root) {
@@ -1879,10 +1792,7 @@ export const getFirstToMoveColorFromSgf = (
   return defaultMoveColor;
 };
 
-export const getMoveColor = (
-  node: TreeModel.Node<SgfNode>,
-  defaultMoveColor: Ki = Ki.Black
-) => {
+export const getMoveColor = (node: TNode, defaultMoveColor: Ki = Ki.Black) => {
   const moveProp = node.model?.moveProps?.[0];
   switch (moveProp?.token) {
     case 'W':
