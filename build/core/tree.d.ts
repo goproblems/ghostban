@@ -13,8 +13,10 @@ declare class TNode {
     isRoot(): boolean;
     hasChildren(): boolean;
     addChild(child: TNode): TNode;
+    addChildAtIndex(child: TNode, index: number): TNode;
     getPath(): TNode[];
     getIndex(): number;
+    setIndex(index: number): this;
     walk(fn: (node: TNode) => boolean | void): void;
     first(fn: (node: TNode) => boolean): TNode | undefined;
     all(fn: (node: TNode) => boolean): TNode[];

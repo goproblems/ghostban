@@ -46,6 +46,31 @@ class TNode {
     return addChild(this, child);
   }
 
+  addChildAtIndex(child: TNode, index: number): TNode {
+    if (this.config.modelComparatorFn) {
+      throw new Error(
+        'Cannot add child at index when using a comparator function.'
+      );
+    }
+
+    const prop = this.config.childrenPropertyName || 'children';
+    if (!(this.model as any)[prop]) {
+      (this.model as any)[prop] = [];
+    }
+
+    const modelChildren = (this.model as any)[prop];
+
+    if (index < 0 || index > this.children.length) {
+      throw new Error('Invalid index.');
+    }
+
+    child.parent = this;
+    modelChildren.splice(index, 0, child.model);
+    this.children.splice(index, 0, child);
+
+    return child;
+  }
+
   getPath(): TNode[] {
     const path: TNode[] = [];
     let current: TNode | undefined = this;
@@ -58,6 +83,41 @@ class TNode {
 
   getIndex(): number {
     return this.isRoot() ? 0 : this.parent!.children.indexOf(this);
+  }
+
+  setIndex(index: number): this {
+    if (this.config.modelComparatorFn) {
+      throw new Error(
+        'Cannot set node index when using a comparator function.'
+      );
+    }
+
+    if (this.isRoot()) {
+      if (index === 0) {
+        return this;
+      }
+      throw new Error('Invalid index.');
+    }
+
+    if (!this.parent) {
+      throw new Error('Node has no parent.');
+    }
+
+    const siblings = this.parent.children;
+    const modelSiblings = (this.parent.model as any)[
+      this.config.childrenPropertyName || 'children'
+    ];
+
+    const oldIndex = siblings.indexOf(this);
+
+    if (index < 0 || index >= siblings.length) {
+      throw new Error('Invalid index.');
+    }
+
+    siblings.splice(index, 0, siblings.splice(oldIndex, 1)[0]);
+    modelSiblings.splice(index, 0, modelSiblings.splice(oldIndex, 1)[0]);
+
+    return this;
   }
 
   walk(fn: (node: TNode) => boolean | void): void {
