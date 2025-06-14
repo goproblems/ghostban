@@ -25,7 +25,7 @@ export const calcHash = (
 export function isCharacterInNode(
   sgf: string,
   n: number,
-  nodes = ['C', 'TM', 'GN']
+  nodes = ['C', 'TM', 'GN', 'PC']
 ): boolean {
   const pattern = new RegExp(`(${nodes.join('|')})\\[([^\\]]*)\\]`, 'g');
   let match: RegExpExecArray | null;
@@ -45,7 +45,7 @@ type Range = [number, number];
 
 export function buildNodeRanges(
   sgf: string,
-  keys: string[] = ['C', 'TM', 'GN']
+  keys: string[] = ['C', 'TM', 'GN', 'PC']
 ): Range[] {
   const ranges: Range[] = [];
   const pattern = new RegExp(`\\b(${keys.join('|')})\\[([^\\]]*)\\]`, 'g');
