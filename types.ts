@@ -225,6 +225,7 @@ export enum Markup {
   DottedNode = 'dtnode',
   ActiveNode = 'anode',
   DashedActiveNode = 'danode',
+  Highlight = 'hl',
   None = '',
 }
 

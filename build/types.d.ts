@@ -212,6 +212,7 @@ export declare enum Markup {
     DottedNode = "dtnode",
     ActiveNode = "anode",
     DashedActiveNode = "danode",
+    Highlight = "hl",
     None = ""
 }
 export declare enum Cursor {

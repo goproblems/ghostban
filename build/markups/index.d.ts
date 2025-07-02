@@ -6,3 +6,4 @@ export * from './TriangleMarkup';
 export * from './NodeMarkup';
 export * from './ActiveNodeMarkup';
 export * from './CircleSolidMarkup';
+export * from './HighlightMarkup';

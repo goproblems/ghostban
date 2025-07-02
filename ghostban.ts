@@ -43,6 +43,7 @@ import {
   NodeMarkup,
   ActiveNodeMarkup,
   CircleSolidMarkup,
+  HighlightMarkup,
 } from './markups';
 import {BanEffect} from './effects';
 
@@ -1007,6 +1008,10 @@ export class GhostBan {
                   }
                   case Markup.Cross: {
                     markup = new CrossMarkup(ctx, x, y, space, ki);
+                    break;
+                  }
+                  case Markup.Highlight: {
+                    markup = new HighlightMarkup(ctx, x, y, space, ki);
                     break;
                   }
                   default: {
