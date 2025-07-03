@@ -1512,20 +1512,6 @@ export const calcMatAndMarkup = (currentNode: TNode, defaultBoardSize = 19) => {
     const {moveProps, setupProps, rootProps} = node.model;
     if (setupProps.length > 0) setupCount += 1;
 
-    setupProps.forEach((setup: any) => {
-      setup.values.forEach((value: any) => {
-        const i = SGF_LETTERS.indexOf(value[0]);
-        const j = SGF_LETTERS.indexOf(value[1]);
-        if (i < 0 || j < 0) return;
-        if (i < size && j < size) {
-          li = i;
-          lj = j;
-          mat[i][j] = setup.token === 'AB' ? 1 : -1;
-          if (setup.token === 'AE') mat[i][j] = 0;
-        }
-      });
-    });
-
     moveProps.forEach((m: MoveProp) => {
       const i = SGF_LETTERS.indexOf(m.value[0]);
       const j = SGF_LETTERS.indexOf(m.value[1]);
@@ -1546,6 +1532,48 @@ export const calcMatAndMarkup = (currentNode: TNode, defaultBoardSize = 19) => {
         }
       }
     });
+
+    // Setup props should override move props
+    setupProps.forEach((setup: any) => {
+      setup.values.forEach((value: any) => {
+        const i = SGF_LETTERS.indexOf(value[0]);
+        const j = SGF_LETTERS.indexOf(value[1]);
+        if (i < 0 || j < 0) return;
+        if (i < size && j < size) {
+          li = i;
+          lj = j;
+          mat[i][j] = setup.token === 'AB' ? 1 : -1;
+          if (setup.token === 'AE') mat[i][j] = 0;
+        }
+      });
+    });
+
+    // If the root node does not include any setup properties
+    // check whether its first child is a setup node (i.e., a non-move node)
+    // and apply its setup properties instead
+    if (setupProps.length === 0 && currentNode.isRoot()) {
+      const firstChildNode = currentNode.children[0];
+      if (
+        firstChildNode &&
+        isSetupNode(firstChildNode) &&
+        !isMoveNode(firstChildNode)
+      ) {
+        const setupProps = firstChildNode.model.setupProps;
+        setupProps.forEach((setup: any) => {
+          setup.values.forEach((value: any) => {
+            const i = SGF_LETTERS.indexOf(value[0]);
+            const j = SGF_LETTERS.indexOf(value[1]);
+            if (i < 0 || j < 0) return;
+            if (i < size && j < size) {
+              li = i;
+              lj = j;
+              mat[i][j] = setup.token === 'AB' ? 1 : -1;
+              if (setup.token === 'AE') mat[i][j] = 0;
+            }
+          });
+        });
+      }
+    }
 
     // Clear number when stones are captured
     for (let i = 0; i < size; i++) {
