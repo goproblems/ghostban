@@ -6,6 +6,7 @@ import {
   empty,
   a1ToPos,
   offsetA1Move,
+  canMove,
 } from './helper';
 import {
   A1_LETTERS,
@@ -1095,7 +1096,7 @@ export class GhostBan {
 
   drawBoardLine = (board = this.board) => {
     if (!board) return;
-    const {visibleArea, options} = this;
+    const {visibleArea, options, mat, preventMoveMat, cursorPosition} = this;
     const {
       zoom,
       boardSize,
@@ -1109,22 +1110,24 @@ export class GhostBan {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
       const extendSpace = zoom ? boardLineExtent * space : 0;
+      const activeColor = '#000000';
+      const inactiveColor = '#666666';
 
       ctx.fillStyle = '#000000';
 
+      const adaptiveFactor = 0.001;
+      const touchingFactor = 2.5;
       let edgeLineWidth = adaptiveBoardLine
-        ? board.width * 0.002
+        ? board.width * adaptiveFactor * 2
         : boardEdgeLineWidth;
 
-      // if (adaptiveBoardLine || (!adaptiveBoardLine && !isMobileDevice())) {
-      //  edgeLineWidth *= dpr;
-      // }
+      let lineWidth = adaptiveBoardLine
+        ? board.width * adaptiveFactor
+        : boardLineWidth;
 
-      let lineWidth = adaptiveBoardLine ? board.width * 0.001 : boardLineWidth;
-
-      // if (adaptiveBoardLine ||  (!adaptiveBoardLine && !isMobileDevice())) {
-      //   lineWidth *= dpr;
-      // }
+      const allowMove =
+        canMove(mat, cursorPosition[0], cursorPosition[1], this.turn) &&
+        preventMoveMat[cursorPosition[0]][cursorPosition[1]] === 0;
 
       // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
@@ -1142,7 +1145,10 @@ export class GhostBan {
           i === this.cursorPosition[0] &&
           this.touchMoving
         ) {
-          ctx.lineWidth = ctx.lineWidth * 2;
+          ctx.lineWidth = ctx.lineWidth * touchingFactor;
+          ctx.strokeStyle = allowMove ? activeColor : inactiveColor;
+        } else {
+          ctx.strokeStyle = activeColor;
         }
         let startPointY =
           i === 0 || i === boardSize - 1
@@ -1181,7 +1187,10 @@ export class GhostBan {
           i === this.cursorPosition[1] &&
           this.touchMoving
         ) {
-          ctx.lineWidth = ctx.lineWidth * 2;
+          ctx.lineWidth = ctx.lineWidth * touchingFactor;
+          ctx.strokeStyle = allowMove ? activeColor : inactiveColor;
+        } else {
+          ctx.strokeStyle = activeColor;
         }
         let startPointX =
           i === 0 || i === boardSize - 1

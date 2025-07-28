@@ -167,7 +167,10 @@ const canCapture = (mat: number[][], i: number, j: number, ki: number) => {
 
 export const canMove = (mat: number[][], i: number, j: number, ki: number) => {
   const newArray = cloneDeep(mat);
-  if (i < 0 || j < 0) return false;
+  if (i < 0 || j < 0 || i >= mat.length || j >= (mat[0]?.length ?? 0)) {
+    return false;
+  }
+
   if (mat[i][j] !== 0) {
     return false;
   }
