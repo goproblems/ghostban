@@ -19,6 +19,8 @@ export type GhostBanOptions = {
   boardLineWidth: number;
   boardLineExtent: number;
   themeFlatBoardColor: string;
+  themeWarmBoardColor: string;
+  themeDarkBoardColor: string;
   positiveNodeColor: string;
   negativeNodeColor: string;
   neutralNodeColor: string;
@@ -49,6 +51,8 @@ export type GhostBanOptionsParams = {
   boardEdgeLineWidth?: number;
   boardLineWidth?: number;
   themeFlatBoardColor?: string;
+  themeWarmBoardColor?: string;
+  themeDarkBoardColor?: string;
   positiveNodeColor?: string;
   negativeNodeColor?: string;
   neutralNodeColor?: string;
@@ -154,6 +158,8 @@ export enum Theme {
   SlateAndShell = 'slate_and_shell',
   Walnut = 'walnut',
   Photorealistic = 'photorealistic',
+  Dark = 'dark',
+  Warm = 'warm',
 }
 
 export enum AnalysisPointTheme {

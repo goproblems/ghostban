@@ -143,6 +143,14 @@ export const THEME_RESOURCES: {
     blacks: [],
     whites: [],
   },
+  [Theme.Warm]: {
+    blacks: [],
+    whites: [],
+  },
+  [Theme.Dark]: {
+    blacks: [],
+    whites: [],
+  },
 };
 
 export const LIGHT_GREEN_RGB = 'rgba(136, 170, 60, 1)';

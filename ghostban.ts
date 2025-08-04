@@ -47,6 +47,7 @@ import {
   HighlightMarkup,
 } from './markups';
 import {BanEffect} from './effects';
+import {DarkStone} from './stones/DarkStone';
 
 const images: {
   [key: string]: HTMLImageElement;
@@ -86,6 +87,9 @@ if (typeof window !== 'undefined') {
   dpr = window.devicePixelRatio || 1.0;
 }
 
+const DARK_ACTIVE_COLOR = '#9CA3AF';
+const DARK_INACTIVE_COLOR = '#666666';
+
 export class GhostBan {
   defaultOptions: GhostBanOptions = {
     boardSize: 19,
@@ -103,6 +107,8 @@ export class GhostBan {
     boardLineWidth: 1,
     boardLineExtent: 0.5,
     themeFlatBoardColor: '#ECB55A',
+    themeWarmBoardColor: '#C18B50',
+    themeDarkBoardColor: '#2B3035',
     positiveNodeColor: '#4d7c0f',
     negativeNodeColor: '#b91c1c',
     neutralNodeColor: '#a16207',
@@ -869,7 +875,9 @@ export class GhostBan {
       if (
         theme !== Theme.Subdued &&
         theme !== Theme.BlackAndWhite &&
-        theme !== Theme.Flat
+        theme !== Theme.Flat &&
+        theme !== Theme.Warm &&
+        theme !== Theme.Dark
       ) {
         ctx.shadowOffsetX = 3;
         ctx.shadowOffsetY = 3;
@@ -1064,6 +1072,22 @@ export class GhostBan {
             board.width + padding,
             board.height + padding
           );
+        } else if (theme === Theme.Warm) {
+          ctx.fillStyle = this.options.themeWarmBoardColor;
+          ctx.fillRect(
+            -padding,
+            -padding,
+            board.width + padding,
+            board.height + padding
+          );
+        } else if (theme === Theme.Dark) {
+          ctx.fillStyle = this.options.themeDarkBoardColor;
+          ctx.fillRect(
+            -padding,
+            -padding,
+            board.width + padding,
+            board.height + padding
+          );
         } else if (
           theme === Theme.Walnut &&
           themeResources[theme].board !== undefined
@@ -1104,14 +1128,20 @@ export class GhostBan {
       boardEdgeLineWidth,
       boardLineExtent,
       adaptiveBoardLine,
+      theme,
     } = options;
     const ctx = board.getContext('2d');
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
       const extendSpace = zoom ? boardLineExtent * space : 0;
-      const activeColor = '#000000';
-      const inactiveColor = '#666666';
+      let activeColor = '#000000';
+      let inactiveColor = '#666666';
+
+      if (theme === Theme.Dark) {
+        activeColor = DARK_ACTIVE_COLOR;
+        inactiveColor = DARK_INACTIVE_COLOR;
+      }
 
       ctx.fillStyle = '#000000';
 
@@ -1249,7 +1279,10 @@ export class GhostBan {
               2 * Math.PI,
               true
             );
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = '#000000';
+            if (this.options.theme === Theme.Dark) {
+              ctx.fillStyle = DARK_ACTIVE_COLOR;
+            }
             ctx.fill();
           }
         });
@@ -1260,7 +1293,7 @@ export class GhostBan {
   drawCoordinate = () => {
     const {board, options, visibleArea} = this;
     if (!board) return;
-    const {boardSize, zoom, padding, boardLineExtent} = options;
+    const {boardSize, zoom, padding, boardLineExtent, theme} = options;
     let zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
     const ctx = board.getContext('2d');
     const {space, scaledPadding} = this.calcSpaceAndPadding();
@@ -1268,6 +1301,11 @@ export class GhostBan {
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
       ctx.fillStyle = '#000000';
+
+      if (theme === Theme.Dark) {
+        ctx.fillStyle = DARK_ACTIVE_COLOR;
+      }
+
       ctx.font = `bold ${space / 3}px Helvetica`;
 
       const center = this.calcCenter();
@@ -1497,7 +1535,9 @@ export class GhostBan {
               if (
                 theme !== Theme.Subdued &&
                 theme !== Theme.BlackAndWhite &&
-                theme !== Theme.Flat
+                theme !== Theme.Flat &&
+                theme !== Theme.Warm &&
+                theme !== Theme.Dark
               ) {
                 ctx.shadowOffsetX = 3;
                 ctx.shadowOffsetY = 3;
@@ -1509,10 +1549,17 @@ export class GhostBan {
                 ctx.shadowBlur = 0;
               }
               let stone;
+
               switch (theme) {
                 case Theme.BlackAndWhite:
-                case Theme.Flat: {
+                case Theme.Flat:
+                case Theme.Warm: {
                   stone = new ColorStone(ctx, x, y, value);
+                  stone.setSize(space * ratio * 2);
+                  break;
+                }
+                case Theme.Dark: {
+                  stone = new DarkStone(ctx, x, y, value);
                   stone.setSize(space * ratio * 2);
                   break;
                 }

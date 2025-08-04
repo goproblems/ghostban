@@ -1,6 +1,6 @@
 import Stone from './base';
 
-export class ColorStone extends Stone {
+export class DarkStone extends Stone {
   constructor(
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -19,11 +19,11 @@ export class ColorStone extends Stone {
     ctx.globalAlpha = globalAlpha;
     ctx.arc(x, y, size / 2, 0, 2 * Math.PI, true);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#000';
+    ctx.strokeStyle = '#1a1a1a';
     if (ki === 1) {
-      ctx.fillStyle = '#000';
+      ctx.fillStyle = '#1a1a1a';
     } else if (ki === -1) {
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = '#F2F2F2';
     }
     ctx.fill();
     ctx.stroke();
