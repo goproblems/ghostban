@@ -12,6 +12,8 @@ export class TextMarkup extends Markup {
       ctx.fillStyle = '#fff';
     } else if (ki === -1) {
       ctx.fillStyle = '#000';
+    } else {
+      ctx.fillStyle = this.getThemeAwareColor('#000', '#fff');
     }
     // else {
     //   ctx.clearRect(x - size / 2, y - size / 2, size, size);

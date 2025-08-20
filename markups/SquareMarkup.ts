@@ -9,11 +9,11 @@ export class SquareMarkup extends Markup {
     ctx.globalAlpha = globalAlpha;
     let size = s * 0.55;
     if (ki === 1) {
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = this.getThemeAwareColor('#fff', '#fff');
     } else if (ki === -1) {
-      ctx.strokeStyle = '#000';
+      ctx.strokeStyle = this.getThemeAwareColor('#000', '#000');
     } else {
-      ctx.strokeStyle = '#000';
+      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
       ctx.lineWidth = 3;
     }
     ctx.rect(x - size / 2, y - size / 2, size, size);

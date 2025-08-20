@@ -14,6 +14,7 @@ export class CrossMarkup extends Markup {
     } else if (ki === -1) {
       ctx.strokeStyle = '#000';
     } else {
+      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
       size = radius * 0.58;
     }
     ctx.moveTo(x - size, y - size);

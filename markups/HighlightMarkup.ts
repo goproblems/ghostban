@@ -8,7 +8,7 @@ export class HighlightMarkup extends Markup {
     ctx.lineWidth = 2;
     ctx.globalAlpha = 0.6;
     let size = s * 0.4;
-    ctx.fillStyle = '#ffeb64';
+    ctx.fillStyle = this.getThemeAwareColor('#ffeb64', '#b8860b');
     if (ki === 1 || ki === -1) {
       size = s * 0.35;
     }

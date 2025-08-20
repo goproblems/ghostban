@@ -30,10 +30,6 @@ import {
 
 import {ImageStone, ColorStone} from './stones';
 import AnalysisPoint from './stones/AnalysisPoint';
-// import {create, meanDependencies, stdDependencies} from 'mathjs';
-
-// const config = {};
-// const {std, mean} = create({meanDependencies, stdDependencies}, config);
 
 import {
   CircleMarkup,
@@ -82,7 +78,6 @@ function preload(urls: string[], done: () => void) {
 }
 
 let dpr = 1.0;
-// browser code
 if (typeof window !== 'undefined') {
   dpr = window.devicePixelRatio || 1.0;
 }
@@ -373,7 +368,7 @@ export class GhostBan {
     this.effectCanvas = this.createCanvas('ghostban-effect', false);
 
     this.dom = dom;
-    dom.innerHTML = ''; // Clear existing children
+    dom.innerHTML = '';
     dom.appendChild(this.board);
     dom.appendChild(this.canvas);
     dom.appendChild(this.markupCanvas);
@@ -393,7 +388,6 @@ export class GhostBan {
 
   setOptions(options: GhostBanOptionsParams) {
     this.options = {...this.options, ...options};
-    // The onMouseMove event needs to be re-added after the options are updated
     this.renderInteractive();
   }
 
@@ -426,7 +420,6 @@ export class GhostBan {
   }
 
   setCursorWithRender = (domPoint: DOMPoint, offsetY = 0) => {
-    // space need recalculate every time
     const {padding} = this.options;
     const {space} = this.calcSpaceAndPadding();
     const point = this.transMat.inverse().transformPoint(domPoint);
@@ -446,11 +439,6 @@ export class GhostBan {
       return;
     }
 
-    // if (
-    //   !isMobileDevice() ||
-    //   (isMobileDevice() && this.mat?.[idx - 1]?.[idy - 1] === 0)
-    // ) {
-    // }
     this.cursorPoint = p;
     this.cursorPosition = [idx - 1, idy - 1];
     this.drawCursor();
@@ -587,22 +575,6 @@ export class GhostBan {
 
   calcDynamicPadding(visibleAreaSize: number) {
     const {coordinate} = this.options;
-    // let padding = 30;
-    // if (visibleAreaSize <= 3) {
-    //   padding = coordinate ? 120 : 100;
-    // } else if (visibleAreaSize <= 6) {
-    //   padding = coordinate ? 80 : 60;
-    // } else if (visibleAreaSize <= 9) {
-    //   padding = coordinate ? 60 : 50;
-    // } else if (visibleAreaSize <= 12) {
-    //   padding = coordinate ? 50 : 40;
-    // } else if (visibleAreaSize <= 15) {
-    //   padding = coordinate ? 40 : 30;
-    // } else if (visibleAreaSize <= 17) {
-    //   padding = coordinate ? 35 : 25;
-    // } else if (visibleAreaSize <= 19) {
-    //   padding = coordinate ? 30 : 20;
-    // }
 
     const {canvas} = this;
     if (!canvas) return;
@@ -610,7 +582,6 @@ export class GhostBan {
     const paddingWithoutCoordinate = canvas.width / (visibleAreaSize + 2) / 4;
 
     this.options.padding = coordinate ? padding : paddingWithoutCoordinate;
-    // this.renderInteractive();
   }
 
   zoomBoard(zoom = false) {
@@ -682,19 +653,15 @@ export class GhostBan {
 
         let offsetX =
           visibleArea[0][0] * space * scale +
-          // for padding
           padding * scale -
           padding -
-          // for board line extent
           (space * extraVisibleSize * scale) / 2 +
           (space * scale) / 2;
 
         let offsetY =
           visibleArea[1][0] * space * scale +
-          // for padding
           padding * scale -
           padding -
-          // for board line extent
           (space * extraVisibleSize * scale) / 2 +
           (space * scale) / 2;
 
@@ -747,7 +714,6 @@ export class GhostBan {
     const {mat} = this;
     if (this.mat && mat[0]) this.options.boardSize = mat[0].length;
 
-    // TODO: calc visible area twice is not good, need to refactor
     this.zoomBoard(this.options.zoom);
     this.zoomBoard(this.options.zoom);
     this.clearAllCanvas();
@@ -780,7 +746,6 @@ export class GhostBan {
     if (ctx) {
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      // Will always clear the right space
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.restore();
     }
@@ -854,11 +819,6 @@ export class GhostBan {
     analysis.moveInfos.forEach(m => {
       if (m.move === 'pass') return;
       const idObj = JSON.parse(analysis.id);
-      // const {x: ox, y: oy} = reverseOffset(mat, idObj.bx, idObj.by);
-      // let {x: i, y: j} = a1ToPos(m.move);
-      // i += ox;
-      // j += oy;
-      // let analysisBoardSize = forceAnalysisBoardSize || boardSize;
       let analysisBoardSize = boardSize;
       const offsetedMove = offsetA1Move(
         m.move,
@@ -925,6 +885,7 @@ export class GhostBan {
     clear = true
   ) => {
     const canvas = markupCanvas;
+    const {theme} = this.options;
     if (canvas) {
       if (clear) this.clearCanvas(canvas);
       for (let i = 0; i < markup.length; i++) {
@@ -942,11 +903,11 @@ export class GhostBan {
               if (ctx) {
                 switch (value) {
                   case Markup.Circle: {
-                    markup = new CircleMarkup(ctx, x, y, space, ki);
+                    markup = new CircleMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   case Markup.Current: {
-                    markup = new CircleSolidMarkup(ctx, x, y, space, ki);
+                    markup = new CircleSolidMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   case Markup.PositiveActiveNode:
@@ -972,6 +933,7 @@ export class GhostBan {
                       y,
                       space,
                       ki,
+                      theme,
                       Markup.Circle
                     );
                     markup.setColor(color);
@@ -1001,6 +963,7 @@ export class GhostBan {
                       y,
                       space,
                       ki,
+                      theme,
                       Markup.Circle
                     );
                     markup.setColor(color);
@@ -1008,24 +971,32 @@ export class GhostBan {
                     break;
                   }
                   case Markup.Square: {
-                    markup = new SquareMarkup(ctx, x, y, space, ki);
+                    markup = new SquareMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   case Markup.Triangle: {
-                    markup = new TriangleMarkup(ctx, x, y, space, ki);
+                    markup = new TriangleMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   case Markup.Cross: {
-                    markup = new CrossMarkup(ctx, x, y, space, ki);
+                    markup = new CrossMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   case Markup.Highlight: {
-                    markup = new HighlightMarkup(ctx, x, y, space, ki);
+                    markup = new HighlightMarkup(ctx, x, y, space, ki, theme);
                     break;
                   }
                   default: {
                     if (value !== '') {
-                      markup = new TextMarkup(ctx, x, y, space, ki, value);
+                      markup = new TextMarkup(
+                        ctx,
+                        x,
+                        y,
+                        space,
+                        ki,
+                        theme,
+                        value
+                      );
                     }
                     break;
                   }
@@ -1159,7 +1130,6 @@ export class GhostBan {
         canMove(mat, cursorPosition[0], cursorPosition[1], this.turn) &&
         preventMoveMat[cursorPosition[0]][cursorPosition[1]] === 0;
 
-      // vertical
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();
         if (
@@ -1201,7 +1171,6 @@ export class GhostBan {
         ctx.stroke();
       }
 
-      // horizontal
       for (let i = visibleArea[1][0]; i <= visibleArea[1][1]; i++) {
         ctx.beginPath();
         if (
@@ -1255,12 +1224,8 @@ export class GhostBan {
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
     let starSize = adaptiveStarSize ? board.width * 0.0035 : starSizeOptions;
-    // if (!isMobileDevice() || !adaptiveStarSize) {
-    //   starSize = starSize * dpr;
-    // }
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
-      // Drawing star
       ctx.stroke();
       [3, 9, 15].forEach(i => {
         [3, 9, 15].forEach(j => {
@@ -1420,7 +1385,6 @@ export class GhostBan {
       }
 
       const divisor = zoom ? boardSize + scaledBoardExtent : boardSize;
-      // const divisor = boardSize;
       space = (canvas.width - padding * 2) / Math.ceil(divisor);
       scaledPadding = padding + space / 2;
     }
@@ -1466,7 +1430,7 @@ export class GhostBan {
       if (this.cursor === Cursor.None) return;
       if (isMobileDevice() && !this.touchMoving) return;
 
-      const {padding} = this.options;
+      const {padding, theme} = this.options;
       const ctx = canvas.getContext('2d');
       const {space} = this.calcSpaceAndPadding();
       const {visibleArea, cursor, cursorValue} = this;
@@ -1482,19 +1446,19 @@ export class GhostBan {
         let cur;
         const size = space * 0.8;
         if (cursor === Cursor.Circle) {
-          cur = new CircleMarkup(ctx, x, y, space, ki);
+          cur = new CircleMarkup(ctx, x, y, space, ki, theme);
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Square) {
-          cur = new SquareMarkup(ctx, x, y, space, ki);
+          cur = new SquareMarkup(ctx, x, y, space, ki, theme);
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Triangle) {
-          cur = new TriangleMarkup(ctx, x, y, space, ki);
+          cur = new TriangleMarkup(ctx, x, y, space, ki, theme);
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Cross) {
-          cur = new CrossMarkup(ctx, x, y, space, ki);
+          cur = new CrossMarkup(ctx, x, y, space, ki, theme);
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Text) {
-          cur = new TextMarkup(ctx, x, y, space, ki, cursorValue);
+          cur = new TextMarkup(ctx, x, y, space, ki, theme, cursorValue);
           cur.setGlobalAlpha(0.8);
         } else if (ki === Ki.Empty && cursor === Cursor.BlackStone) {
           cur = new ColorStone(ctx, x, y, Ki.Black);

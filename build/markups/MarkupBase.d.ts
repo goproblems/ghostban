@@ -1,3 +1,4 @@
+import { Theme } from '../types';
 export default class Markup {
     protected ctx: CanvasRenderingContext2D;
     protected x: number;
@@ -8,9 +9,11 @@ export default class Markup {
     protected globalAlpha: number;
     protected color: string;
     protected lineDash: number[];
-    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, ki: number, val?: string | number);
+    protected theme?: Theme;
+    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, ki: number, theme?: Theme, val?: string | number);
     draw(): void;
     setGlobalAlpha(alpha: number): void;
     setColor(color: string): void;
     setLineDash(lineDash: number[]): void;
+    protected getThemeAwareColor(lightColor: string, darkColor: string): string;
 }

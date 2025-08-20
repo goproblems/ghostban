@@ -15,6 +15,7 @@ export class CircleSolidMarkup extends Markup {
     } else if (ki === -1) {
       ctx.fillStyle = '#000';
     } else {
+      ctx.fillStyle = this.getThemeAwareColor('#000', '#fff');
       ctx.lineWidth = 3;
     }
     if (color) ctx.fillStyle = color;

@@ -18,6 +18,7 @@ export class TriangleMarkup extends Markup {
     } else if (ki === -1) {
       ctx.strokeStyle = '#000';
     } else {
+      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
       ctx.lineWidth = 3;
       size = radius * 0.7;
     }
