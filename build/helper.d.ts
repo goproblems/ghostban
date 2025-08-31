@@ -116,20 +116,8 @@ export declare const calcMost: (mat: number[][], boardSize?: number) => {
 };
 export declare const calcCenter: (mat: number[][], boardSize?: number) => Center.TopRight | Center.TopLeft | Center.BottomLeft | Center.BottomRight | Center.Center;
 export declare const calcBoardSize: (mat: number[][], boardSize?: number, extent?: number) => number[];
-export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[
-    number,
-    number
-], [
-    number,
-    number
-]];
-export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[
-    number,
-    number
-], [
-    number,
-    number
-]], boardSize?: number) => string[];
+export declare const calcPartialArea: (mat: number[][], extent?: number, boardSize?: number) => [[number, number], [number, number]];
+export declare const calcAvoidMovesForPartialAnalysis: (partialArea: [[number, number], [number, number]], boardSize?: number) => string[];
 export declare const calcTsumegoFrame: (mat: number[][], extent: number, boardSize?: number, komi?: number, turn?: Ki, ko?: boolean) => number[][];
 export declare const calcOffset: (mat: number[][]) => {
     x: number;
@@ -208,7 +196,7 @@ export declare const calcMatAndMarkup: (currentNode: TNode, defaultBoardSize?: n
  * @param token The token of the property to find.
  * @returns The found property or null if not found.
  */
-export declare const findProp: (node: TNode, token: string) => MoveProp | NodeAnnotationProp | SetupProp | RootProp | MarkupProp | GameInfoProp | MoveAnnotationProp | null | undefined;
+export declare const findProp: (node: TNode, token: string) => MoveProp | SetupProp | NodeAnnotationProp | MoveAnnotationProp | MarkupProp | RootProp | GameInfoProp | null | undefined;
 /**
  * Finds properties in a given node based on the provided token.
  * @param node - The node to search for properties.

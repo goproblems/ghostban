@@ -1,5 +1,5 @@
-import {Theme, ThemePropertyKey, ThemeContext, ThemeConfig} from '../types';
-import {DEFAULT_THEME_COLOR_CONFIG} from '../const';
+import {Ki, ThemeContext, ThemeConfig} from '../types';
+import {BASE_THEME_CONFIG} from '../const';
 
 export default class Markup {
   protected globalAlpha = 1;
@@ -43,7 +43,7 @@ export default class Markup {
   ): ThemeConfig[K] {
     if (!this.themeContext) {
       console.log(`[DEBUG] No theme context for key: ${key}, using default`);
-      return DEFAULT_THEME_COLOR_CONFIG[key];
+      return BASE_THEME_CONFIG[key];
     }
 
     const {theme, themeOptions} = this.themeContext;

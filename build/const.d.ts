@@ -1,5 +1,5 @@
 import { Theme, ThemeConfig } from './types';
-export declare const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig;
+export declare const BASE_THEME_CONFIG: ThemeConfig;
 export declare const MAX_BOARD_SIZE = 29;
 export declare const DEFAULT_BOARD_SIZE = 19;
 export declare const A1_LETTERS: string[];
@@ -26,6 +26,11 @@ export declare const THEME_RESOURCES: {
         board?: string;
         blacks: string[];
         whites: string[];
+        lowRes?: {
+            board?: string;
+            blacks: string[];
+            whites: string[];
+        };
     };
 };
 export declare const LIGHT_GREEN_RGB = "rgba(136, 170, 60, 1)";

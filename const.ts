@@ -3,7 +3,7 @@ import {Theme, ThemeConfig} from './types';
 
 const settings = {cdn: 'https://s.shaowq.com'};
 
-export const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig = {
+export const BASE_THEME_CONFIG: ThemeConfig = {
   positiveNodeColor: '#4d7c0f',
   negativeNodeColor: '#b91c1c',
   neutralNodeColor: '#a16207',
@@ -18,8 +18,8 @@ export const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig = {
   flatBlackColorAlt: '#000000', // Alternative, temporarily same as main color
   flatWhiteColor: '#FFFFFF',
   flatWhiteColorAlt: '#FFFFFF', // Alternative, temporarily same as main color
-  boardEdgeLineWidth: 5,
-  boardLineWidth: 1,
+  boardEdgeLineWidth: 2,
+  boardLineWidth: 1.2,
   boardLineExtent: 0.5,
   starSize: 3,
   markupLineWidth: 2,
@@ -113,7 +113,16 @@ export const DEFAULT_OPTIONS = {
 };
 
 export const THEME_RESOURCES: {
-  [key in Theme]: {board?: string; blacks: string[]; whites: string[]};
+  [key in Theme]: {
+    board?: string;
+    blacks: string[];
+    whites: string[];
+    lowRes?: {
+      board?: string;
+      blacks: string[];
+      whites: string[];
+    };
+  };
 } = {
   [Theme.BlackAndWhite]: {
     blacks: [],
@@ -177,11 +186,20 @@ export const THEME_RESOURCES: {
   [Theme.YunziMonkeyDark]: {
     board: `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder1920px.png`,
     blacks: [
-      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-1350px.png`,
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-338px.png`,
     ],
     whites: [
-      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v5-1350px.png`,
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v14-338px.png`,
     ],
+    lowRes: {
+      board: `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder-960px.png`,
+      blacks: [
+        `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-135px.png`,
+      ],
+      whites: [
+        `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v14-135px.png`,
+      ],
+    },
   },
   [Theme.HighContrast]: {
     blacks: [],
