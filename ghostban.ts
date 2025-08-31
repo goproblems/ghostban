@@ -49,6 +49,43 @@ import {
 } from './markups';
 import {BanEffect} from './effects';
 
+// Utility functions for mobile detection and resource selection
+const isMobile = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth <= 768
+  );
+};
+
+const getThemeResources = (theme: Theme, themeResources: any) => {
+  const resources = themeResources[theme];
+  if (!resources) return null;
+
+  // If on mobile and lowRes exists, use lowRes resources
+  if (isMobile() && resources.lowRes) {
+    return {
+      board: resources.lowRes.board || resources.board,
+      blacks:
+        resources.lowRes.blacks.length > 0
+          ? resources.lowRes.blacks
+          : resources.blacks,
+      whites:
+        resources.lowRes.whites.length > 0
+          ? resources.lowRes.whites
+          : resources.whites,
+    };
+  }
+
+  // Otherwise use regular resources
+  return {
+    board: resources.board,
+    blacks: resources.blacks,
+    whites: resources.whites,
+  };
+};
+
 const images: {
   [key: string]: HTMLImageElement;
 } = {};
@@ -627,7 +664,9 @@ export class GhostBan {
   setTheme(theme: Theme, options: Partial<GhostBanOptionsParams> = {}) {
     const {themeResources} = this.options;
     if (!themeResources[theme]) return;
-    const {board, blacks, whites} = themeResources[theme];
+    const resources = getThemeResources(theme, themeResources);
+    if (!resources) return;
+    const {board, blacks, whites} = resources;
     this.options.theme = theme;
     this.options = {
       ...this.options,
@@ -1199,50 +1238,34 @@ export class GhostBan {
           ctx.fillStyle = this.getThemeProperty(
             ThemePropertyKey.BoardBackgroundColor
           );
-          ctx.fillRect(
-            -padding,
-            -padding,
-            board.width + padding,
-            board.height + padding
-          );
-        } else if (
-          theme === Theme.Walnut &&
-          themeResources[theme].board !== undefined
-        ) {
-          const boardUrl = themeResources[theme].board || '';
-          const boardRes = images[boardUrl];
-          if (boardRes) {
-            ctx.drawImage(
-              boardRes,
-              -padding,
-              -padding,
-              board.width + padding,
-              board.height + padding
-            );
-          }
-        } else if (
-          theme === Theme.YunziMonkeyDark &&
-          themeResources[theme].board !== undefined
-        ) {
-          const boardUrl = themeResources[theme].board || '';
-          const boardRes = images[boardUrl];
-          if (boardRes) {
-            ctx.drawImage(
-              boardRes,
-              -padding,
-              -padding,
-              board.width + padding,
-              board.height + padding
-            );
-          }
+          // ctx.fillRect(
+          //   -padding,
+          //   -padding,
+          //   board.width + padding,
+          //   board.height + padding
+          // );
+          ctx.fillRect(0, 0, board.width, board.height);
         } else {
-          const boardUrl = themeResources[theme].board || '';
-          const image = images[boardUrl];
-          if (image) {
-            const pattern = ctx.createPattern(image, 'repeat');
-            if (pattern) {
-              ctx.fillStyle = pattern;
-              ctx.fillRect(0, 0, board.width, board.height);
+          const resources = getThemeResources(theme, themeResources);
+          if (resources && resources.board) {
+            const boardUrl = resources.board;
+            const boardRes = images[boardUrl];
+            if (boardRes) {
+              if (theme === Theme.Walnut || theme === Theme.YunziMonkeyDark) {
+                ctx.drawImage(
+                  boardRes,
+                  -padding,
+                  -padding,
+                  board.width + padding,
+                  board.height + padding
+                );
+              } else {
+                const pattern = ctx.createPattern(boardRes, 'repeat');
+                if (pattern) {
+                  ctx.fillStyle = pattern;
+                  ctx.fillRect(0, 0, board.width, board.height);
+                }
+              }
             }
           }
         }
@@ -1731,27 +1754,30 @@ export class GhostBan {
                   break;
                 }
                 default: {
-                  const blacks = themeResources[theme].blacks.map(
-                    i => images[i]
-                  );
-                  const whites = themeResources[theme].whites.map(
-                    i => images[i]
-                  );
-                  const mod = i + 10 + j;
-                  stone = new ImageStone(
-                    ctx,
-                    x,
-                    y,
-                    value,
-                    mod,
-                    blacks,
-                    whites,
-                    this.createThemeContext()
-                  );
-                  stone.setSize(space * ratio * 2);
+                  const resources = getThemeResources(theme, themeResources);
+                  if (resources) {
+                    const blacks = resources.blacks.map(
+                      (i: string) => images[i]
+                    );
+                    const whites = resources.whites.map(
+                      (i: string) => images[i]
+                    );
+                    const mod = i + 10 + j;
+                    stone = new ImageStone(
+                      ctx,
+                      x,
+                      y,
+                      value,
+                      mod,
+                      blacks,
+                      whites,
+                      this.createThemeContext()
+                    );
+                    stone.setSize(space * ratio * 2);
+                  }
                 }
               }
-              stone.draw();
+              stone?.draw();
               ctx.restore();
             }
           }
