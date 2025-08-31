@@ -26,6 +26,11 @@ export declare const THEME_RESOURCES: {
         board?: string;
         blacks: string[];
         whites: string[];
+        lowRes?: {
+            board?: string;
+            blacks: string[];
+            whites: string[];
+        };
     };
 };
 export declare const LIGHT_GREEN_RGB = "rgba(136, 170, 60, 1)";

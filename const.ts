@@ -113,7 +113,16 @@ export const DEFAULT_OPTIONS = {
 };
 
 export const THEME_RESOURCES: {
-  [key in Theme]: {board?: string; blacks: string[]; whites: string[]};
+  [key in Theme]: {
+    board?: string;
+    blacks: string[];
+    whites: string[];
+    lowRes?: {
+      board?: string;
+      blacks: string[];
+      whites: string[];
+    };
+  };
 } = {
   [Theme.BlackAndWhite]: {
     blacks: [],
@@ -177,11 +186,20 @@ export const THEME_RESOURCES: {
   [Theme.YunziMonkeyDark]: {
     board: `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder1920px.png`,
     blacks: [
-      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-1350px.png`,
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-338px.png`,
     ],
     whites: [
-      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v5-1350px.png`,
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v14-338px.png`,
     ],
+    lowRes: {
+      board: `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder-960px.png`,
+      blacks: [
+        `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-135px.png`,
+      ],
+      whites: [
+        `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v14-135px.png`,
+      ],
+    },
   },
   [Theme.HighContrast]: {
     blacks: [],
