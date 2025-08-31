@@ -14,6 +14,7 @@ import {
   DEFAULT_OPTIONS,
   MAX_BOARD_SIZE,
   THEME_RESOURCES,
+  DEFAULT_THEME_COLOR_CONFIG,
 } from './const';
 import {
   Cursor,
@@ -26,9 +27,13 @@ import {
   Center,
   AnalysisPointTheme,
   Effect,
+  ThemeOptions,
+  ThemeConfig,
+  ThemePropertyKey,
+  ThemeContext,
 } from './types';
 
-import {ImageStone, ColorStone} from './stones';
+import {ImageStone, FlatStone} from './stones';
 import AnalysisPoint from './stones/AnalysisPoint';
 
 import {
@@ -43,7 +48,6 @@ import {
   HighlightMarkup,
 } from './markups';
 import {BanEffect} from './effects';
-import {DarkStone} from './stones/DarkStone';
 
 const images: {
   [key: string]: HTMLImageElement;
@@ -82,8 +86,30 @@ if (typeof window !== 'undefined') {
   dpr = window.devicePixelRatio || 1.0;
 }
 
-const DARK_ACTIVE_COLOR = '#9CA3AF';
-const DARK_INACTIVE_COLOR = '#666666';
+const DEFAULT_THEME_OPTIONS: ThemeOptions = {
+  default: DEFAULT_THEME_COLOR_CONFIG,
+  [Theme.Flat]: {
+    boardBackgroundColor: '#ECB55A',
+  },
+  [Theme.Warm]: {
+    boardBackgroundColor: '#C18B50',
+  },
+  [Theme.Dark]: {
+    activeColor: '#9CA3AF',
+    inactiveColor: '#666666',
+    boardLineColor: '#9CA3AF',
+    boardBackgroundColor: '#2B3035',
+  },
+  [Theme.YunziMonkeyDark]: {
+    activeColor: '#A1C9AF',
+    inactiveColor: '#A1C9AF',
+    boardLineColor: '#A1C9AF',
+    flatBlackColor: '#0E2019',
+    flatBlackColorAlt: '#021D11',
+    flatWhiteColor: '#A2C8B4',
+    flatWhiteColorAlt: '#AFCBBC',
+  },
+};
 
 export class GhostBan {
   defaultOptions: GhostBanOptions = {
@@ -98,21 +124,10 @@ export class GhostBan {
     background: false,
     showAnalysis: false,
     adaptiveBoardLine: true,
-    boardEdgeLineWidth: 5,
-    boardLineWidth: 1,
-    boardLineExtent: 0.5,
-    themeFlatBoardColor: '#ECB55A',
-    themeWarmBoardColor: '#C18B50',
-    themeDarkBoardColor: '#2B3035',
-    positiveNodeColor: '#4d7c0f',
-    negativeNodeColor: '#b91c1c',
-    neutralNodeColor: '#a16207',
-    defaultNodeColor: '#404040',
-    warningNodeColor: '#ffdf20',
+    themeOptions: DEFAULT_THEME_OPTIONS,
     themeResources: THEME_RESOURCES,
     moveSound: false,
     adaptiveStarSize: true,
-    starSize: 3,
     mobileIndicatorOffset: 0,
   };
   options: GhostBanOptions;
@@ -147,12 +162,16 @@ export class GhostBan {
       color: string;
       lineDash: number[];
     };
-  };
+  } = {};
 
   constructor(options: GhostBanOptionsParams = {}) {
     this.options = {
       ...this.defaultOptions,
       ...options,
+      themeOptions: {
+        ...this.defaultOptions.themeOptions,
+        ...(options.themeOptions || {}),
+      },
     };
     const size = this.options.boardSize;
     this.mat = zeros([size, size]);
@@ -170,128 +189,161 @@ export class GhostBan {
       [0, size - 1],
     ];
 
+    this.updateNodeMarkupStyles();
+  }
+
+  private getThemeProperty<T extends keyof ThemeConfig>(
+    propertyKey: T
+  ): ThemeConfig[T];
+  private getThemeProperty(propertyKey: ThemePropertyKey): string | number;
+  private getThemeProperty<T extends keyof ThemeConfig>(
+    propertyKey: T | ThemePropertyKey
+  ): ThemeConfig[T] | string | number {
+    const key =
+      typeof propertyKey === 'string' ? propertyKey : (propertyKey as string);
+    const currentTheme = this.options.theme;
+    const themeConfig = this.options.themeOptions[currentTheme] || {};
+    const defaultConfig = this.options.themeOptions.default || {};
+
+    const result = (themeConfig[key as keyof ThemeConfig] ||
+      defaultConfig[key as keyof ThemeConfig]) as ThemeConfig[T];
+
+    return result;
+  }
+
+  /**
+   * Create theme context for markup components
+   */
+  private createThemeContext(): ThemeContext {
+    return {
+      theme: this.options.theme,
+      themeOptions: this.options.themeOptions,
+    };
+  }
+
+  private updateNodeMarkupStyles() {
     const defaultDashedLineDash = [8, 6];
     const defaultDottedLineDash = [4, 4];
 
     this.nodeMarkupStyles = {
       [Markup.PositiveNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: [],
       },
       [Markup.NegativeNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: [],
       },
       [Markup.NeutralNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: [],
       },
       [Markup.DefaultNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: [],
       },
       [Markup.WarningNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: [],
       },
       [Markup.PositiveDashedNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.NegativeDashedNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.NeutralDashedNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.DefaultDashedNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.WarningDashedNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.PositiveDottedNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.NegativeDottedNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.NeutralDottedNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.DefaultDottedNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.WarningDottedNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.PositiveActiveNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: [],
       },
       [Markup.NegativeActiveNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: [],
       },
       [Markup.NeutralActiveNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: [],
       },
       [Markup.DefaultActiveNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: [],
       },
       [Markup.WarningActiveNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: [],
       },
       [Markup.PositiveDashedActiveNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.NegativeDashedActiveNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.NeutralDashedActiveNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.DefaultDashedActiveNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.WarningDashedActiveNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: defaultDashedLineDash,
       },
       [Markup.PositiveDottedActiveNode]: {
-        color: this.options.positiveNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.NegativeDottedActiveNode]: {
-        color: this.options.negativeNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.NeutralDottedActiveNode]: {
-        color: this.options.neutralNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.DefaultDottedActiveNode]: {
-        color: this.options.defaultNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
         lineDash: defaultDottedLineDash,
       },
       [Markup.WarningDottedActiveNode]: {
-        color: this.options.warningNodeColor,
+        color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
         lineDash: defaultDottedLineDash,
       },
     };
@@ -387,7 +439,15 @@ export class GhostBan {
   }
 
   setOptions(options: GhostBanOptionsParams) {
-    this.options = {...this.options, ...options};
+    this.options = {
+      ...this.options,
+      ...options,
+      themeOptions: {
+        ...this.options.themeOptions,
+        ...(options.themeOptions || {}),
+      },
+    };
+    this.updateNodeMarkupStyles();
     this.renderInteractive();
   }
 
@@ -529,7 +589,7 @@ export class GhostBan {
     if (this.options.showAnalysis) this.drawAnalysis(analysis);
   }
 
-  setTheme(theme: Theme, options = {}) {
+  setTheme(theme: Theme, options: Partial<GhostBanOptionsParams> = {}) {
     const {themeResources} = this.options;
     if (!themeResources[theme]) return;
     const {board, blacks, whites} = themeResources[theme];
@@ -538,7 +598,12 @@ export class GhostBan {
       ...this.options,
       theme,
       ...options,
+      themeOptions: {
+        ...this.options.themeOptions,
+        ...(options.themeOptions || {}),
+      },
     };
+    this.updateNodeMarkupStyles();
     preload(compact([board, ...blacks, ...whites]), () => {
       this.drawBoard();
       this.render();
@@ -594,8 +659,10 @@ export class GhostBan {
       effectCanvas,
     } = this;
     if (!canvas) return;
-    const {boardSize, extent, boardLineExtent, padding, dynamicPadding} =
-      this.options;
+    const {boardSize, extent, padding, dynamicPadding} = this.options;
+    const boardLineExtent = this.getThemeProperty(
+      ThemePropertyKey.BoardLineExtent
+    );
     const zoomedVisibleArea = calcVisibleArea(
       this.visibleAreaMat,
       extent,
@@ -841,7 +908,7 @@ export class GhostBan {
       ) {
         ctx.shadowOffsetX = 3;
         ctx.shadowOffsetY = 3;
-        ctx.shadowColor = '#555';
+        ctx.shadowColor = this.getThemeProperty(ThemePropertyKey.ShadowColor);
         ctx.shadowBlur = 8;
       } else {
         ctx.shadowOffsetX = 0;
@@ -852,15 +919,19 @@ export class GhostBan {
 
       let outlineColor;
       if (markup[i][j].includes(Markup.PositiveNode)) {
-        outlineColor = this.options.positiveNodeColor;
+        outlineColor = this.getThemeProperty(
+          ThemePropertyKey.PositiveNodeColor
+        );
       }
 
       if (markup[i][j].includes(Markup.NegativeNode)) {
-        outlineColor = this.options.negativeNodeColor;
+        outlineColor = this.getThemeProperty(
+          ThemePropertyKey.NegativeNodeColor
+        );
       }
 
       if (markup[i][j].includes(Markup.NeutralNode)) {
-        outlineColor = this.options.neutralNodeColor;
+        outlineColor = this.getThemeProperty(ThemePropertyKey.NeutralNodeColor);
       }
 
       const point = new AnalysisPoint(
@@ -903,11 +974,25 @@ export class GhostBan {
               if (ctx) {
                 switch (value) {
                   case Markup.Circle: {
-                    markup = new CircleMarkup(ctx, x, y, space, ki, theme);
+                    markup = new CircleMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   case Markup.Current: {
-                    markup = new CircleSolidMarkup(ctx, x, y, space, ki, theme);
+                    markup = new CircleSolidMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   case Markup.PositiveActiveNode:
@@ -933,7 +1018,7 @@ export class GhostBan {
                       y,
                       space,
                       ki,
-                      theme,
+                      this.createThemeContext(),
                       Markup.Circle
                     );
                     markup.setColor(color);
@@ -963,7 +1048,7 @@ export class GhostBan {
                       y,
                       space,
                       ki,
-                      theme,
+                      this.createThemeContext(),
                       Markup.Circle
                     );
                     markup.setColor(color);
@@ -971,19 +1056,47 @@ export class GhostBan {
                     break;
                   }
                   case Markup.Square: {
-                    markup = new SquareMarkup(ctx, x, y, space, ki, theme);
+                    markup = new SquareMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   case Markup.Triangle: {
-                    markup = new TriangleMarkup(ctx, x, y, space, ki, theme);
+                    markup = new TriangleMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   case Markup.Cross: {
-                    markup = new CrossMarkup(ctx, x, y, space, ki, theme);
+                    markup = new CrossMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   case Markup.Highlight: {
-                    markup = new HighlightMarkup(ctx, x, y, space, ki, theme);
+                    markup = new HighlightMarkup(
+                      ctx,
+                      x,
+                      y,
+                      space,
+                      ki,
+                      this.createThemeContext()
+                    );
                     break;
                   }
                   default: {
@@ -994,7 +1107,7 @@ export class GhostBan {
                         y,
                         space,
                         ki,
-                        theme,
+                        this.createThemeContext(),
                         value
                       );
                     }
@@ -1026,33 +1139,18 @@ export class GhostBan {
       board.style.borderRadius = '2px';
       const ctx = board.getContext('2d');
       if (ctx) {
-        if (theme === Theme.BlackAndWhite) {
-          board.style.boxShadow = '0px 0px 0px #000000';
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(
-            -padding,
-            -padding,
-            board.width + padding,
-            board.height + padding
+        if (
+          theme === Theme.BlackAndWhite ||
+          theme === Theme.Flat ||
+          theme === Theme.Warm ||
+          theme === Theme.Dark
+        ) {
+          board.style.boxShadow =
+            theme === Theme.BlackAndWhite ? '0px 0px 0px #000000' : '';
+
+          ctx.fillStyle = this.getThemeProperty(
+            ThemePropertyKey.BoardBackgroundColor
           );
-        } else if (theme === Theme.Flat) {
-          ctx.fillStyle = this.options.themeFlatBoardColor;
-          ctx.fillRect(
-            -padding,
-            -padding,
-            board.width + padding,
-            board.height + padding
-          );
-        } else if (theme === Theme.Warm) {
-          ctx.fillStyle = this.options.themeWarmBoardColor;
-          ctx.fillRect(
-            -padding,
-            -padding,
-            board.width + padding,
-            board.height + padding
-          );
-        } else if (theme === Theme.Dark) {
-          ctx.fillStyle = this.options.themeDarkBoardColor;
           ctx.fillRect(
             -padding,
             -padding,
@@ -1061,6 +1159,21 @@ export class GhostBan {
           );
         } else if (
           theme === Theme.Walnut &&
+          themeResources[theme].board !== undefined
+        ) {
+          const boardUrl = themeResources[theme].board || '';
+          const boardRes = images[boardUrl];
+          if (boardRes) {
+            ctx.drawImage(
+              boardRes,
+              -padding,
+              -padding,
+              board.width + padding,
+              board.height + padding
+            );
+          }
+        } else if (
+          theme === Theme.YunziMonkeyDark &&
           themeResources[theme].board !== undefined
         ) {
           const boardUrl = themeResources[theme].board || '';
@@ -1092,29 +1205,25 @@ export class GhostBan {
   drawBoardLine = (board = this.board) => {
     if (!board) return;
     const {visibleArea, options, mat, preventMoveMat, cursorPosition} = this;
-    const {
-      zoom,
-      boardSize,
-      boardLineWidth,
-      boardEdgeLineWidth,
-      boardLineExtent,
-      adaptiveBoardLine,
-      theme,
-    } = options;
+    const {zoom, boardSize, adaptiveBoardLine, theme} = options;
+    const boardLineWidth = this.getThemeProperty(
+      ThemePropertyKey.BoardLineWidth
+    );
+    const boardEdgeLineWidth = this.getThemeProperty(
+      ThemePropertyKey.BoardEdgeLineWidth
+    );
+    const boardLineExtent = this.getThemeProperty(
+      ThemePropertyKey.BoardLineExtent
+    );
     const ctx = board.getContext('2d');
     if (ctx) {
       const {space, scaledPadding} = this.calcSpaceAndPadding();
 
       const extendSpace = zoom ? boardLineExtent * space : 0;
-      let activeColor = '#000000';
-      let inactiveColor = '#666666';
+      let activeColor = this.getThemeProperty(ThemePropertyKey.ActiveColor);
+      let inactiveColor = this.getThemeProperty(ThemePropertyKey.InactiveColor);
 
-      if (theme === Theme.Dark) {
-        activeColor = DARK_ACTIVE_COLOR;
-        inactiveColor = DARK_INACTIVE_COLOR;
-      }
-
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = this.getThemeProperty(ThemePropertyKey.BoardLineColor);
 
       const adaptiveFactor = 0.001;
       const touchingFactor = 2.5;
@@ -1219,7 +1328,8 @@ export class GhostBan {
     if (!board) return;
     if (this.options.boardSize !== 19) return;
 
-    let {starSize: starSizeOptions, adaptiveStarSize} = this.options;
+    let {adaptiveStarSize} = this.options;
+    const starSizeOptions = this.getThemeProperty(ThemePropertyKey.StarSize);
 
     const visibleArea = this.visibleArea;
     const ctx = board.getContext('2d');
@@ -1244,10 +1354,7 @@ export class GhostBan {
               2 * Math.PI,
               true
             );
-            ctx.fillStyle = '#000000';
-            if (this.options.theme === Theme.Dark) {
-              ctx.fillStyle = DARK_ACTIVE_COLOR;
-            }
+            ctx.fillStyle = this.getThemeProperty('boardLineColor');
             ctx.fill();
           }
         });
@@ -1258,18 +1365,15 @@ export class GhostBan {
   drawCoordinate = () => {
     const {board, options, visibleArea} = this;
     if (!board) return;
-    const {boardSize, zoom, padding, boardLineExtent, theme} = options;
+    const {boardSize, zoom, padding, theme} = options;
+    const boardLineExtent = this.getThemeProperty('boardLineExtent');
     let zoomedBoardSize = visibleArea[0][1] - visibleArea[0][0] + 1;
     const ctx = board.getContext('2d');
     const {space, scaledPadding} = this.calcSpaceAndPadding();
     if (ctx) {
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#000000';
-
-      if (theme === Theme.Dark) {
-        ctx.fillStyle = DARK_ACTIVE_COLOR;
-      }
+      ctx.fillStyle = this.getThemeProperty('boardLineColor');
 
       ctx.font = `bold ${space / 3}px Helvetica`;
 
@@ -1368,7 +1472,8 @@ export class GhostBan {
     let scaledPadding = 0;
     let scaledBoardExtent = 0;
     if (canvas) {
-      const {padding, boardSize, boardLineExtent, zoom} = this.options;
+      const {padding, boardSize, zoom} = this.options;
+      const boardLineExtent = this.getThemeProperty('boardLineExtent');
       const {visibleArea} = this;
 
       if (
@@ -1446,30 +1551,66 @@ export class GhostBan {
         let cur;
         const size = space * 0.8;
         if (cursor === Cursor.Circle) {
-          cur = new CircleMarkup(ctx, x, y, space, ki, theme);
+          cur = new CircleMarkup(
+            ctx,
+            x,
+            y,
+            space,
+            ki,
+            this.createThemeContext()
+          );
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Square) {
-          cur = new SquareMarkup(ctx, x, y, space, ki, theme);
+          cur = new SquareMarkup(
+            ctx,
+            x,
+            y,
+            space,
+            ki,
+            this.createThemeContext()
+          );
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Triangle) {
-          cur = new TriangleMarkup(ctx, x, y, space, ki, theme);
+          cur = new TriangleMarkup(
+            ctx,
+            x,
+            y,
+            space,
+            ki,
+            this.createThemeContext()
+          );
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Cross) {
-          cur = new CrossMarkup(ctx, x, y, space, ki, theme);
+          cur = new CrossMarkup(
+            ctx,
+            x,
+            y,
+            space,
+            ki,
+            this.createThemeContext()
+          );
           cur.setGlobalAlpha(0.8);
         } else if (cursor === Cursor.Text) {
-          cur = new TextMarkup(ctx, x, y, space, ki, theme, cursorValue);
+          cur = new TextMarkup(
+            ctx,
+            x,
+            y,
+            space,
+            ki,
+            this.createThemeContext(),
+            cursorValue
+          );
           cur.setGlobalAlpha(0.8);
         } else if (ki === Ki.Empty && cursor === Cursor.BlackStone) {
-          cur = new ColorStone(ctx, x, y, Ki.Black);
+          cur = new FlatStone(ctx, x, y, Ki.Black, this.createThemeContext());
           cur.setSize(size);
           cur.setGlobalAlpha(0.5);
         } else if (ki === Ki.Empty && cursor === Cursor.WhiteStone) {
-          cur = new ColorStone(ctx, x, y, Ki.White);
+          cur = new FlatStone(ctx, x, y, Ki.White, this.createThemeContext());
           cur.setSize(size);
           cur.setGlobalAlpha(0.5);
         } else if (cursor === Cursor.Clear) {
-          cur = new ColorStone(ctx, x, y, Ki.Empty);
+          cur = new FlatStone(ctx, x, y, Ki.Empty, this.createThemeContext());
           cur.setSize(size);
         }
         cur?.draw();
@@ -1505,7 +1646,7 @@ export class GhostBan {
               ) {
                 ctx.shadowOffsetX = 3;
                 ctx.shadowOffsetY = 3;
-                ctx.shadowColor = '#555';
+                ctx.shadowColor = this.getThemeProperty('shadowColor');
                 ctx.shadowBlur = 8;
               } else {
                 ctx.shadowOffsetX = 0;
@@ -1518,12 +1659,24 @@ export class GhostBan {
                 case Theme.BlackAndWhite:
                 case Theme.Flat:
                 case Theme.Warm: {
-                  stone = new ColorStone(ctx, x, y, value);
+                  stone = new FlatStone(
+                    ctx,
+                    x,
+                    y,
+                    value,
+                    this.createThemeContext()
+                  );
                   stone.setSize(space * ratio * 2);
                   break;
                 }
                 case Theme.Dark: {
-                  stone = new DarkStone(ctx, x, y, value);
+                  stone = new FlatStone(
+                    ctx,
+                    x,
+                    y,
+                    value,
+                    this.createThemeContext()
+                  );
                   stone.setSize(space * ratio * 2);
                   break;
                 }

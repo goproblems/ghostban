@@ -1,4 +1,4 @@
-import { Theme } from '../types';
+import { ThemeContext, ThemeConfig } from '../types';
 export default class Markup {
     protected ctx: CanvasRenderingContext2D;
     protected x: number;
@@ -9,11 +9,14 @@ export default class Markup {
     protected globalAlpha: number;
     protected color: string;
     protected lineDash: number[];
-    protected theme?: Theme;
-    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, ki: number, theme?: Theme, val?: string | number);
+    protected themeContext?: ThemeContext;
+    constructor(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, ki: number, themeContext?: ThemeContext, val?: string | number);
     draw(): void;
     setGlobalAlpha(alpha: number): void;
     setColor(color: string): void;
     setLineDash(lineDash: number[]): void;
-    protected getThemeAwareColor(lightColor: string, darkColor: string): string;
+    /**
+     * Get a theme property value with fallback
+     */
+    protected getThemeProperty<K extends keyof ThemeConfig>(key: K): ThemeConfig[K];
 }

@@ -1,3 +1,4 @@
+import {Ki} from '../types';
 import Markup from './MarkupBase';
 
 export class CircleSolidMarkup extends Markup {
@@ -8,14 +9,14 @@ export class CircleSolidMarkup extends Markup {
     ctx.save();
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = this.getThemeProperty('markupLineWidth');
     ctx.setLineDash(this.lineDash);
-    if (ki === 1) {
-      ctx.fillStyle = '#fff';
-    } else if (ki === -1) {
-      ctx.fillStyle = '#000';
+    if (ki === Ki.Black) {
+      ctx.fillStyle = this.getThemeProperty('flatWhiteColor');
+    } else if (ki === Ki.White) {
+      ctx.fillStyle = this.getThemeProperty('flatBlackColor');
     } else {
-      ctx.fillStyle = this.getThemeAwareColor('#000', '#fff');
+      ctx.fillStyle = this.getThemeProperty('boardLineColor');
       ctx.lineWidth = 3;
     }
     if (color) ctx.fillStyle = color;

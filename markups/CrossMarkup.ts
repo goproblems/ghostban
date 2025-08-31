@@ -1,4 +1,5 @@
 import Markup from './MarkupBase';
+import {Ki} from '../types';
 
 export class CrossMarkup extends Markup {
   draw() {
@@ -9,12 +10,12 @@ export class CrossMarkup extends Markup {
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.globalAlpha = globalAlpha;
-    if (ki === 1) {
-      ctx.strokeStyle = '#fff';
-    } else if (ki === -1) {
-      ctx.strokeStyle = '#000';
+    if (ki === Ki.White) {
+      ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
+    } else if (ki === Ki.Black) {
+      ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
     } else {
-      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
+      ctx.strokeStyle = this.getThemeProperty('boardLineColor');
       size = radius * 0.58;
     }
     ctx.moveTo(x - size, y - size);

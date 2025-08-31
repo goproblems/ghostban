@@ -1,4 +1,5 @@
 import Markup from './MarkupBase';
+import {Ki} from '../types';
 
 export class TextMarkup extends Markup {
   draw() {
@@ -8,12 +9,12 @@ export class TextMarkup extends Markup {
     ctx.save();
     ctx.globalAlpha = globalAlpha;
 
-    if (ki === 1) {
-      ctx.fillStyle = '#fff';
-    } else if (ki === -1) {
-      ctx.fillStyle = '#000';
+    if (ki === Ki.White) {
+      ctx.fillStyle = this.getThemeProperty('flatBlackColor');
+    } else if (ki === Ki.Black) {
+      ctx.fillStyle = this.getThemeProperty('flatWhiteColor');
     } else {
-      ctx.fillStyle = this.getThemeAwareColor('#000', '#fff');
+      ctx.fillStyle = this.getThemeProperty('boardLineColor');
     }
     // else {
     //   ctx.clearRect(x - size / 2, y - size / 2, size, size);

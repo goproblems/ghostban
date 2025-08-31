@@ -1,4 +1,36 @@
 /**
+ * Theme property keys for type-safe access to theme configuration
+ */
+export declare enum ThemePropertyKey {
+    PositiveNodeColor = "positiveNodeColor",
+    NegativeNodeColor = "negativeNodeColor",
+    NeutralNodeColor = "neutralNodeColor",
+    DefaultNodeColor = "defaultNodeColor",
+    WarningNodeColor = "warningNodeColor",
+    ShadowColor = "shadowColor",
+    BoardLineColor = "boardLineColor",
+    ActiveColor = "activeColor",
+    InactiveColor = "inactiveColor",
+    BoardBackgroundColor = "boardBackgroundColor",
+    FlatBlackColor = "flatBlackColor",
+    FlatBlackColorAlt = "flatBlackColorAlt",
+    FlatWhiteColor = "flatWhiteColor",
+    FlatWhiteColorAlt = "flatWhiteColorAlt",
+    BoardEdgeLineWidth = "boardEdgeLineWidth",
+    BoardLineWidth = "boardLineWidth",
+    BoardLineExtent = "boardLineExtent",
+    StarSize = "starSize",
+    MarkupLineWidth = "markupLineWidth",
+    HighlightColor = "highlightColor"
+}
+/**
+ * Theme context for markup rendering
+ */
+export type ThemeContext = {
+    theme: Theme;
+    themeOptions: ThemeOptions;
+};
+/**
  * Options for configuring GhostBan.
  */
 export type GhostBanOptions = {
@@ -15,20 +47,9 @@ export type GhostBanOptions = {
     background: boolean;
     showAnalysis: boolean;
     adaptiveBoardLine: boolean;
-    boardEdgeLineWidth: number;
-    boardLineWidth: number;
-    boardLineExtent: number;
-    themeFlatBoardColor: string;
-    themeWarmBoardColor: string;
-    themeDarkBoardColor: string;
-    positiveNodeColor: string;
-    negativeNodeColor: string;
-    neutralNodeColor: string;
-    defaultNodeColor: string;
-    warningNodeColor: string;
+    themeOptions: ThemeOptions;
     themeResources: ThemeResources;
     moveSound: boolean;
-    starSize: number;
     adaptiveStarSize: boolean;
     mobileIndicatorOffset: number;
     forceAnalysisBoardSize?: number;
@@ -47,22 +68,39 @@ export type GhostBanOptionsParams = {
     background?: boolean;
     showAnalysis?: boolean;
     adaptiveBoardLine?: boolean;
-    boardEdgeLineWidth?: number;
-    boardLineWidth?: number;
-    themeFlatBoardColor?: string;
-    themeWarmBoardColor?: string;
-    themeDarkBoardColor?: string;
-    positiveNodeColor?: string;
-    negativeNodeColor?: string;
-    neutralNodeColor?: string;
-    defaultNodeColor?: string;
-    warningNodeColor?: string;
+    themeOptions?: Partial<ThemeOptions>;
     themeResources?: ThemeResources;
     moveSound?: boolean;
-    starSize?: number;
     adaptiveStarSize?: boolean;
     forceAnalysisBoardSize?: number;
     mobileIndicatorOffset?: number;
+};
+export type ThemeConfig = {
+    positiveNodeColor: string;
+    negativeNodeColor: string;
+    neutralNodeColor: string;
+    defaultNodeColor: string;
+    warningNodeColor: string;
+    shadowColor: string;
+    boardLineColor: string;
+    activeColor: string;
+    inactiveColor: string;
+    boardBackgroundColor: string;
+    flatBlackColor: string;
+    flatBlackColorAlt: string;
+    flatWhiteColor: string;
+    flatWhiteColorAlt: string;
+    boardEdgeLineWidth: number;
+    boardLineWidth: number;
+    boardLineExtent: number;
+    starSize: number;
+    markupLineWidth: number;
+    highlightColor: string;
+};
+export type ThemeOptions = {
+    [key in Theme]?: Partial<ThemeConfig>;
+} & {
+    default: ThemeConfig;
 };
 export type ThemeResources = {
     [key in Theme]: {
@@ -150,7 +188,8 @@ export declare enum Theme {
     Walnut = "walnut",
     Photorealistic = "photorealistic",
     Dark = "dark",
-    Warm = "warm"
+    Warm = "warm",
+    YunziMonkeyDark = "yunzi_monkey_dark"
 }
 export declare enum AnalysisPointTheme {
     Default = "default",

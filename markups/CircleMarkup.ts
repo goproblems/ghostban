@@ -1,4 +1,5 @@
 import Markup from './MarkupBase';
+import {Ki} from '../types';
 
 export class CircleMarkup extends Markup {
   draw() {
@@ -8,14 +9,14 @@ export class CircleMarkup extends Markup {
     ctx.save();
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = this.getThemeProperty('markupLineWidth');
     ctx.setLineDash(this.lineDash);
-    if (ki === 1) {
-      ctx.strokeStyle = '#fff';
-    } else if (ki === -1) {
-      ctx.strokeStyle = '#000';
+    if (ki === Ki.White) {
+      ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
+    } else if (ki === Ki.Black) {
+      ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
     } else {
-      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
+      ctx.strokeStyle = this.getThemeProperty('boardLineColor');
       ctx.lineWidth = 3;
     }
     if (color) ctx.strokeStyle = color;

@@ -449,9 +449,9 @@ export const a1ToSGF = (str: any, type = 'B', offsetX = 0, offsetY = 0) => {
 export const posToSgf = (x: number, y: number, ki: number) => {
   const ax = SGF_LETTERS[x];
   const ay = SGF_LETTERS[y];
-  if (ki === 0) return '';
-  if (ki === 1) return `B[${ax}${ay}]`;
-  if (ki === -1) return `W[${ax}${ay}]`;
+  if (ki === Ki.Empty) return '';
+  if (ki === Ki.White) return `B[${ax}${ay}]`;
+  if (ki === Ki.Black) return `W[${ax}${ay}]`;
   return '';
 };
 

@@ -1,4 +1,5 @@
-import { Theme } from './types';
+import { Theme, ThemeConfig } from './types';
+export declare const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig;
 export declare const MAX_BOARD_SIZE = 29;
 export declare const DEFAULT_BOARD_SIZE = 19;
 export declare const A1_LETTERS: string[];

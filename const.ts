@@ -1,7 +1,32 @@
 import {chunk} from 'lodash';
-import {Theme} from './types';
+import {Theme, ThemeConfig} from './types';
 
 const settings = {cdn: 'https://s.shaowq.com'};
+
+export const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig = {
+  positiveNodeColor: '#4d7c0f',
+  negativeNodeColor: '#b91c1c',
+  neutralNodeColor: '#a16207',
+  defaultNodeColor: '#404040',
+  warningNodeColor: '#ffdf20',
+  shadowColor: '#555',
+  boardLineColor: '#000000',
+  activeColor: '#000000',
+  inactiveColor: '#666666',
+  boardBackgroundColor: '#FFFFFF',
+  // Markup colors for flat themes
+  flatBlackColor: '#000000',
+  flatBlackColorAlt: '#000000', // 备用，暂时与主要颜色相同
+  flatWhiteColor: '#FFFFFF',
+  flatWhiteColorAlt: '#FFFFFF', // 备用，暂时与主要颜色相同
+  // Board display properties
+  boardEdgeLineWidth: 5,
+  boardLineWidth: 1,
+  boardLineExtent: 0.5,
+  starSize: 3,
+  markupLineWidth: 2,
+  highlightColor: '#ffeb64',
+};
 
 export const MAX_BOARD_SIZE = 29;
 export const DEFAULT_BOARD_SIZE = 19;
@@ -150,6 +175,15 @@ export const THEME_RESOURCES: {
   [Theme.Dark]: {
     blacks: [],
     whites: [],
+  },
+  [Theme.YunziMonkeyDark]: {
+    board: `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder1920px.png`,
+    blacks: [
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-1350px.png`,
+    ],
+    whites: [
+      `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v5-1350px.png`,
+    ],
   },
 };
 

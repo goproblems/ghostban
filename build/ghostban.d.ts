@@ -35,6 +35,12 @@ export declare class GhostBan {
         };
     };
     constructor(options?: GhostBanOptionsParams);
+    private getThemeProperty;
+    /**
+     * Create theme context for markup components
+     */
+    private createThemeContext;
+    private updateNodeMarkupStyles;
     setTurn(turn: Ki): void;
     setBoardSize(size: number): void;
     resize(): void;
@@ -55,7 +61,7 @@ export declare class GhostBan {
     private onTouchEnd;
     renderInteractive(): void;
     setAnalysis(analysis: Analysis | null): void;
-    setTheme(theme: Theme, options?: {}): void;
+    setTheme(theme: Theme, options?: Partial<GhostBanOptionsParams>): void;
     calcCenter: () => Center;
     calcDynamicPadding(visibleAreaSize: number): void;
     zoomBoard(zoom?: boolean): void;

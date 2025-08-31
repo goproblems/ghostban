@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GhostBan Theme Debug</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <script src="./build/index.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        
+        // 创建 GhostBan 实例，使用 YunziMonkeyDark 主题
+        const ghostban = new GhostBan({
+            canvas: canvas,
+            boardSize: 9,
+            theme: 'YunziMonkeyDark',
+            coordinate: false,
+            background: true
+        });
+        
+        // 创建标记数组来触发 getThemeProperty 调用
+        const size = 9;
+        const markupArray = Array(size).fill(null).map(() => Array(size).fill(''));
+        markupArray[4][4] = 'O'; // Circle markup
+        markupArray[2][2] = 'S'; // Square markup
+        ghostban.setMarkup(markupArray);
+        
+        console.log('Theme:', ghostban.options.theme);
+        console.log('ThemeOptions:', ghostban.options.themeOptions);
+        
+        // 获取主题上下文
+        const themeContext = ghostban.createThemeContext();
+        console.log('ThemeContext:', themeContext);
+        
+        // 重新渲染以触发 markup 绘制和调试输出
+        ghostban.render();
+        
+        // 等一下再查看生成的 markup
+        setTimeout(() => {
+            console.log('=== 延迟检查主题属性 ===');
+            // 输出当前构建的版本信息
+            console.log('Build timestamp:', new Date().toISOString());
+        }, 100);
+    </script>
+</body>
+</html>

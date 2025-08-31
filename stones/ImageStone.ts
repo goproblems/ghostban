@@ -1,4 +1,5 @@
 import Stone from './base';
+import {Ki} from '../types';
 
 export class ImageStone extends Stone {
   constructor(
@@ -17,7 +18,7 @@ export class ImageStone extends Stone {
     const {ctx, x, y, size, ki, blacks, whites, mod} = this;
     if (size <= 0) return;
     let img;
-    if (ki === 1) {
+    if (ki === Ki.Black) {
       img = blacks[mod % blacks.length];
     } else {
       img = whites[mod % whites.length];

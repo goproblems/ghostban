@@ -1,4 +1,5 @@
 import Markup from './MarkupBase';
+import {Ki} from '../types';
 
 export class TriangleMarkup extends Markup {
   draw() {
@@ -12,13 +13,13 @@ export class TriangleMarkup extends Markup {
     ctx.lineTo(x - size * Math.cos(0.523), y + size * Math.sin(0.523));
     ctx.lineTo(x + size * Math.cos(0.523), y + size * Math.sin(0.523));
 
-    ctx.lineWidth = 2;
-    if (ki === 1) {
-      ctx.strokeStyle = '#fff';
-    } else if (ki === -1) {
-      ctx.strokeStyle = '#000';
+    ctx.lineWidth = this.getThemeProperty('markupLineWidth');
+    if (ki === Ki.White) {
+      ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
+    } else if (ki === Ki.Black) {
+      ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
     } else {
-      ctx.strokeStyle = this.getThemeAwareColor('#000', '#fff');
+      ctx.strokeStyle = this.getThemeProperty('boardLineColor');
       ctx.lineWidth = 3;
       size = radius * 0.7;
     }

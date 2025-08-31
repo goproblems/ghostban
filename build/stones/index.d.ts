@@ -1,2 +1,2 @@
-export * from './ColorStone';
+export * from './FlatStone';
 export * from './ImageStone';
