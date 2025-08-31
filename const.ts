@@ -9,7 +9,7 @@ export const BASE_THEME_CONFIG: ThemeConfig = {
   neutralNodeColor: '#a16207',
   defaultNodeColor: '#404040',
   warningNodeColor: '#ffdf20',
-  shadowColor: '#555',
+  shadowColor: '#555555',
   boardLineColor: '#000000',
   activeColor: '#000000',
   inactiveColor: '#666666',

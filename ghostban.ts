@@ -156,6 +156,7 @@ const DEFAULT_THEME_OPTIONS: ThemeOptions = {
     flatBlackColorAlt: '#021D11',
     flatWhiteColor: '#A2C8B4',
     flatWhiteColorAlt: '#AFCBBC',
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
   },
   [Theme.HighContrast]: {
     // High contrast theme, friendly for all types of color blindness
@@ -992,8 +993,8 @@ export class GhostBan {
         theme !== Theme.Warm &&
         theme !== Theme.Dark
       ) {
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 3;
+        ctx.shadowOffsetX = 30;
+        ctx.shadowOffsetY = 30;
         ctx.shadowColor = this.getThemeProperty(ThemePropertyKey.ShadowColor);
         ctx.shadowBlur = 8;
       } else {
@@ -1252,13 +1253,7 @@ export class GhostBan {
             const boardRes = images[boardUrl];
             if (boardRes) {
               if (theme === Theme.Walnut || theme === Theme.YunziMonkeyDark) {
-                ctx.drawImage(
-                  boardRes,
-                  -padding,
-                  -padding,
-                  board.width + padding,
-                  board.height + padding
-                );
+                ctx.drawImage(boardRes, 0, 0, board.width, board.height);
               } else {
                 const pattern = ctx.createPattern(boardRes, 'repeat');
                 if (pattern) {

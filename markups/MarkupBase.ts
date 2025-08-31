@@ -50,14 +50,6 @@ export default class Markup {
     const themeSpecific = themeOptions[theme];
     const defaultConfig = themeOptions.default;
 
-    console.log(`[DEBUG] Getting theme property:`, {
-      key,
-      theme,
-      themeSpecific: themeSpecific?.[key],
-      defaultConfig: defaultConfig[key],
-      hasThemeSpecific: !!themeSpecific?.[key],
-    });
-
     // Try theme-specific value first, then default
     const result = (themeSpecific?.[key] ??
       defaultConfig[key]) as ThemeConfig[K];
