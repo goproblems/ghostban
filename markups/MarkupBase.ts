@@ -1,4 +1,4 @@
-import {Ki, ThemeContext, ThemeConfig} from '../types';
+import {Theme, ThemePropertyKey, ThemeContext, ThemeConfig} from '../types';
 import {BASE_THEME_CONFIG} from '../const';
 
 export default class Markup {
@@ -20,7 +20,7 @@ export default class Markup {
   }
 
   draw() {
-    console.log('TBD');
+    // Base draw method - to be implemented by subclasses
   }
 
   setGlobalAlpha(alpha: number) {
@@ -42,7 +42,6 @@ export default class Markup {
     key: K
   ): ThemeConfig[K] {
     if (!this.themeContext) {
-      console.log(`[DEBUG] No theme context for key: ${key}, using default`);
       return BASE_THEME_CONFIG[key];
     }
 
@@ -53,7 +52,6 @@ export default class Markup {
     // Try theme-specific value first, then default
     const result = (themeSpecific?.[key] ??
       defaultConfig[key]) as ThemeConfig[K];
-    console.log(`[DEBUG] Result for ${key}:`, result);
     return result;
   }
 }

@@ -11,6 +11,6 @@ export default class EffectBase {
   ) {}
 
   play() {
-    console.log('TBD');
+    // Base play method - to be implemented by subclasses
   }
 }

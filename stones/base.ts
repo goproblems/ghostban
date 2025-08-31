@@ -9,7 +9,7 @@ export default class Stone {
     protected ki: number
   ) {}
   draw() {
-    console.log('TBD');
+    // Base draw method - to be implemented by subclasses
   }
 
   setGlobalAlpha(alpha: number) {
