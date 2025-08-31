@@ -205,6 +205,7 @@ export enum Theme {
   Dark = 'dark',
   Warm = 'warm',
   YunziMonkeyDark = 'yunzi_monkey_dark',
+  HighContrast = 'high_contrast',
 }
 
 export enum AnalysisPointTheme {

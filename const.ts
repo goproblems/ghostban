@@ -14,12 +14,10 @@ export const DEFAULT_THEME_COLOR_CONFIG: ThemeConfig = {
   activeColor: '#000000',
   inactiveColor: '#666666',
   boardBackgroundColor: '#FFFFFF',
-  // Markup colors for flat themes
   flatBlackColor: '#000000',
-  flatBlackColorAlt: '#000000', // 备用，暂时与主要颜色相同
+  flatBlackColorAlt: '#000000', // Alternative, temporarily same as main color
   flatWhiteColor: '#FFFFFF',
-  flatWhiteColorAlt: '#FFFFFF', // 备用，暂时与主要颜色相同
-  // Board display properties
+  flatWhiteColorAlt: '#FFFFFF', // Alternative, temporarily same as main color
   boardEdgeLineWidth: 5,
   boardLineWidth: 1,
   boardLineExtent: 0.5,
@@ -184,6 +182,10 @@ export const THEME_RESOURCES: {
     whites: [
       `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v5-1350px.png`,
     ],
+  },
+  [Theme.HighContrast]: {
+    blacks: [],
+    whites: [],
   },
 };
 

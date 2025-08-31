@@ -189,7 +189,8 @@ export declare enum Theme {
     Photorealistic = "photorealistic",
     Dark = "dark",
     Warm = "warm",
-    YunziMonkeyDark = "yunzi_monkey_dark"
+    YunziMonkeyDark = "yunzi_monkey_dark",
+    HighContrast = "high_contrast"
 }
 export declare enum AnalysisPointTheme {
     Default = "default",

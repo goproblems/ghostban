@@ -59,7 +59,11 @@ function isMobileDevice() {
   );
 }
 
-function preload(urls: string[], done: () => void) {
+function preload(
+  urls: string[],
+  done: () => void,
+  onImageLoaded?: (url: string) => void
+) {
   let loaded = 0;
   const imageLoaded = () => {
     loaded++;
@@ -73,10 +77,17 @@ function preload(urls: string[], done: () => void) {
       images[urls[i]].src = urls[i];
       images[urls[i]].onload = function () {
         imageLoaded();
+        // Callback when single image load completes
+        if (onImageLoaded) {
+          onImageLoaded(urls[i]);
+        }
       };
       images[urls[i]].onerror = function () {
         imageLoaded();
       };
+    } else if (images[urls[i]].complete) {
+      // Image already loaded
+      imageLoaded();
     }
   }
 }
@@ -108,6 +119,30 @@ const DEFAULT_THEME_OPTIONS: ThemeOptions = {
     flatBlackColorAlt: '#021D11',
     flatWhiteColor: '#A2C8B4',
     flatWhiteColorAlt: '#AFCBBC',
+  },
+  [Theme.HighContrast]: {
+    // High contrast theme, friendly for all types of color blindness
+    boardBackgroundColor: '#F5F5DC', // Beige background, gentle on eyes
+    boardLineColor: '#2F4F4F', // Dark slate gray lines for high contrast
+    activeColor: '#2F4F4F',
+    inactiveColor: '#808080',
+
+    // Stone colors: traditional black and white for maximum contrast and color blind friendliness
+    flatBlackColor: '#000000', // Pure black - universally accessible
+    flatBlackColorAlt: '#1A1A1A', // Very dark gray variant
+    flatWhiteColor: '#FFFFFF', // Pure white - maximum contrast with black
+    flatWhiteColorAlt: '#F8F8F8', // Very light gray variant
+
+    // Node and markup colors - using colorblind-friendly colors that avoid red-green combinations
+    positiveNodeColor: '#0284C7', // Blue (positive) - safe for all color blindness types
+    negativeNodeColor: '#EA580C', // Orange (negative) - distinguishable from blue for all users
+    neutralNodeColor: '#7C2D12', // Brown (neutral) - alternative to problematic colors
+    defaultNodeColor: '#4B5563', // Dark gray
+    warningNodeColor: '#FBBF24', // Bright yellow warning
+
+    // Highlight and shadow
+    highlightColor: '#FDE047', // Bright yellow highlight
+    shadowColor: '#374151', // Dark gray shadow
   },
 };
 
@@ -604,10 +639,22 @@ export class GhostBan {
       },
     };
     this.updateNodeMarkupStyles();
-    preload(compact([board, ...blacks, ...whites]), () => {
-      this.drawBoard();
-      this.render();
-    });
+
+    // Redraw callback after image loading completes
+    const onImageLoaded = (url: string) => {
+      // Only redraw stones, avoid redrawing entire board
+      this.drawStones();
+    };
+
+    preload(
+      compact([board, ...blacks, ...whites]),
+      () => {
+        this.drawBoard();
+        this.render();
+      },
+      onImageLoaded
+    );
+
     this.drawBoard();
     this.render();
   }
@@ -1143,7 +1190,8 @@ export class GhostBan {
           theme === Theme.BlackAndWhite ||
           theme === Theme.Flat ||
           theme === Theme.Warm ||
-          theme === Theme.Dark
+          theme === Theme.Dark ||
+          theme === Theme.HighContrast
         ) {
           board.style.boxShadow =
             theme === Theme.BlackAndWhite ? '0px 0px 0px #000000' : '';
@@ -1642,7 +1690,8 @@ export class GhostBan {
                 theme !== Theme.BlackAndWhite &&
                 theme !== Theme.Flat &&
                 theme !== Theme.Warm &&
-                theme !== Theme.Dark
+                theme !== Theme.Dark &&
+                theme !== Theme.HighContrast
               ) {
                 ctx.shadowOffsetX = 3;
                 ctx.shadowOffsetY = 3;
@@ -1658,7 +1707,8 @@ export class GhostBan {
               switch (theme) {
                 case Theme.BlackAndWhite:
                 case Theme.Flat:
-                case Theme.Warm: {
+                case Theme.Warm:
+                case Theme.HighContrast: {
                   stone = new FlatStone(
                     ctx,
                     x,
@@ -1688,7 +1738,16 @@ export class GhostBan {
                     i => images[i]
                   );
                   const mod = i + 10 + j;
-                  stone = new ImageStone(ctx, x, y, value, mod, blacks, whites);
+                  stone = new ImageStone(
+                    ctx,
+                    x,
+                    y,
+                    value,
+                    mod,
+                    blacks,
+                    whites,
+                    this.createThemeContext()
+                  );
                   stone.setSize(space * ratio * 2);
                 }
               }
