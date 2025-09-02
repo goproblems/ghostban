@@ -156,7 +156,8 @@ const DEFAULT_THEME_OPTIONS: ThemeOptions = {
     flatBlackColorAlt: '#021D11',
     flatWhiteColor: '#A2C8B4',
     flatWhiteColorAlt: '#AFCBBC',
-    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    stoneRatio: 0.5,
   },
   [Theme.HighContrast]: {
     // High contrast theme, friendly for all types of color blindness
@@ -1701,7 +1702,7 @@ export class GhostBan {
               const {space, scaledPadding} = this.calcSpaceAndPadding();
               const x = scaledPadding + i * space;
               const y = scaledPadding + j * space;
-              const ratio = 0.45;
+              const ratio = this.getThemeProperty('stoneRatio');
               ctx.save();
               if (
                 theme !== Theme.Subdued &&

@@ -24,6 +24,7 @@ export const BASE_THEME_CONFIG: ThemeConfig = {
   starSize: 3,
   markupLineWidth: 2,
   highlightColor: '#ffeb64',
+  stoneRatio: 0.45,
 };
 
 export const MAX_BOARD_SIZE = 29;

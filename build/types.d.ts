@@ -96,6 +96,7 @@ export type ThemeConfig = {
     starSize: number;
     markupLineWidth: number;
     highlightColor: string;
+    stoneRatio: number;
 };
 export type ThemeOptions = {
     [key in Theme]?: Partial<ThemeConfig>;
