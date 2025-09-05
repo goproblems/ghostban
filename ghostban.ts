@@ -49,30 +49,39 @@ import {
 } from './markups';
 import {BanEffect} from './effects';
 
-// Utility functions for mobile detection and resource selection
-const isMobile = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  return (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    ) || window.innerWidth <= 768
-  );
-};
-
-const getThemeResources = (theme: Theme, themeResources: any) => {
+const getThemeResources = (
+  theme: Theme,
+  themeResources: any,
+  boardSize: number = 512
+) => {
   const resources = themeResources[theme];
   if (!resources) return null;
 
-  // If on mobile and lowRes exists, use lowRes resources
-  if (isMobile() && resources.lowRes) {
+  // If board size < 256 and microRes exists, use microRes resources
+  if (boardSize < 256 && resources.microRes) {
+    return {
+      board: resources.microRes.board || resources.board,
+      blacks:
+        resources.microRes.blacks?.length > 0
+          ? resources.microRes.blacks
+          : resources.blacks,
+      whites:
+        resources.microRes.whites?.length > 0
+          ? resources.microRes.whites
+          : resources.whites,
+    };
+  }
+
+  // If board size < 512 and lowRes exists, use lowRes resources
+  if (boardSize < 512 && resources.lowRes) {
     return {
       board: resources.lowRes.board || resources.board,
       blacks:
-        resources.lowRes.blacks.length > 0
+        resources.lowRes.blacks?.length > 0
           ? resources.lowRes.blacks
           : resources.blacks,
       whites:
-        resources.lowRes.whites.length > 0
+        resources.lowRes.whites?.length > 0
           ? resources.lowRes.whites
           : resources.whites,
     };
@@ -84,6 +93,36 @@ const getThemeResources = (theme: Theme, themeResources: any) => {
     blacks: resources.blacks,
     whites: resources.whites,
   };
+};
+
+// Get all theme resources for preloading (all resolutions)
+const getAllThemeResources = (theme: Theme, themeResources: any) => {
+  const resources = themeResources[theme];
+  if (!resources) return [];
+
+  const allImages: string[] = [];
+
+  // Add regular resolution resources
+  if (resources.board) allImages.push(resources.board);
+  if (resources.blacks) allImages.push(...resources.blacks);
+  if (resources.whites) allImages.push(...resources.whites);
+
+  // Add lowRes resources if they exist
+  if (resources.lowRes) {
+    if (resources.lowRes.board) allImages.push(resources.lowRes.board);
+    if (resources.lowRes.blacks) allImages.push(...resources.lowRes.blacks);
+    if (resources.lowRes.whites) allImages.push(...resources.lowRes.whites);
+  }
+
+  // Add microRes resources if they exist
+  if (resources.microRes) {
+    if (resources.microRes.board) allImages.push(resources.microRes.board);
+    if (resources.microRes.blacks) allImages.push(...resources.microRes.blacks);
+    if (resources.microRes.whites) allImages.push(...resources.microRes.whites);
+  }
+
+  // Remove duplicates
+  return Array.from(new Set(allImages));
 };
 
 const images: {
@@ -157,7 +196,7 @@ const DEFAULT_THEME_OPTIONS: ThemeOptions = {
     flatWhiteColor: '#A2C8B4',
     flatWhiteColorAlt: '#AFCBBC',
     shadowColor: 'rgba(0, 0, 0, 0.1)',
-    stoneRatio: 0.5,
+    stoneRatio: 0.51,
   },
   [Theme.HighContrast]: {
     // High contrast theme, friendly for all types of color blindness
@@ -666,9 +705,10 @@ export class GhostBan {
   setTheme(theme: Theme, options: Partial<GhostBanOptionsParams> = {}) {
     const {themeResources} = this.options;
     if (!themeResources[theme]) return;
-    const resources = getThemeResources(theme, themeResources);
-    if (!resources) return;
-    const {board, blacks, whites} = resources;
+
+    // Get all theme resources for preloading (all resolutions)
+    const allThemeImages = getAllThemeResources(theme, themeResources);
+
     this.options.theme = theme;
     this.options = {
       ...this.options,
@@ -687,8 +727,9 @@ export class GhostBan {
       this.drawStones();
     };
 
+    // Preload all theme resources (all resolutions)
     preload(
-      compact([board, ...blacks, ...whites]),
+      allThemeImages,
       () => {
         this.drawBoard();
         this.render();
@@ -1248,7 +1289,12 @@ export class GhostBan {
           // );
           ctx.fillRect(0, 0, board.width, board.height);
         } else {
-          const resources = getThemeResources(theme, themeResources);
+          const boardPixelSize = board.width;
+          const resources = getThemeResources(
+            theme,
+            themeResources,
+            boardPixelSize
+          );
           if (resources && resources.board) {
             const boardUrl = resources.board;
             const boardRes = images[boardUrl];
@@ -1750,7 +1796,12 @@ export class GhostBan {
                   break;
                 }
                 default: {
-                  const resources = getThemeResources(theme, themeResources);
+                  const boardPixelSize = canvas?.width || 512;
+                  const resources = getThemeResources(
+                    theme,
+                    themeResources,
+                    boardPixelSize
+                  );
                   if (resources) {
                     const blacks = resources.blacks.map(
                       (i: string) => images[i]

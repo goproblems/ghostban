@@ -31,6 +31,11 @@ export declare const THEME_RESOURCES: {
             blacks: string[];
             whites: string[];
         };
+        microRes?: {
+            board?: string;
+            blacks: string[];
+            whites: string[];
+        };
     };
 };
 export declare const LIGHT_GREEN_RGB = "rgba(136, 170, 60, 1)";

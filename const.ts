@@ -123,6 +123,11 @@ export const THEME_RESOURCES: {
       blacks: string[];
       whites: string[];
     };
+    microRes?: {
+      board?: string;
+      blacks: string[];
+      whites: string[];
+    };
   };
 } = {
   [Theme.BlackAndWhite]: {
@@ -200,6 +205,11 @@ export const THEME_RESOURCES: {
       whites: [
         `${settings.cdn}/assets/theme/ymd/yunzi-monkey-dark/YMD-W-v14-135px.png`,
       ],
+    },
+    microRes: {
+      board: `${settings.cdn}/assets/theme/ymd/YMD-Bo-V10_lessborder-960px.png`,
+      blacks: [`${settings.cdn}/assets/theme/ymd/YMD-B_197to59px.png`],
+      whites: [`${settings.cdn}/assets/theme/ymd/YMD-W_197to59px.png`],
     },
   },
   [Theme.HighContrast]: {
