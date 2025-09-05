@@ -129,6 +129,16 @@ const images: {
   [key: string]: HTMLImageElement;
 } = {};
 
+// Helper function to set high-quality image smoothing for canvas context
+const setImageSmoothingQuality = (
+  ctx: CanvasRenderingContext2D | null | undefined
+) => {
+  if (ctx) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+  }
+};
+
 function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
@@ -196,7 +206,7 @@ const DEFAULT_THEME_OPTIONS: ThemeOptions = {
     flatWhiteColor: '#A2C8B4',
     flatWhiteColorAlt: '#AFCBBC',
     shadowColor: 'rgba(0, 0, 0, 0.1)',
-    stoneRatio: 0.51,
+    stoneRatio: 0.5115,
   },
   [Theme.HighContrast]: {
     // High contrast theme, friendly for all types of color blindness
@@ -1268,6 +1278,7 @@ export class GhostBan {
       board.style.borderRadius = '2px';
       const ctx = board.getContext('2d');
       if (ctx) {
+        setImageSmoothingQuality(ctx);
         if (
           theme === Theme.BlackAndWhite ||
           theme === Theme.Flat ||
@@ -1745,6 +1756,7 @@ export class GhostBan {
           if (value !== 0) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
+              setImageSmoothingQuality(ctx);
               const {space, scaledPadding} = this.calcSpaceAndPadding();
               const x = scaledPadding + i * space;
               const y = scaledPadding + j * space;
