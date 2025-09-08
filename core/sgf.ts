@@ -1,6 +1,6 @@
 import {compact, replace} from 'lodash';
 import {
-  buildNodeRanges,
+  buildPropertyValueRanges,
   isInAnyRange,
   calcHash,
   getDeduplicatedProps,
@@ -115,12 +115,54 @@ export class Sgf {
    */
   parse(sgf: string) {
     if (!sgf) return;
-    sgf = sgf.replace(/\s+(?![^\[\]]*])/gm, '');
+
+    // First, get all property value ranges from the original string
+    // Use all known SGF property keys from the constants
+    const allPropertyKeys = [
+      ...ROOT_PROP_LIST,
+      ...MOVE_PROP_LIST,
+      ...SETUP_PROP_LIST,
+      ...MARKUP_PROP_LIST,
+      ...NODE_ANNOTATION_PROP_LIST,
+      ...MOVE_ANNOTATION_PROP_LIST,
+      ...GAME_INFO_PROP_LIST,
+      ...CUSTOM_PROP_LIST,
+    ];
+
+    const propertyValueRanges = buildPropertyValueRanges(
+      sgf,
+      allPropertyKeys
+    ).sort((a, b) => a[0] - b[0]);
+
+    // Remove spaces only outside property value ranges
+    let processedSgf = '';
+    let lastIndex = 0;
+
+    for (const [start, end] of propertyValueRanges) {
+      // Process text before this property value (remove spaces)
+      const beforeProp = sgf.slice(lastIndex, start);
+      processedSgf += beforeProp.replace(/\s+/gm, '');
+
+      // Keep property value as-is (preserve spaces)
+      const propValue = sgf.slice(start, end);
+      processedSgf += propValue;
+
+      lastIndex = end;
+    }
+
+    // Process remaining text after last property value (remove spaces)
+    const remaining = sgf.slice(lastIndex);
+    processedSgf += remaining.replace(/\s+/gm, '');
+
+    // Now use the processed SGF for parsing
+    sgf = processedSgf;
     let nodeStart = 0;
     let counter = 0;
     const stack: TNode[] = [];
 
-    const inNodeRanges = buildNodeRanges(sgf).sort((a, b) => a[0] - b[0]);
+    const inNodeRanges = buildPropertyValueRanges(sgf).sort(
+      (a, b) => a[0] - b[0]
+    );
 
     for (let i = 0; i < sgf.length; i++) {
       const c = sgf[i];
@@ -144,7 +186,9 @@ export class Sgf {
               // RegExp(/([A-Z]+\[.*?\]+)/, 'g')
               // RegExp(/[A-Z]+(\[.*?\]){1,}/, 'g')
               // RegExp(/[A-Z]+(\[[\s\S]*?\]){1,}/, 'g'),
-              RegExp(/\w+(\[[^\]]*?\](?:\r?\n?\s[^\]]*?)*){1,}/, 'g')
+              // Simplified regex to handle escaped brackets properly
+              // [^\]\\]|\\.  matches: any char except ] and \, OR any escaped char (\.)
+              RegExp(/\w+(?:\[(?:[^\]\\]|\\.)*\])+/g)
             ),
           ];
 
@@ -210,7 +254,6 @@ export class Sgf {
         }
       }
       if (c === '(' && this.currentNode && !insideProp) {
-        // console.log(`${sgf[i]}${sgf[i + 1]}${sgf[i + 2]}`);
         stack.push(this.currentNode);
       }
       if (c === ')' && !insideProp && stack.length > 0) {

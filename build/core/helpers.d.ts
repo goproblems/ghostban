@@ -3,7 +3,7 @@ import { MoveProp, SgfPropBase } from './props';
 export declare const calcHash: (node: TNode | null | undefined, moveProps?: MoveProp[]) => string;
 export declare function isCharacterInNode(sgf: string, n: number, nodes?: string[]): boolean;
 type Range = [number, number];
-export declare function buildNodeRanges(sgf: string, keys?: string[]): Range[];
+export declare function buildPropertyValueRanges(sgf: string, keys?: string[]): Range[];
 export declare function isInAnyRange(index: number, ranges: Range[]): boolean;
 export declare const getDeduplicatedProps: (targetProps: SgfPropBase[]) => SgfPropBase[];
 export declare const isMoveNode: (n: TNode) => boolean;

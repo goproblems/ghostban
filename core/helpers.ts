@@ -43,18 +43,49 @@ export function isCharacterInNode(
 
 type Range = [number, number];
 
-export function buildNodeRanges(
+export function buildPropertyValueRanges(
   sgf: string,
   keys: string[] = ['C', 'TM', 'GN', 'PC']
 ): Range[] {
   const ranges: Range[] = [];
-  const pattern = new RegExp(`\\b(${keys.join('|')})\\[([^\\]]*)\\]`, 'g');
+  const pattern = new RegExp(`\\b(${keys.join('|')})\\[`, 'g');
 
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(sgf)) !== null) {
-    const start = match.index + match[1].length + 1;
-    const end = start + match[2].length;
-    ranges.push([start, end]);
+    const propStart = match.index;
+    const valueStart = propStart + match[1].length + 1; // +1 for '['
+
+    // Check if this match is inside any existing range
+    const isInsideExistingRange = ranges.some(
+      ([start, end]) => propStart >= start && propStart <= end
+    );
+
+    if (isInsideExistingRange) {
+      continue; // Skip this match as it's inside another property value
+    }
+
+    // Find the first unescaped closing bracket
+    let i = valueStart;
+    let escaped = false;
+
+    while (i < sgf.length) {
+      const char = sgf[i];
+
+      if (escaped) {
+        escaped = false;
+      } else if (char === '\\') {
+        escaped = true;
+      } else if (char === ']') {
+        // Found unescaped closing bracket
+        break;
+      }
+
+      i++;
+    }
+
+    if (i < sgf.length) {
+      ranges.push([valueStart, i]);
+    }
   }
 
   return ranges;

@@ -77,6 +77,9 @@ export const CUSTOM_PROP_LIST = ['PI', 'PAI', 'NID', 'PAT'];
 export const LIST_OF_POINTS_PROP = ['AB', 'AE', 'AW', 'MA', 'SL', 'SQ', 'TR'];
 
 const TOKEN_REGEX = new RegExp(/([A-Z]*)\[([\s\S]*?)\]/);
+// Updated regex to handle escaped brackets properly for Text type properties
+// (?:[^\]\\]|\\.)* matches any char except ] and \, OR any escaped char
+const TOKEN_REGEX_WITH_ESCAPES = new RegExp(/([A-Z]*)\[((?:[^\]\\]|\\.)*)\]/);
 
 export class SgfPropBase {
   public token: string;
@@ -206,7 +209,7 @@ export class NodeAnnotationProp extends SgfPropBase {
     this.type = 'node-annotation';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
+    const match = str.match(TOKEN_REGEX_WITH_ESCAPES);
     if (match) {
       const token = match[1];
       const val = match[2];
@@ -237,6 +240,22 @@ export class NodeAnnotationProp extends SgfPropBase {
     this._values = newValues;
     this._value = newValues.join(',');
   }
+
+  /**
+   * Escapes unescaped right brackets in SGF property values
+   * Only escapes brackets that are not already escaped
+   */
+  private escapeValue(value: string): string {
+    // Replace ] with \] only if it's not already escaped
+    // This regex looks for ] that is NOT preceded by \
+    return value.replace(/(?<!\\)\]/g, '\\]');
+  }
+
+  toString() {
+    return `${this.token}${this._values
+      .map(v => `[${this.escapeValue(v)}]`)
+      .join('')}`;
+  }
 }
 
 export class MoveAnnotationProp extends SgfPropBase {
@@ -245,7 +264,7 @@ export class MoveAnnotationProp extends SgfPropBase {
     this.type = 'move-annotation';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
+    const match = str.match(TOKEN_REGEX_WITH_ESCAPES);
     if (match) {
       const token = match[1];
       const val = match[2];
@@ -324,7 +343,7 @@ export class RootProp extends SgfPropBase {
     this.type = 'root';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
+    const match = str.match(TOKEN_REGEX_WITH_ESCAPES);
     if (match) {
       const token = match[1];
       const val = match[2];
@@ -363,7 +382,7 @@ export class GameInfoProp extends SgfPropBase {
     this.type = 'game-info';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
+    const match = str.match(TOKEN_REGEX_WITH_ESCAPES);
     if (match) {
       const token = match[1];
       const val = match[2];
@@ -401,7 +420,7 @@ export class CustomProp extends SgfPropBase {
     this.type = 'custom';
   }
   static from(str: string) {
-    const match = str.match(/([A-Z]*)\[([\s\S]*?)\]/);
+    const match = str.match(TOKEN_REGEX_WITH_ESCAPES);
     if (match) {
       const token = match[1];
       const val = match[2];

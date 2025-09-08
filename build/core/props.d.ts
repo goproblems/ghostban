@@ -44,6 +44,12 @@ export declare class NodeAnnotationProp extends SgfPropBase {
     set value(newValue: string);
     get values(): string[];
     set values(newValues: string[]);
+    /**
+     * Escapes unescaped right brackets in SGF property values
+     * Only escapes brackets that are not already escaped
+     */
+    private escapeValue;
+    toString(): string;
 }
 export declare class MoveAnnotationProp extends SgfPropBase {
     constructor(token: string, value: string);
