@@ -1319,10 +1319,14 @@ export const addMoveToCurrentNode = (
   mat: number[][],
   i: number,
   j: number,
-  ki: Ki,
-  previousBoardState?: number[][] | null
+  ki: Ki
 ) => {
   if (ki === Ki.Empty) return;
+
+  const previousBoardState = currentNode.parent
+    ? calcMatAndMarkup(currentNode.parent).mat
+    : null;
+
   let node;
   if (canMove(mat, i, j, ki, previousBoardState)) {
     const value = SGF_LETTERS[i] + SGF_LETTERS[j];

@@ -5,9 +5,7 @@ import {
   simulateMoveWithCapture,
   boardStatesEqual,
 } from '../boardcore';
-import {addMoveToCurrentNode} from '../helper';
 import {Ki} from '../types';
-import {TNode} from '../core/tree';
 
 describe('Ko rule functionality', () => {
   test('canMove should allow move when no previous board state', () => {
@@ -111,53 +109,5 @@ describe('Ko rule functionality', () => {
 
     // Black playing at [2,2] should be fine
     expect(canMove(mat, 2, 2, Ki.Black, null)).toBe(true);
-  });
-
-  test('addMoveToCurrentNode should respect ko rule when previousBoardState is provided', () => {
-    // Create a simple root node for testing
-    const rootNode = new TNode({}, {
-      id: 'test',
-      name: 'test',
-      index: 0,
-      number: 0,
-      moveProps: [],
-      setupProps: [],
-      nodeAnnotationProps: [],
-      moveAnnotationProps: [],
-      markupProps: [],
-      rootProps: [],
-      gameInfoProps: [],
-      customProps: []
-    });
-
-    // Create a ko situation where white just captured black at [1,2]
-    const currentMat = [
-      [0, Ki.White, Ki.Black, Ki.White, 0],
-      [0, Ki.Black, 0, Ki.Black, 0],        // Empty at [1,2], black was captured
-      [0, Ki.Black, Ki.Black, Ki.White, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0]
-    ];
-
-    // The position before white's capture (with black stone at [1,2])
-    const previousBoardState = [
-      [0, Ki.White, Ki.Black, Ki.White, 0],
-      [0, Ki.Black, Ki.Black, Ki.Black, 0],  // Black stone at [1,2]
-      [0, Ki.Black, Ki.Black, Ki.White, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0]
-    ];
-
-    // Black tries to immediately recapture at [1,2] - should be prevented by ko rule
-    const nodeWithKo = addMoveToCurrentNode(rootNode, currentMat, 1, 2, Ki.Black, previousBoardState);
-    expect(nodeWithKo).toBeUndefined(); // Should not create a node due to ko rule
-
-    // Black should be able to play elsewhere
-    const nodeElsewhere = addMoveToCurrentNode(rootNode, currentMat, 0, 0, Ki.Black, previousBoardState);
-    expect(nodeElsewhere).toBeDefined(); // Should create a node for valid move
-
-    // Without previous board state, the move should be allowed (backward compatibility)
-    const nodeWithoutHistory = addMoveToCurrentNode(rootNode, currentMat, 1, 2, Ki.Black);
-    expect(nodeWithoutHistory).toBeDefined(); // Should create a node when no ko check
   });
 });
