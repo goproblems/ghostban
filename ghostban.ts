@@ -276,6 +276,7 @@ export class GhostBan {
   public visibleAreaMat: number[][] | undefined;
   public preventMoveMat: number[][];
   public effectMat: string[][];
+  private previousBoardState: number[][] | null = null;
   maxhv: number;
   transMat: DOMMatrix;
   analysis: Analysis | null;
@@ -474,6 +475,21 @@ export class GhostBan {
 
   setTurn(turn: Ki) {
     this.turn = turn;
+  }
+
+  setPreviousBoardState(boardState: number[][] | null) {
+    this.previousBoardState = boardState;
+  }
+
+  getPreviousBoardState(): number[][] | null {
+    return this.previousBoardState;
+  }
+
+  /**
+   * Record current board state as history state for ko rule checking in next move
+   */
+  recordCurrentBoardState() {
+    this.previousBoardState = this.mat.map(row => [...row]);
   }
 
   setBoardSize(size: number) {
@@ -1360,8 +1376,13 @@ export class GhostBan {
         : boardLineWidth;
 
       const allowMove =
-        canMove(mat, cursorPosition[0], cursorPosition[1], this.turn) &&
-        preventMoveMat[cursorPosition[0]][cursorPosition[1]] === 0;
+        canMove(
+          mat,
+          cursorPosition[0],
+          cursorPosition[1],
+          this.turn,
+          this.previousBoardState
+        ) && preventMoveMat[cursorPosition[0]][cursorPosition[1]] === 0;
 
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();

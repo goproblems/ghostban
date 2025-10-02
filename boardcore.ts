@@ -165,8 +165,48 @@ const canCapture = (mat: number[][], i: number, j: number, ki: number) => {
   return false;
 };
 
-export const canMove = (mat: number[][], i: number, j: number, ki: number) => {
-  const newArray = cloneDeep(mat);
+/**
+ * Compare if two board states are completely identical
+ */
+export const boardStatesEqual = (
+  board1: number[][],
+  board2: number[][]
+): boolean => {
+  if (board1.length !== board2.length) return false;
+
+  for (let i = 0; i < board1.length; i++) {
+    if (board1[i].length !== board2[i].length) return false;
+    for (let j = 0; j < board1[i].length; j++) {
+      if (board1[i][j] !== board2[i][j]) return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Simulate the board state after making a move at specified position (including captures)
+ */
+export const simulateMoveWithCapture = (
+  mat: number[][],
+  i: number,
+  j: number,
+  ki: number
+): number[][] => {
+  const newMat = cloneDeep(mat);
+  newMat[i][j] = ki;
+
+  // Execute captures
+  return execCapture(newMat, i, j, -ki);
+};
+
+export const canMove = (
+  mat: number[][],
+  i: number,
+  j: number,
+  ki: number,
+  previousBoardState?: number[][] | null
+) => {
   if (i < 0 || j < 0 || i >= mat.length || j >= (mat[0]?.length ?? 0)) {
     return false;
   }
@@ -175,16 +215,30 @@ export const canMove = (mat: number[][], i: number, j: number, ki: number) => {
     return false;
   }
 
+  // Simulate the board state after the move (including captures)
+  const boardStateAfterMove = simulateMoveWithCapture(mat, i, j, ki);
+
+  // Ko rule check: if the board state after move is identical to previous state, it violates ko rule
+  if (
+    previousBoardState &&
+    boardStatesEqual(boardStateAfterMove, previousBoardState)
+  ) {
+    return false;
+  }
+
+  // Check suicide rule: if after placing the stone it has no liberties and cannot capture opponent stones, it's illegal
+  const newArray = cloneDeep(mat);
   newArray[i][j] = ki;
   const {liberty} = calcLiberty(newArray, i, j, ki);
+
   if (canCapture(newArray, i, j, -ki)) {
-    return true;
+    return true; // Can capture opponent stones, legal move
   }
   if (canCapture(newArray, i, j, ki)) {
-    return false;
+    return false; // Own stones would be captured, illegal move
   }
   if (liberty === 0) {
-    return false;
+    return false; // No liberties and cannot capture, illegal move
   }
   return true;
 };

@@ -24,6 +24,7 @@ export declare class GhostBan {
     visibleAreaMat: number[][] | undefined;
     preventMoveMat: number[][];
     effectMat: string[][];
+    private previousBoardState;
     maxhv: number;
     transMat: DOMMatrix;
     analysis: Analysis | null;
@@ -42,6 +43,12 @@ export declare class GhostBan {
     private createThemeContext;
     private updateNodeMarkupStyles;
     setTurn(turn: Ki): void;
+    setPreviousBoardState(boardState: number[][] | null): void;
+    getPreviousBoardState(): number[][] | null;
+    /**
+     * Record current board state as history state for ko rule checking in next move
+     */
+    recordCurrentBoardState(): void;
     setBoardSize(size: number): void;
     resize(): void;
     private createCanvas;

@@ -1319,11 +1319,12 @@ export const addMoveToCurrentNode = (
   mat: number[][],
   i: number,
   j: number,
-  ki: Ki
+  ki: Ki,
+  previousBoardState?: number[][] | null
 ) => {
   if (ki === Ki.Empty) return;
   let node;
-  if (canMove(mat, i, j, ki)) {
+  if (canMove(mat, i, j, ki, previousBoardState)) {
     const value = SGF_LETTERS[i] + SGF_LETTERS[j];
     const token = ki === Ki.Black ? 'B' : 'W';
     const hash = calcHash(currentNode, [MoveProp.from(`${token}[${value}]`)]);
