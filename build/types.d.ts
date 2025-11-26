@@ -124,6 +124,7 @@ export type Analysis = {
     moveInfos: MoveInfo[];
     rootInfo: RootInfo;
     policy: number[];
+    humanPolicy?: number[];
     ownership: number[];
     turnNumber: number;
 };
@@ -173,6 +174,15 @@ export type RootInfo = {
     thisHash?: string;
 };
 export type AnalysisPointOptions = {
+    ctx: CanvasRenderingContext2D;
+    x: number;
+    y: number;
+    r: number;
+    rootInfo: RootInfo;
+    moveInfo: MoveInfo;
+    policyValue?: number;
+    theme?: AnalysisPointTheme;
+    outlineColor?: string;
     showOrder?: boolean;
 };
 export declare enum Ki {
@@ -195,7 +205,8 @@ export declare enum Theme {
 }
 export declare enum AnalysisPointTheme {
     Default = "default",
-    Problem = "problem"
+    Problem = "problem",
+    Scenario = "scenario"
 }
 export declare enum Center {
     Left = "l",

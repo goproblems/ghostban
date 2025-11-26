@@ -131,6 +131,7 @@ export type Analysis = {
   moveInfos: MoveInfo[];
   rootInfo: RootInfo;
   policy: number[];
+  humanPolicy?: number[];
   ownership: number[];
   turnNumber: number;
 };
@@ -186,6 +187,15 @@ export type RootInfo = {
 };
 
 export type AnalysisPointOptions = {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  r: number;
+  rootInfo: RootInfo;
+  moveInfo: MoveInfo;
+  policyValue?: number;
+  theme?: AnalysisPointTheme;
+  outlineColor?: string;
   showOrder?: boolean;
 };
 
@@ -212,6 +222,7 @@ export enum Theme {
 export enum AnalysisPointTheme {
   Default = 'default',
   Problem = 'problem',
+  Scenario = 'scenario',
 }
 
 export enum Center {

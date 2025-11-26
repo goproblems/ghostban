@@ -1,4 +1,9 @@
-import {AnalysisPointTheme, MoveInfo, RootInfo} from '../types';
+import {
+  AnalysisPointTheme,
+  AnalysisPointOptions,
+  MoveInfo,
+  RootInfo,
+} from '../types';
 import {
   calcAnalysisPointColor,
   calcScoreDiff,
@@ -14,16 +19,27 @@ import {
 } from '../const';
 
 export default class AnalysisPoint {
-  constructor(
-    private ctx: CanvasRenderingContext2D,
-    private x: number,
-    private y: number,
-    private r: number,
-    private rootInfo: RootInfo,
-    private moveInfo: MoveInfo,
-    private theme: AnalysisPointTheme = AnalysisPointTheme.Default,
-    private outlineColor?: string
-  ) {}
+  private ctx: CanvasRenderingContext2D;
+  private x: number;
+  private y: number;
+  private r: number;
+  private rootInfo: RootInfo;
+  private moveInfo: MoveInfo;
+  private policyValue?: number;
+  private theme: AnalysisPointTheme;
+  private outlineColor?: string;
+
+  constructor(options: AnalysisPointOptions) {
+    this.ctx = options.ctx;
+    this.x = options.x;
+    this.y = options.y;
+    this.r = options.r;
+    this.rootInfo = options.rootInfo;
+    this.moveInfo = options.moveInfo;
+    this.policyValue = options.policyValue;
+    this.theme = options.theme ?? AnalysisPointTheme.Default;
+    this.outlineColor = options.outlineColor;
+  }
 
   draw() {
     const {ctx, x, y, r, rootInfo, moveInfo, theme} = this;
@@ -40,6 +56,8 @@ export default class AnalysisPoint {
       this.drawDefaultAnalysisPoint();
     } else if (theme === AnalysisPointTheme.Problem) {
       this.drawProblemAnalysisPoint();
+    } else if (theme === AnalysisPointTheme.Scenario) {
+      this.drawScenarioAnalysisPoint();
     }
 
     ctx.restore();
@@ -117,6 +135,55 @@ export default class AnalysisPoint {
           : 1 - moveInfo.winrate;
 
       ctx.fillText(round3(winrate, 100, 1), x, y - r / 2 + fontSize / 5);
+
+      ctx.font = `${fontSize}px Tahoma`;
+      const scoreText = calcScoreDiffText(rootInfo, moveInfo);
+      ctx.fillText(scoreText, x, y + fontSize / 3);
+
+      ctx.font = `${fontSize * 0.8}px Tahoma`;
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText(nFormatter(moveInfo.visits), x, y + r / 2 + fontSize / 3);
+
+      const order = moveInfo.order;
+      ctx.fillText((order + 1).toString(), x + r, y - r / 2);
+    } else {
+      this.drawCandidatePoint();
+    }
+  };
+
+  private drawScenarioAnalysisPoint = () => {
+    const {ctx, x, y, r, rootInfo, moveInfo} = this;
+    const {order} = moveInfo;
+
+    let pColor = calcAnalysisPointColor(rootInfo, moveInfo);
+
+    if (order < 9) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+      ctx.lineWidth = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,0)';
+      const gradient = ctx.createRadialGradient(x, y, r * 0.9, x, y, r);
+      gradient.addColorStop(0, pColor);
+      gradient.addColorStop(0.9, 'rgba(255, 255, 255, 0');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      const fontSize = r / 1.5;
+
+      ctx.font = `${fontSize * 0.8}px Tahoma`;
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+
+      // Display humanPolicy value (from policyValue) or fallback to moveInfo.prior
+      // Filter out -1 values (illegal positions in policy array)
+      const policy =
+        this.policyValue !== undefined && this.policyValue !== -1
+          ? this.policyValue
+          : moveInfo.prior;
+
+      const policyPercent = round3(policy, 100, 1);
+      ctx.fillText(policyPercent, x, y - r / 2 + fontSize / 5);
 
       ctx.font = `${fontSize}px Tahoma`;
       const scoreText = calcScoreDiffText(rootInfo, moveInfo);

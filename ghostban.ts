@@ -5,6 +5,7 @@ import {
   zeros,
   empty,
   a1ToPos,
+  a1ToIndex,
   offsetA1Move,
   canMove,
 } from './helper';
@@ -1037,7 +1038,6 @@ export class GhostBan {
     if (!ctx) return;
     this.clearAnalysisCanvas();
     const {rootInfo} = analysis;
-
     analysis.moveInfos.forEach(m => {
       if (m.move === 'pass') return;
       const idObj = JSON.parse(analysis.id);
@@ -1089,16 +1089,29 @@ export class GhostBan {
         outlineColor = this.getThemeProperty(ThemePropertyKey.NeutralNodeColor);
       }
 
-      const point = new AnalysisPoint(
+      let policyValue: number | undefined;
+      // Convert m.move to row-major index for policy array
+      // KataGo's policy array is stored in row-major order: policy[row * boardSize + col]
+      const {x: col, y: row} = a1ToPos(m.move);
+      const policyIndex = row * analysisBoardSize + col;
+
+      if (analysisPointTheme === AnalysisPointTheme.Scenario) {
+        if (analysis.humanPolicy && analysis.humanPolicy.length > 0) {
+          policyValue = analysis.humanPolicy[policyIndex];
+        }
+      }
+
+      const point = new AnalysisPoint({
         ctx,
         x,
         y,
-        space * ratio,
+        r: space * ratio,
         rootInfo,
-        m,
-        analysisPointTheme,
-        outlineColor
-      );
+        moveInfo: m,
+        policyValue,
+        theme: analysisPointTheme,
+        outlineColor,
+      });
       point.draw();
       ctx.restore();
     });
