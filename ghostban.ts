@@ -279,7 +279,6 @@ export class GhostBan {
   public visibleAreaMat: number[][] | undefined;
   public preventMoveMat: number[][];
   public effectMat: string[][];
-  public ownership: number[][] | null = null;
   private previousBoardState: number[][] | null = null;
   maxhv: number;
   transMat: DOMMatrix;
@@ -507,6 +506,7 @@ export class GhostBan {
       !this.dom ||
       !this.board ||
       !this.markupCanvas ||
+      !this.ownershipCanvas ||
       !this.analysisCanvas ||
       !this.effectCanvas
     )
@@ -516,6 +516,7 @@ export class GhostBan {
       this.board,
       this.canvas,
       this.markupCanvas,
+      this.ownershipCanvas,
       this.cursorCanvas,
       this.analysisCanvas,
       this.effectCanvas,
@@ -584,6 +585,9 @@ export class GhostBan {
   }
 
   setOptions(options: GhostBanOptionsParams) {
+    const previousShowAnalysis = this.options.showAnalysis;
+    const previousShowOwnership = this.options.showOwnership;
+
     this.options = {
       ...this.options,
       ...options,
@@ -594,6 +598,22 @@ export class GhostBan {
     };
     this.updateNodeMarkupStyles();
     this.renderInteractive();
+
+    if (previousShowAnalysis && !this.options.showAnalysis) {
+      this.clearAnalysisCanvas();
+    }
+
+    if (previousShowOwnership && !this.options.showOwnership) {
+      this.clearOwnershipCanvas();
+    }
+
+    if (!previousShowAnalysis && this.options.showAnalysis && this.analysis) {
+      this.drawAnalysis();
+    }
+
+    if (!previousShowOwnership && this.options.showOwnership && this.analysis) {
+      this.drawOwnership();
+    }
   }
 
   setMat(mat: number[][]) {
@@ -729,18 +749,11 @@ export class GhostBan {
     this.analysis = analysis;
     if (!analysis) {
       this.clearAnalysisCanvas();
-      return;
-    }
-    if (this.options.showAnalysis) this.drawAnalysis(analysis);
-  }
-
-  setOwnership(ownership: number[][] | null) {
-    this.ownership = ownership;
-    if (!ownership) {
       this.clearOwnershipCanvas();
       return;
     }
-    if (this.options.showOwnership) this.drawOwnership(ownership);
+    if (this.options.showAnalysis) this.drawAnalysis(analysis);
+    if (this.options.showOwnership) this.drawOwnership();
   }
 
   setTheme(theme: Theme, options: Partial<GhostBanOptionsParams> = {}) {
@@ -973,6 +986,7 @@ export class GhostBan {
     this.clearCanvas(this.board);
     this.clearCanvas();
     this.clearCanvas(this.markupCanvas);
+    this.clearOwnershipCanvas();
     this.clearCanvas(this.effectCanvas);
     this.clearCursorCanvas();
     this.clearAnalysisCanvas();
@@ -1149,7 +1163,7 @@ export class GhostBan {
   };
 
   drawOwnership = (
-    ownership: number[][] | null = this.ownership,
+    ownership: number[] | null = this.analysis?.ownership ?? null,
     ownershipCanvas = this.ownershipCanvas,
     clear = true
   ) => {
@@ -1160,25 +1174,31 @@ export class GhostBan {
 
     if (clear) this.clearOwnershipCanvas();
 
+    console.log('Drawing ownership overlay...', ownership);
+
     const {space, scaledPadding} = this.calcSpaceAndPadding();
-    const size = ownership.length;
+    const {boardSize} = this.options;
 
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        const ownershipValue = ownership[i][j];
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
+        // row-major order
+        const index = j * boardSize + i;
+        const ownershipValue = ownership[index];
 
-        if (Math.abs(ownershipValue) < 0.01) continue;
+        if (Math.abs(ownershipValue) < 0.1) continue;
 
         const x = scaledPadding + i * space;
         const y = scaledPadding + j * space;
-        const squareSize = space * 0.4;
+        const squareSize = space * 0.3;
 
         ctx.save();
-        const opacity = Math.min(Math.abs(ownershipValue), 1);
+        const minOpacity = 0.15;
+        const rawOpacity = Math.min(Math.abs(ownershipValue), 1);
+        const opacity = minOpacity + rawOpacity * (1 - minOpacity);
         if (ownershipValue > 0) {
-          ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.6})`;
+          ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
         } else {
-          ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.6})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
         }
         ctx.fillRect(
           x - squareSize / 2,
