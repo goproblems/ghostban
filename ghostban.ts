@@ -247,6 +247,7 @@ export class GhostBan {
     analysisPointTheme: AnalysisPointTheme.Default,
     background: false,
     showAnalysis: false,
+    showOwnership: false,
     adaptiveBoardLine: true,
     themeOptions: DEFAULT_THEME_OPTIONS,
     themeResources: THEME_RESOURCES,
@@ -262,6 +263,7 @@ export class GhostBan {
   cursorCanvas?: HTMLCanvasElement;
   markupCanvas?: HTMLCanvasElement;
   effectCanvas?: HTMLCanvasElement;
+  ownershipCanvas?: HTMLCanvasElement;
   moveSoundAudio?: HTMLAudioElement;
   turn: Ki;
   private cursor: Cursor = Cursor.None;
@@ -277,6 +279,7 @@ export class GhostBan {
   public visibleAreaMat: number[][] | undefined;
   public preventMoveMat: number[][];
   public effectMat: string[][];
+  public ownership: number[][] | null = null;
   private previousBoardState: number[][] | null = null;
   maxhv: number;
   transMat: DOMMatrix;
@@ -554,15 +557,17 @@ export class GhostBan {
 
     this.board = this.createCanvas('ghostban-board');
     this.canvas = this.createCanvas('ghostban-canvas');
+    this.ownershipCanvas = this.createCanvas('ghostban-ownership', false);
     this.markupCanvas = this.createCanvas('ghostban-markup', false);
-    this.cursorCanvas = this.createCanvas('ghostban-cursor');
     this.analysisCanvas = this.createCanvas('ghostban-analysis', false);
+    this.cursorCanvas = this.createCanvas('ghostban-cursor');
     this.effectCanvas = this.createCanvas('ghostban-effect', false);
 
     this.dom = dom;
     dom.innerHTML = '';
     dom.appendChild(this.board);
     dom.appendChild(this.canvas);
+    dom.appendChild(this.ownershipCanvas);
     dom.appendChild(this.markupCanvas);
     dom.appendChild(this.analysisCanvas);
     dom.appendChild(this.cursorCanvas);
@@ -727,6 +732,15 @@ export class GhostBan {
       return;
     }
     if (this.options.showAnalysis) this.drawAnalysis(analysis);
+  }
+
+  setOwnership(ownership: number[][] | null) {
+    this.ownership = ownership;
+    if (!ownership) {
+      this.clearOwnershipCanvas();
+      return;
+    }
+    if (this.options.showOwnership) this.drawOwnership(ownership);
   }
 
   setTheme(theme: Theme, options: Partial<GhostBanOptionsParams> = {}) {
@@ -943,6 +957,7 @@ export class GhostBan {
     this.drawBoard();
     this.drawStones();
     this.drawMarkup();
+    if (this.options.showOwnership) this.drawOwnership();
     this.drawCursor();
     if (this.options.showAnalysis) this.drawAnalysis();
   }
@@ -1115,6 +1130,66 @@ export class GhostBan {
       point.draw();
       ctx.restore();
     });
+  };
+
+  clearOwnershipCanvas = () => {
+    if (!this.ownershipCanvas) return;
+    const ctx = this.ownershipCanvas.getContext('2d');
+    if (ctx) {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(
+        0,
+        0,
+        this.ownershipCanvas.width,
+        this.ownershipCanvas.height
+      );
+      ctx.restore();
+    }
+  };
+
+  drawOwnership = (
+    ownership: number[][] | null = this.ownership,
+    ownershipCanvas = this.ownershipCanvas,
+    clear = true
+  ) => {
+    const canvas = ownershipCanvas;
+    if (!canvas || !ownership) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (clear) this.clearOwnershipCanvas();
+
+    const {space, scaledPadding} = this.calcSpaceAndPadding();
+    const size = ownership.length;
+
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        const ownershipValue = ownership[i][j];
+
+        if (Math.abs(ownershipValue) < 0.01) continue;
+
+        const x = scaledPadding + i * space;
+        const y = scaledPadding + j * space;
+        const squareSize = space * 0.4;
+
+        ctx.save();
+        const opacity = Math.min(Math.abs(ownershipValue), 1);
+        if (ownershipValue > 0) {
+          ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.6})`;
+        } else {
+          ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.6})`;
+        }
+        ctx.fillRect(
+          x - squareSize / 2,
+          y - squareSize / 2,
+          squareSize,
+          squareSize
+        );
+
+        ctx.restore();
+      }
+    }
   };
 
   drawMarkup = (

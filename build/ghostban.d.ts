@@ -9,6 +9,7 @@ export declare class GhostBan {
     cursorCanvas?: HTMLCanvasElement;
     markupCanvas?: HTMLCanvasElement;
     effectCanvas?: HTMLCanvasElement;
+    ownershipCanvas?: HTMLCanvasElement;
     moveSoundAudio?: HTMLAudioElement;
     turn: Ki;
     private cursor;
@@ -24,6 +25,7 @@ export declare class GhostBan {
     visibleAreaMat: number[][] | undefined;
     preventMoveMat: number[][];
     effectMat: string[][];
+    ownership: number[][] | null;
     private previousBoardState;
     maxhv: number;
     transMat: DOMMatrix;
@@ -68,6 +70,7 @@ export declare class GhostBan {
     private onTouchEnd;
     renderInteractive(): void;
     setAnalysis(analysis: Analysis | null): void;
+    setOwnership(ownership: number[][] | null): void;
     setTheme(theme: Theme, options?: Partial<GhostBanOptionsParams>): void;
     calcCenter: () => Center;
     calcDynamicPadding(visibleAreaSize: number): void;
@@ -83,6 +86,8 @@ export declare class GhostBan {
     clearCursorCanvas: () => void;
     clearAnalysisCanvas: () => void;
     drawAnalysis: (analysis?: Analysis | null) => void;
+    clearOwnershipCanvas: () => void;
+    drawOwnership: (ownership?: number[][] | null, ownershipCanvas?: HTMLCanvasElement | undefined, clear?: boolean) => void;
     drawMarkup: (mat?: number[][], markup?: string[][], markupCanvas?: HTMLCanvasElement | undefined, clear?: boolean) => void;
     drawBoard: (board?: HTMLCanvasElement | undefined, clear?: boolean) => void;
     drawBan: (board?: HTMLCanvasElement | undefined) => void;

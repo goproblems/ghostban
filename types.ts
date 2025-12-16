@@ -48,6 +48,7 @@ export type GhostBanOptions = {
   interactive: boolean;
   background: boolean;
   showAnalysis: boolean;
+  showOwnership: boolean;
   adaptiveBoardLine: boolean;
   themeOptions: ThemeOptions;
   themeResources: ThemeResources;
@@ -70,6 +71,7 @@ export type GhostBanOptionsParams = {
   interactive?: boolean;
   background?: boolean;
   showAnalysis?: boolean;
+  showOwnership?: boolean;
   adaptiveBoardLine?: boolean;
   themeOptions?: Partial<ThemeOptions>;
   themeResources?: ThemeResources;
