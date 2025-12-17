@@ -1174,8 +1174,6 @@ export class GhostBan {
 
     if (clear) this.clearOwnershipCanvas();
 
-    console.log('Drawing ownership overlay...', ownership);
-
     const {space, scaledPadding} = this.calcSpaceAndPadding();
     const {boardSize} = this.options;
 
