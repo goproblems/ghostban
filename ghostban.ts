@@ -1185,6 +1185,15 @@ export class GhostBan {
 
         if (Math.abs(ownershipValue) < 0.1) continue;
 
+        const stoneValue = this.mat[i]?.[j] || 0;
+
+        const shouldShow =
+          stoneValue === 0 ||
+          (stoneValue === Ki.Black && ownershipValue < 0) ||
+          (stoneValue === Ki.White && ownershipValue > 0);
+
+        if (!shouldShow) continue;
+
         const x = scaledPadding + i * space;
         const y = scaledPadding + j * space;
         const squareSize = space * 0.3;
