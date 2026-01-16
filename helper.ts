@@ -1311,6 +1311,7 @@ export const addStoneToCurrentNode = (
  * @param i - The row index of the move.
  * @param j - The column index of the move.
  * @param ki - The type of move (Ki).
+ * @param parentMat - Optional parent matrix to avoid recalculation
  * @returns The corresponding node in the tree, or null if no move is added.
  */
 // TODO: The params here is weird
@@ -1319,13 +1320,17 @@ export const addMoveToCurrentNode = (
   mat: number[][],
   i: number,
   j: number,
-  ki: Ki
+  ki: Ki,
+  parentMat?: number[][]
 ) => {
   if (ki === Ki.Empty) return;
 
-  const previousBoardState = currentNode.parent
-    ? calcMatAndMarkup(currentNode.parent).mat
-    : null;
+  const previousBoardState =
+    parentMat !== undefined
+      ? parentMat
+      : currentNode.parent
+        ? calcMatAndMarkup(currentNode.parent).mat
+        : null;
 
   let node;
   if (canMove(mat, i, j, ki, previousBoardState)) {

@@ -160,9 +160,10 @@ export declare const addStoneToCurrentNode: (currentNode: TNode, mat: number[][]
  * @param i - The row index of the move.
  * @param j - The column index of the move.
  * @param ki - The type of move (Ki).
+ * @param parentMat - Optional parent matrix to avoid recalculation
  * @returns The corresponding node in the tree, or null if no move is added.
  */
-export declare const addMoveToCurrentNode: (currentNode: TNode, mat: number[][], i: number, j: number, ki: Ki) => TNode | undefined;
+export declare const addMoveToCurrentNode: (currentNode: TNode, mat: number[][], i: number, j: number, ki: Ki, parentMat?: number[][]) => TNode | undefined;
 export declare const calcPreventMoveMatForDisplayOnly: (node: TNode, defaultBoardSize?: number) => number[][];
 export declare const calcPreventMoveMat: (node: TNode, defaultBoardSize?: number) => number[][];
 /**
