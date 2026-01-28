@@ -1077,6 +1077,7 @@ export class GhostBan {
         analysisBoardSize - idObj.by
       );
       let {x: i, y: j} = a1ToPos(offsetedMove);
+      if (i < 0 || j < 0 || i >= mat.length || j >= mat[0].length) return;
       if (mat[i][j] !== 0) return;
       const {space, scaledPadding} = this.calcSpaceAndPadding();
       const x = scaledPadding + i * space;
@@ -1490,14 +1491,22 @@ export class GhostBan {
         ? board.width * adaptiveFactor
         : boardLineWidth;
 
-      const allowMove =
-        canMove(
-          mat,
-          cursorPosition[0],
-          cursorPosition[1],
-          this.turn,
-          this.previousBoardState
-        ) && preventMoveMat[cursorPosition[0]][cursorPosition[1]] === 0;
+      const [cursorX, cursorY] = cursorPosition;
+      const isValidPosition =
+        cursorX >= 0 &&
+        cursorY >= 0 &&
+        cursorX < boardSize &&
+        cursorY < boardSize;
+      const isNotBlocked =
+        isValidPosition && preventMoveMat[cursorX][cursorY] === 0;
+      const canPlaceStone = canMove(
+        mat,
+        cursorX,
+        cursorY,
+        this.turn,
+        this.previousBoardState
+      );
+      const allowMove = canPlaceStone && isNotBlocked;
 
       for (let i = visibleArea[0][0]; i <= visibleArea[0][1]; i++) {
         ctx.beginPath();

@@ -16,6 +16,8 @@ export declare class Sgf {
     currentNode: TNode | null;
     parentNode: TNode | null;
     nodeProps: Map<string, string>;
+    nodeMap: Map<string, TNode>;
+    pathMap: Map<string, TNode[]>;
     /**
      * Constructs a new instance of the Sgf class.
      * @param content The content of the Sgf, either as a string or as a TNode(Root node).
@@ -23,6 +25,8 @@ export declare class Sgf {
      */
     constructor(content?: string | TNode | undefined, parseOptions?: {
         ignorePropList: never[];
+        enableNodeMap: boolean;
+        enablePathMap: boolean;
     });
     /**
      * Sets the root node of the SGF tree.
