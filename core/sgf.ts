@@ -60,6 +60,8 @@ export class Sgf {
   currentNode: TNode | null = null;
   parentNode: TNode | null = null;
   nodeProps: Map<string, string> = new Map();
+  nodeMap: Map<string, TNode> = new Map();
+  pathMap: Map<string, TNode[]> = new Map();
 
   /**
    * Constructs a new instance of the Sgf class.
@@ -70,6 +72,8 @@ export class Sgf {
     private content?: string | TNode,
     private parseOptions = {
       ignorePropList: [],
+      enableNodeMap: false,
+      enablePathMap: false,
     }
   ) {
     if (typeof content === 'string') {
@@ -249,6 +253,22 @@ export class Sgf {
               this.parentNode = node;
             }
             this.currentNode = node;
+
+            if (this.parseOptions.enableNodeMap) {
+              this.nodeMap.set(node.model.id, node);
+            }
+
+            if (this.parseOptions.enablePathMap) {
+              if (node.parent) {
+                const parentPath = this.pathMap.get(node.parent.model.id);
+                if (parentPath) {
+                  this.pathMap.set(node.model.id, [...parentPath, node]);
+                }
+              } else {
+                this.pathMap.set(node.model.id, [node]);
+              }
+            }
+
             counter += 1;
           }
         }
