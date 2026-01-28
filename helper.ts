@@ -528,6 +528,14 @@ export const offsetA1Move = (move: string, ox = 0, oy = 0) => {
   const inx = A1_LETTERS.indexOf(move[0]) + ox;
   const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0)) + oy;
   // console.log('inxy', inx, iny, `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`);
+  if (
+    inx < 0 ||
+    iny < 0 ||
+    inx >= A1_LETTERS.length ||
+    iny >= A1_NUMBERS.length
+  ) {
+    return null;
+  }
   return `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`;
 };
 
@@ -542,6 +550,14 @@ export const reverseOffsetA1Move = (
   const {x, y} = reverseOffset(mat, idObj.bx, idObj.by, boardSize);
   const inx = A1_LETTERS.indexOf(move[0]) + x;
   const iny = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0)) + y;
+  if (
+    inx < 0 ||
+    iny < 0 ||
+    inx >= A1_LETTERS.length ||
+    iny >= A1_NUMBERS.length
+  ) {
+    return null;
+  }
   return `${A1_LETTERS[inx]}${A1_NUMBERS[iny]}`;
 };
 

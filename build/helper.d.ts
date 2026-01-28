@@ -76,8 +76,8 @@ export declare const matToPosition: (mat: number[][], xOffset?: number, yOffset?
 export declare const matToListOfTuples: (mat: number[][], xOffset?: number, yOffset?: number) => string[][];
 export declare const convertStoneTypeToString: (type: any) => "B" | "W";
 export declare const convertStepsForAI: (steps: any, offset?: number) => string;
-export declare const offsetA1Move: (move: string, ox?: number, oy?: number) => string;
-export declare const reverseOffsetA1Move: (move: string, mat: number[][], analysis: Analysis, boardSize?: number) => string;
+export declare const offsetA1Move: (move: string, ox?: number, oy?: number) => string | null;
+export declare const reverseOffsetA1Move: (move: string, mat: number[][], analysis: Analysis, boardSize?: number) => string | null;
 export declare const calcScoreDiffText: (rootInfo?: RootInfo | null, currInfo?: MoveInfo | RootInfo | null, fixed?: number, reverse?: boolean) => string;
 export declare const calcWinrateDiffText: (rootInfo?: RootInfo | null, currInfo?: MoveInfo | RootInfo | null, fixed?: number, reverse?: boolean) => string;
 export declare const calcScoreDiff: (rootInfo: RootInfo, currInfo: MoveInfo | RootInfo) => number;

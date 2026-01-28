@@ -1068,7 +1068,7 @@ export class GhostBan {
     this.clearAnalysisCanvas();
     const {rootInfo} = analysis;
     analysis.moveInfos.forEach(m => {
-      if (m.move === 'pass') return;
+      if (!m.move || m.move === 'pass') return;
       const idObj = JSON.parse(analysis.id);
       let analysisBoardSize = boardSize;
       const offsetedMove = offsetA1Move(
@@ -1076,6 +1076,7 @@ export class GhostBan {
         0,
         analysisBoardSize - idObj.by
       );
+      if (!offsetedMove) return;
       let {x: i, y: j} = a1ToPos(offsetedMove);
       if (i < 0 || j < 0 || i >= mat.length || j >= mat[0].length) return;
       if (mat[i][j] !== 0) return;
