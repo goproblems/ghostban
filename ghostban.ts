@@ -32,6 +32,7 @@ import {
   ThemeConfig,
   ThemePropertyKey,
   ThemeContext,
+  CustomMarkupRenderer,
 } from './types';
 
 import {ImageStone, FlatStone} from './stones';
@@ -43,6 +44,9 @@ import {
   TextMarkup,
   SquareMarkup,
   TriangleMarkup,
+  GreenPlusMarkup,
+  RedCrossMarkup,
+  YellowTriangleMarkup,
   NodeMarkup,
   ActiveNodeMarkup,
   CircleSolidMarkup,
@@ -290,6 +294,7 @@ export class GhostBan {
       lineDash: number[];
     };
   } = {};
+  private customMarkupRenderers: Record<string, CustomMarkupRenderer> = {};
 
   constructor(options: GhostBanOptionsParams = {}) {
     this.options = {
@@ -299,6 +304,10 @@ export class GhostBan {
         ...this.defaultOptions.themeOptions,
         ...(options.themeOptions || {}),
       },
+    };
+    this.customMarkupRenderers = {
+      ...this.getDefaultCustomMarkupRenderers(),
+      ...(options.customMarkupRenderers || {}),
     };
     const size = this.options.boardSize;
     this.mat = zeros([size, size]);
@@ -345,6 +354,40 @@ export class GhostBan {
     return {
       theme: this.options.theme,
       themeOptions: this.options.themeOptions,
+    };
+  }
+
+  private getDefaultCustomMarkupRenderers(): Record<
+    string,
+    CustomMarkupRenderer
+  > {
+    return {
+      [Markup.GreenPlus]: ({ctx, x, y, s, ki, themeContext}) => {
+        const markup = new GreenPlusMarkup(ctx, x, y, s, ki, themeContext);
+        markup.draw();
+      },
+      [Markup.RedCross]: ({ctx, x, y, s, ki, themeContext}) => {
+        const markup = new RedCrossMarkup(ctx, x, y, s, ki, themeContext);
+        markup.draw();
+      },
+      [Markup.YellowTriangle]: ({ctx, x, y, s, ki, themeContext}) => {
+        const markup = new YellowTriangleMarkup(ctx, x, y, s, ki, themeContext);
+        markup.draw();
+      },
+    };
+  }
+
+  registerCustomMarkup(name: string, renderer: CustomMarkupRenderer) {
+    this.customMarkupRenderers[name] = renderer;
+  }
+
+  unregisterCustomMarkup(name: string) {
+    delete this.customMarkupRenderers[name];
+  }
+
+  setCustomMarkups(renderers: Record<string, CustomMarkupRenderer>) {
+    this.customMarkupRenderers = {
+      ...renderers,
     };
   }
 
@@ -1372,7 +1415,18 @@ export class GhostBan {
                     break;
                   }
                   default: {
-                    if (value !== '') {
+                    const customRenderer = this.customMarkupRenderers[value];
+                    if (customRenderer) {
+                      customRenderer({
+                        ctx,
+                        x,
+                        y,
+                        s: space,
+                        ki,
+                        themeContext: this.createThemeContext(),
+                        value,
+                      });
+                    } else if (value !== '') {
                       markup = new TextMarkup(
                         ctx,
                         x,

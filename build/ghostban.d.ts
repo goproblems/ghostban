@@ -1,4 +1,4 @@
-import { Cursor, Theme, Ki, Analysis, GhostBanOptions, GhostBanOptionsParams, Center } from './types';
+import { Cursor, Theme, Ki, Analysis, GhostBanOptions, GhostBanOptionsParams, Center, CustomMarkupRenderer } from './types';
 export declare class GhostBan {
     defaultOptions: GhostBanOptions;
     options: GhostBanOptions;
@@ -36,12 +36,17 @@ export declare class GhostBan {
             lineDash: number[];
         };
     };
+    private customMarkupRenderers;
     constructor(options?: GhostBanOptionsParams);
     private getThemeProperty;
     /**
      * Create theme context for markup components
      */
     private createThemeContext;
+    private getDefaultCustomMarkupRenderers;
+    registerCustomMarkup(name: string, renderer: CustomMarkupRenderer): void;
+    unregisterCustomMarkup(name: string): void;
+    setCustomMarkups(renderers: Record<string, CustomMarkupRenderer>): void;
     private updateNodeMarkupStyles;
     setTurn(turn: Ki): void;
     setPreviousBoardState(boardState: number[][] | null): void;

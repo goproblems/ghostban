@@ -32,6 +32,16 @@ export type ThemeContext = {
   themeOptions: ThemeOptions;
 };
 
+export type CustomMarkupRenderer = (args: {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  s: number;
+  ki: Ki;
+  themeContext: ThemeContext;
+  value: string;
+}) => void;
+
 /**
  * Options for configuring GhostBan.
  */
@@ -56,6 +66,7 @@ export type GhostBanOptions = {
   adaptiveStarSize: boolean;
   mobileIndicatorOffset: number;
   forceAnalysisBoardSize?: number;
+  customMarkupRenderers?: Record<string, CustomMarkupRenderer>;
 };
 
 export type GhostBanOptionsParams = {
@@ -79,6 +90,7 @@ export type GhostBanOptionsParams = {
   adaptiveStarSize?: boolean;
   forceAnalysisBoardSize?: number;
   mobileIndicatorOffset?: number;
+  customMarkupRenderers?: Record<string, CustomMarkupRenderer>;
 };
 
 export type ThemeConfig = {
@@ -254,6 +266,9 @@ export enum Markup {
   SquareSolid = 'sqs',
   Triangle = 'tri',
   Cross = 'cr',
+  GreenPlus = 'gplus',
+  RedCross = 'rcross',
+  YellowTriangle = 'ytri',
   Number = 'num',
   Letter = 'le',
   PositiveNode = 'pos',
