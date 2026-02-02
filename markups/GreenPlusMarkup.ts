@@ -8,8 +8,8 @@ export class GreenPlusMarkup extends Markup {
     ctx.save();
     ctx.beginPath();
     ctx.globalAlpha = globalAlpha;
-    ctx.lineWidth = this.getThemeProperty('markupLineWidth') * 2;
-    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = this.getThemeProperty('markupLineWidth') * 3;
+    ctx.strokeStyle = this.getThemeProperty('positiveNodeColor');
     ctx.setLineDash(this.lineDash);
 
     ctx.moveTo(x - size, y);
