@@ -5,13 +5,7 @@ export const MOVE_PROP_LIST = [
   'MN',
   'W',
 ];
-export const SETUP_PROP_LIST = [
-  'AB',
-  'AE',
-  'AW',
-  //TODO: PL is a value of color type
-  // 'PL'
-];
+export const SETUP_PROP_LIST = ['AB', 'AE', 'AW', 'PL'];
 export const NODE_ANNOTATION_PROP_LIST = [
   'A',
   'C',
