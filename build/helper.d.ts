@@ -68,6 +68,7 @@ export declare const a1ToPos: (move: string) => {
     x: number;
     y: number;
 };
+export declare const posToA1: (x: number, y: number) => string;
 export declare const a1ToIndex: (move: string, boardSize?: number) => number;
 export declare const sgfOffset: (sgf: any, offset?: number) => any;
 export declare const a1ToSGF: (str: any, type?: string, offsetX?: number, offsetY?: number) => string;

@@ -425,6 +425,10 @@ export const a1ToPos = (move: string) => {
   return {x, y};
 };
 
+export const posToA1 = (x: number, y: number) => {
+  return A1_LETTERS[x] + A1_NUMBERS[y];
+};
+
 export const a1ToIndex = (move: string, boardSize = 19) => {
   const x = A1_LETTERS.indexOf(move[0]);
   const y = A1_NUMBERS.indexOf(parseInt(move.substr(1), 0));
