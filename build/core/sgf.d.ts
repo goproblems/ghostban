@@ -24,9 +24,9 @@ export declare class Sgf {
      * @param parseOptions The options for parsing the Sgf content.
      */
     constructor(content?: string | TNode | undefined, parseOptions?: {
-        ignorePropList: never[];
-        enableNodeMap: boolean;
-        enablePathMap: boolean;
+        enableNodeMap?: boolean;
+        enablePathMap?: boolean;
+        allowCustomProps?: boolean;
     });
     /**
      * Sets the root node of the SGF tree.

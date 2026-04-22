@@ -45,10 +45,13 @@ type Range = [number, number];
 
 export function buildPropertyValueRanges(
   sgf: string,
-  keys: string[] = ['C', 'TM', 'GN', 'PC']
+  keys?: string[]
 ): Range[] {
   const ranges: Range[] = [];
-  const pattern = new RegExp(`\\b(${keys.join('|')})\\[`, 'g');
+  const pattern =
+    keys && keys.length > 0
+      ? new RegExp(`\\b(${keys.join('|')})\\[`, 'g')
+      : /\b([A-Z]+)\[/g;
 
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(sgf)) !== null) {

@@ -70,11 +70,11 @@ export class Sgf {
    */
   constructor(
     private content?: string | TNode,
-    private parseOptions = {
-      ignorePropList: [],
-      enableNodeMap: false,
-      enablePathMap: false,
-    }
+    private parseOptions: {
+      enableNodeMap?: boolean;
+      enablePathMap?: boolean;
+      allowCustomProps?: boolean;
+    } = {}
   ) {
     if (typeof content === 'string') {
       this.parse(content);
@@ -222,6 +222,17 @@ export class Sgf {
                 moveAnnotationProps.push(MoveAnnotationProp.from(m[0]));
               }
               if (CUSTOM_PROP_LIST.includes(token)) {
+                customProps.push(CustomProp.from(m[0]));
+              } else if (
+                this.parseOptions.allowCustomProps &&
+                !MOVE_PROP_LIST.includes(token) &&
+                !SETUP_PROP_LIST.includes(token) &&
+                !ROOT_PROP_LIST.includes(token) &&
+                !MARKUP_PROP_LIST.includes(token) &&
+                !GAME_INFO_PROP_LIST.includes(token) &&
+                !NODE_ANNOTATION_PROP_LIST.includes(token) &&
+                !MOVE_ANNOTATION_PROP_LIST.includes(token)
+              ) {
                 customProps.push(CustomProp.from(m[0]));
               }
             }
