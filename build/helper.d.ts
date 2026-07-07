@@ -174,7 +174,7 @@ export declare const calcPreventMoveMat: (node: TNode, defaultBoardSize?: number
  * @param policy - The policy for handling the markup. Defaults to 'append'.
  * @returns The calculated markup for the variations.
  */
-export declare const calcVariationsMarkup: (node: TNode, policy?: 'append' | 'prepend' | 'replace', activeIndex?: number, defaultBoardSize?: number) => string[][];
+export declare const calcVariationsMarkup: (node: TNode, policy?: "append" | "prepend" | "replace", activeIndex?: number, defaultBoardSize?: number) => string[][];
 export declare const detectST: (node: TNode) => {
     showVariationsMarkup: boolean;
     showChildrenMarkup: boolean;

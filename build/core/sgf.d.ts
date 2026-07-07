@@ -23,7 +23,7 @@ export declare class Sgf {
      * @param content The content of the Sgf, either as a string or as a TNode(Root node).
      * @param parseOptions The options for parsing the Sgf content.
      */
-    constructor(content?: string | TNode | undefined, parseOptions?: {
+    constructor(content?: (string | TNode) | undefined, parseOptions?: {
         enableNodeMap?: boolean;
         enablePathMap?: boolean;
         allowCustomProps?: boolean;
