@@ -53,7 +53,7 @@ export type GhostBanOptions = {
   zoom?: boolean;
   extent: number;
   theme: Theme;
-  analysisPointTheme: AnalysisPointTheme;
+  analysisPointTheme: AnalysisPointThemeName;
   coordinate: boolean;
   interactive: boolean;
   background: boolean;
@@ -67,6 +67,7 @@ export type GhostBanOptions = {
   mobileIndicatorOffset: number;
   forceAnalysisBoardSize?: number;
   customMarkupRenderers?: Record<string, CustomMarkupRenderer>;
+  customAnalysisPointRenderers?: Record<string, AnalysisPointRenderer>;
 };
 
 export type GhostBanOptionsParams = {
@@ -77,7 +78,7 @@ export type GhostBanOptionsParams = {
   zoom?: boolean;
   extent?: number;
   theme?: Theme;
-  analysisPointTheme?: AnalysisPointTheme;
+  analysisPointTheme?: AnalysisPointThemeName;
   coordinate?: boolean;
   interactive?: boolean;
   background?: boolean;
@@ -91,6 +92,7 @@ export type GhostBanOptionsParams = {
   forceAnalysisBoardSize?: number;
   mobileIndicatorOffset?: number;
   customMarkupRenderers?: Record<string, CustomMarkupRenderer>;
+  customAnalysisPointRenderers?: Record<string, AnalysisPointRenderer>;
 };
 
 export type ThemeConfig = {
@@ -208,10 +210,14 @@ export type AnalysisPointOptions = {
   rootInfo: RootInfo;
   moveInfo: MoveInfo;
   policyValue?: number;
-  theme?: AnalysisPointTheme;
+  theme?: AnalysisPointThemeName;
   outlineColor?: string;
   showOrder?: boolean;
 };
+
+export type AnalysisPointRenderer = (options: AnalysisPointOptions) => void;
+
+export type AnalysisPointThemeName = AnalysisPointTheme | string;
 
 export enum Ki {
   Black = 1,

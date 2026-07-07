@@ -1174,7 +1174,7 @@ export class GhostBan {
         }
       }
 
-      const point = new AnalysisPoint({
+      const pointOptions = {
         ctx,
         x,
         y,
@@ -1184,8 +1184,15 @@ export class GhostBan {
         policyValue,
         theme: analysisPointTheme,
         outlineColor,
-      });
-      point.draw();
+      };
+      const customAnalysisPointRenderer =
+        this.options.customAnalysisPointRenderers?.[analysisPointTheme];
+      if (customAnalysisPointRenderer) {
+        customAnalysisPointRenderer(pointOptions);
+      } else {
+        const point = new AnalysisPoint(pointOptions);
+        point.draw();
+      }
       ctx.restore();
     });
   };

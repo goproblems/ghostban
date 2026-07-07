@@ -1,6 +1,7 @@
 import {
   AnalysisPointTheme,
   AnalysisPointOptions,
+  AnalysisPointThemeName,
   MoveInfo,
   RootInfo,
 } from '../types';
@@ -26,7 +27,7 @@ export default class AnalysisPoint {
   private rootInfo: RootInfo;
   private moveInfo: MoveInfo;
   private policyValue?: number;
-  private theme: AnalysisPointTheme;
+  private theme: AnalysisPointThemeName;
   private outlineColor?: string;
 
   constructor(options: AnalysisPointOptions) {
@@ -58,6 +59,8 @@ export default class AnalysisPoint {
       this.drawProblemAnalysisPoint();
     } else if (theme === AnalysisPointTheme.Scenario) {
       this.drawScenarioAnalysisPoint();
+    } else {
+      this.drawDefaultAnalysisPoint();
     }
 
     ctx.restore();

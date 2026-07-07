@@ -3579,6 +3579,9 @@ var AnalysisPoint = /** @class */ (function () {
         else if (theme === AnalysisPointTheme.Scenario) {
             this.drawScenarioAnalysisPoint();
         }
+        else {
+            this.drawDefaultAnalysisPoint();
+        }
         ctx.restore();
     };
     return AnalysisPoint;
@@ -4453,6 +4456,7 @@ var GhostBan = /** @class */ (function () {
             _this.clearAnalysisCanvas();
             var rootInfo = analysis.rootInfo;
             analysis.moveInfos.forEach(function (m) {
+                var _a;
                 if (!m.move || m.move === 'pass')
                     return;
                 var idObj = JSON.parse(analysis.id);
@@ -4460,12 +4464,12 @@ var GhostBan = /** @class */ (function () {
                 var offsetedMove = offsetA1Move(m.move, 0, analysisBoardSize - idObj.by);
                 if (!offsetedMove)
                     return;
-                var _a = a1ToPos(offsetedMove), i = _a.x, j = _a.y;
+                var _b = a1ToPos(offsetedMove), i = _b.x, j = _b.y;
                 if (i < 0 || j < 0 || i >= mat.length || j >= mat[0].length)
                     return;
                 if (mat[i][j] !== 0)
                     return;
-                var _b = _this.calcSpaceAndPadding(), space = _b.space, scaledPadding = _b.scaledPadding;
+                var _c = _this.calcSpaceAndPadding(), space = _c.space, scaledPadding = _c.scaledPadding;
                 var x = scaledPadding + i * space;
                 var y = scaledPadding + j * space;
                 var ratio = 0.46;
@@ -4499,14 +4503,14 @@ var GhostBan = /** @class */ (function () {
                 var policyValue;
                 // Convert m.move to row-major index for policy array
                 // KataGo's policy array is stored in row-major order: policy[row * boardSize + col]
-                var _c = a1ToPos(m.move), col = _c.x, row = _c.y;
+                var _d = a1ToPos(m.move), col = _d.x, row = _d.y;
                 var policyIndex = row * analysisBoardSize + col;
                 if (analysisPointTheme === AnalysisPointTheme.Scenario) {
                     if (analysis.humanPolicy && analysis.humanPolicy.length > 0) {
                         policyValue = analysis.humanPolicy[policyIndex];
                     }
                 }
-                var point = new AnalysisPoint({
+                var pointOptions = {
                     ctx: ctx,
                     x: x,
                     y: y,
@@ -4516,8 +4520,15 @@ var GhostBan = /** @class */ (function () {
                     policyValue: policyValue,
                     theme: analysisPointTheme,
                     outlineColor: outlineColor,
-                });
-                point.draw();
+                };
+                var customAnalysisPointRenderer = (_a = _this.options.customAnalysisPointRenderers) === null || _a === void 0 ? void 0 : _a[analysisPointTheme];
+                if (customAnalysisPointRenderer) {
+                    customAnalysisPointRenderer(pointOptions);
+                }
+                else {
+                    var point = new AnalysisPoint(pointOptions);
+                    point.draw();
+                }
                 ctx.restore();
             });
         };
