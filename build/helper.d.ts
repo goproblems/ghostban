@@ -54,7 +54,7 @@ export declare const inVariantPath: (node: TNode, strategy?: PathDetectionStrate
 export declare const inWrongPath: (node: TNode, strategy?: PathDetectionStrategy, preNodes?: TNode[] | undefined, postNodes?: TNode[] | undefined) => boolean;
 export declare const nFormatter: (num: number, fixed?: number) => string;
 export declare const pathToIndexes: (path: TNode[]) => string[];
-export declare const pathToInitialStones: (path: TNode[], xOffset?: number, yOffset?: number) => string[];
+export declare const pathToInitialStones: (path: TNode[], xOffset?: number, yOffset?: number) => string[][];
 export declare const pathToAiMoves: (path: TNode[], xOffset?: number, yOffset?: number) => string[][];
 export declare const getIndexFromAnalysis: (a: Analysis) => any;
 export declare const isMainPath: (node: TNode) => boolean;

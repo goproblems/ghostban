@@ -1,4 +1,4 @@
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import pluginTypescript from '@rollup/plugin-typescript';
 import pluginCommonjs from '@rollup/plugin-commonjs';
 import pluginNodeResolve from '@rollup/plugin-node-resolve';
@@ -7,12 +7,14 @@ import image from '@rollup/plugin-image';
 import analyze from 'rollup-plugin-analyzer';
 
 import {createRequire} from 'node:module';
-import {fileURLToPath} from 'node:url';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 const moduleName = pkg.name.replace(/^@.*\//, '');
 const inputFileName = 'index-with-web.ts';
+const iifeFileName = 'build/index.min.js';
+const nodeEsmFileName = 'build/index.mjs';
+const sourcemap = true;
 const author = pkg.author;
 const banner = `
   /**
@@ -29,9 +31,9 @@ export default [
     output: [
       {
         name: moduleName,
-        file: pkg.browser.replace('.js', '.min.js'),
+        file: iifeFileName,
         format: 'iife',
-        sourcemap: 'inline',
+        sourcemap,
         banner,
         plugins: [terser()],
       },
@@ -56,7 +58,14 @@ export default [
       {
         file: pkg.module,
         format: 'es',
-        sourcemap: 'inline',
+        sourcemap,
+        banner,
+        exports: 'named',
+      },
+      {
+        file: nodeEsmFileName,
+        format: 'es',
+        sourcemap,
         banner,
         exports: 'named',
       },
@@ -86,7 +95,7 @@ export default [
       {
         file: pkg.main,
         format: 'cjs',
-        sourcemap: 'inline',
+        sourcemap,
         banner,
       },
     ],

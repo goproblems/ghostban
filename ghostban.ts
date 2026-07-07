@@ -1,4 +1,3 @@
-import {compact} from 'lodash';
 import {
   calcVisibleArea,
   reverseOffset,

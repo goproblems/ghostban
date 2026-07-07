@@ -6,11 +6,9 @@
    * Released under the MIT license.
    */
 
-'use strict';
-
-var tslib = require('tslib');
-var SparkMD5 = require('spark-md5');
-var jsBase64 = require('js-base64');
+import { __spreadArray, __read, __values, __extends, __assign, __rest } from 'tslib';
+import SparkMD5 from 'spark-md5';
+import { encode } from 'js-base64';
 
 /**
  * Sort an array using the merge sort algorithm.
@@ -53,10 +51,10 @@ function merge(comparatorFn, arr1, arr2) {
         }
     }
     if (left1 > 0) {
-        result.push.apply(result, tslib.__spreadArray([], tslib.__read(arr1), false));
+        result.push.apply(result, __spreadArray([], __read(arr1), false));
     }
     else {
-        result.push.apply(result, tslib.__spreadArray([], tslib.__read(arr2), false));
+        result.push.apply(result, __spreadArray([], __read(arr2), false));
     }
     return result;
 }
@@ -144,7 +142,7 @@ var TNode = /** @class */ (function () {
             if (fn(node) === false)
                 return false;
             try {
-                for (var _b = tslib.__values(node.children), _c = _b.next(); !_c.done; _c = _b.next()) {
+                for (var _b = __values(node.children), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var child = _c.value;
                     if (walkRecursive(child) === false)
                         return false;
@@ -232,7 +230,7 @@ var TreeModel = /** @class */ (function () {
                 model[prop] = mergeSort(this.config.modelComparatorFn, children);
             }
             try {
-                for (var _b = tslib.__values(model[prop]), _c = _b.next(); !_c.done; _c = _b.next()) {
+                for (var _b = __values(model[prop]), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var childModel = _c.value;
                     var childNode = this.parse(childModel);
                     addChild(node, childNode);
@@ -298,7 +296,7 @@ function buildPropertyValueRanges(sgf, keys) {
         var valueStart = propStart + match[1].length + 1; // +1 for '['
         // Check if this match is inside any existing range
         var isInsideExistingRange = ranges.some(function (_a) {
-            var _b = tslib.__read(_a, 2), start = _b[0], end = _b[1];
+            var _b = __read(_a, 2), start = _b[0], end = _b[1];
             return propStart >= start && propStart <= end;
         });
         if (isInsideExistingRange) {
@@ -336,7 +334,7 @@ function isInAnyRange(index, ranges) {
     var right = ranges.length - 1;
     while (left <= right) {
         var mid = (left + right) >> 1;
-        var _a = tslib.__read(ranges[mid], 2), start = _a[0], end = _a[1];
+        var _a = __read(ranges[mid], 2), start = _a[0], end = _a[1];
         if (index < start) {
             right = mid - 1;
         }
@@ -375,7 +373,7 @@ var getNodeNumber = function (n, parent) {
 /**
  * Theme property keys for type-safe access to theme configuration
  */
-exports.ThemePropertyKey = void 0;
+var ThemePropertyKey;
 (function (ThemePropertyKey) {
     ThemePropertyKey["PositiveNodeColor"] = "positiveNodeColor";
     ThemePropertyKey["NegativeNodeColor"] = "negativeNodeColor";
@@ -397,14 +395,14 @@ exports.ThemePropertyKey = void 0;
     ThemePropertyKey["StarSize"] = "starSize";
     ThemePropertyKey["MarkupLineWidth"] = "markupLineWidth";
     ThemePropertyKey["HighlightColor"] = "highlightColor";
-})(exports.ThemePropertyKey || (exports.ThemePropertyKey = {}));
-exports.Ki = void 0;
+})(ThemePropertyKey || (ThemePropertyKey = {}));
+var Ki;
 (function (Ki) {
     Ki[Ki["Black"] = 1] = "Black";
     Ki[Ki["White"] = -1] = "White";
     Ki[Ki["Empty"] = 0] = "Empty";
-})(exports.Ki || (exports.Ki = {}));
-exports.Theme = void 0;
+})(Ki || (Ki = {}));
+var Theme;
 (function (Theme) {
     Theme["BlackAndWhite"] = "black_and_white";
     Theme["Flat"] = "flat";
@@ -417,14 +415,14 @@ exports.Theme = void 0;
     Theme["Warm"] = "warm";
     Theme["YunziMonkeyDark"] = "yunzi_monkey_dark";
     Theme["HighContrast"] = "high_contrast";
-})(exports.Theme || (exports.Theme = {}));
-exports.AnalysisPointTheme = void 0;
+})(Theme || (Theme = {}));
+var AnalysisPointTheme;
 (function (AnalysisPointTheme) {
     AnalysisPointTheme["Default"] = "default";
     AnalysisPointTheme["Problem"] = "problem";
     AnalysisPointTheme["Scenario"] = "scenario";
-})(exports.AnalysisPointTheme || (exports.AnalysisPointTheme = {}));
-exports.Center = void 0;
+})(AnalysisPointTheme || (AnalysisPointTheme = {}));
+var Center;
 (function (Center) {
     Center["Left"] = "l";
     Center["Right"] = "r";
@@ -435,15 +433,15 @@ exports.Center = void 0;
     Center["BottomLeft"] = "bl";
     Center["BottomRight"] = "br";
     Center["Center"] = "c";
-})(exports.Center || (exports.Center = {}));
-exports.Effect = void 0;
+})(Center || (Center = {}));
+var Effect;
 (function (Effect) {
     Effect["None"] = "";
     Effect["Ban"] = "ban";
     Effect["Dim"] = "dim";
     Effect["Highlight"] = "highlight";
-})(exports.Effect || (exports.Effect = {}));
-exports.Markup = void 0;
+})(Effect || (Effect = {}));
+var Markup$1;
 (function (Markup) {
     Markup["Current"] = "cu";
     Markup["Circle"] = "ci";
@@ -494,8 +492,8 @@ exports.Markup = void 0;
     Markup["DashedActiveNode"] = "danode";
     Markup["Highlight"] = "hl";
     Markup["None"] = "";
-})(exports.Markup || (exports.Markup = {}));
-exports.Cursor = void 0;
+})(Markup$1 || (Markup$1 = {}));
+var Cursor;
 (function (Cursor) {
     Cursor["None"] = "";
     Cursor["BlackStone"] = "b";
@@ -506,19 +504,19 @@ exports.Cursor = void 0;
     Cursor["Cross"] = "cr";
     Cursor["Clear"] = "cl";
     Cursor["Text"] = "t";
-})(exports.Cursor || (exports.Cursor = {}));
-exports.ProblemAnswerType = void 0;
+})(Cursor || (Cursor = {}));
+var ProblemAnswerType;
 (function (ProblemAnswerType) {
     ProblemAnswerType["Right"] = "1";
     ProblemAnswerType["Wrong"] = "2";
     ProblemAnswerType["Variant"] = "3";
-})(exports.ProblemAnswerType || (exports.ProblemAnswerType = {}));
-exports.PathDetectionStrategy = void 0;
+})(ProblemAnswerType || (ProblemAnswerType = {}));
+var PathDetectionStrategy;
 (function (PathDetectionStrategy) {
     PathDetectionStrategy["Post"] = "post";
     PathDetectionStrategy["Pre"] = "pre";
     PathDetectionStrategy["Both"] = "both";
-})(exports.PathDetectionStrategy || (exports.PathDetectionStrategy = {}));
+})(PathDetectionStrategy || (PathDetectionStrategy = {}));
 
 var _a$1;
 var settings = { cdn: 'https://s.shaowq.com' };
@@ -624,22 +622,22 @@ var DEFAULT_OPTIONS = {
     extent: 2,
     interactive: false,
     coordinate: true,
-    theme: exports.Theme.Flat,
+    theme: Theme.Flat,
     background: false,
     zoom: false,
     showAnalysis: false,
 };
 var THEME_RESOURCES = (_a$1 = {},
-    _a$1[exports.Theme.BlackAndWhite] = {
+    _a$1[Theme.BlackAndWhite] = {
         blacks: [],
         whites: [],
     },
-    _a$1[exports.Theme.Subdued] = {
+    _a$1[Theme.Subdued] = {
         board: "".concat(settings.cdn, "/assets/theme/subdued/board.png"),
         blacks: ["".concat(settings.cdn, "/assets/theme/subdued/black.png")],
         whites: ["".concat(settings.cdn, "/assets/theme/subdued/white.png")],
     },
-    _a$1[exports.Theme.ShellStone] = {
+    _a$1[Theme.ShellStone] = {
         board: "".concat(settings.cdn, "/assets/theme/shell-stone/board.png"),
         blacks: ["".concat(settings.cdn, "/assets/theme/shell-stone/black.png")],
         whites: [
@@ -650,7 +648,7 @@ var THEME_RESOURCES = (_a$1 = {},
             "".concat(settings.cdn, "/assets/theme/shell-stone/white4.png"),
         ],
     },
-    _a$1[exports.Theme.SlateAndShell] = {
+    _a$1[Theme.SlateAndShell] = {
         board: "".concat(settings.cdn, "/assets/theme/slate-and-shell/board.png"),
         blacks: [
             "".concat(settings.cdn, "/assets/theme/slate-and-shell/slate1.png"),
@@ -667,29 +665,29 @@ var THEME_RESOURCES = (_a$1 = {},
             "".concat(settings.cdn, "/assets/theme/slate-and-shell/shell5.png"),
         ],
     },
-    _a$1[exports.Theme.Walnut] = {
+    _a$1[Theme.Walnut] = {
         board: "".concat(settings.cdn, "/assets/theme/walnut/board.jpg"),
         blacks: ["".concat(settings.cdn, "/assets/theme/walnut/black.png")],
         whites: ["".concat(settings.cdn, "/assets/theme/walnut/white.png")],
     },
-    _a$1[exports.Theme.Photorealistic] = {
+    _a$1[Theme.Photorealistic] = {
         board: "".concat(settings.cdn, "/assets/theme/photorealistic/board.png"),
         blacks: ["".concat(settings.cdn, "/assets/theme/photorealistic/black.png")],
         whites: ["".concat(settings.cdn, "/assets/theme/photorealistic/white.png")],
     },
-    _a$1[exports.Theme.Flat] = {
+    _a$1[Theme.Flat] = {
         blacks: [],
         whites: [],
     },
-    _a$1[exports.Theme.Warm] = {
+    _a$1[Theme.Warm] = {
         blacks: [],
         whites: [],
     },
-    _a$1[exports.Theme.Dark] = {
+    _a$1[Theme.Dark] = {
         blacks: [],
         whites: [],
     },
-    _a$1[exports.Theme.YunziMonkeyDark] = {
+    _a$1[Theme.YunziMonkeyDark] = {
         board: "".concat(settings.cdn, "/assets/theme/ymd/yunzi-monkey-dark/YMD-Bo-V10_lessborder1920px.png"),
         blacks: [
             "".concat(settings.cdn, "/assets/theme/ymd/yunzi-monkey-dark/YMD-B-v14-338px.png"),
@@ -712,7 +710,7 @@ var THEME_RESOURCES = (_a$1 = {},
             whites: ["".concat(settings.cdn, "/assets/theme/ymd/YMD-W_197to59px.png")],
         },
     },
-    _a$1[exports.Theme.HighContrast] = {
+    _a$1[Theme.HighContrast] = {
         blacks: [],
         whites: [],
     },
@@ -840,7 +838,7 @@ var SgfPropBase = /** @class */ (function () {
     return SgfPropBase;
 }());
 var MoveProp = /** @class */ (function (_super) {
-    tslib.__extends(MoveProp, _super);
+    __extends(MoveProp, _super);
     function MoveProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'move';
@@ -886,7 +884,7 @@ var MoveProp = /** @class */ (function (_super) {
     return MoveProp;
 }(SgfPropBase));
 var SetupProp = /** @class */ (function (_super) {
-    tslib.__extends(SetupProp, _super);
+    __extends(SetupProp, _super);
     function SetupProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'setup';
@@ -896,7 +894,7 @@ var SetupProp = /** @class */ (function (_super) {
         var tokenMatch = str.match(TOKEN_REGEX);
         var valMatches = str.matchAll(/\[([\s\S]*?)\]/g);
         var token = '';
-        var vals = tslib.__spreadArray([], tslib.__read(valMatches), false).map(function (m) { return m[1]; });
+        var vals = __spreadArray([], __read(valMatches), false).map(function (m) { return m[1]; });
         if (tokenMatch)
             token = tokenMatch[1];
         return new SetupProp(token, vals);
@@ -932,7 +930,7 @@ var SetupProp = /** @class */ (function (_super) {
     return SetupProp;
 }(SgfPropBase));
 var NodeAnnotationProp = /** @class */ (function (_super) {
-    tslib.__extends(NodeAnnotationProp, _super);
+    __extends(NodeAnnotationProp, _super);
     function NodeAnnotationProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'node-annotation';
@@ -993,7 +991,7 @@ var NodeAnnotationProp = /** @class */ (function (_super) {
     return NodeAnnotationProp;
 }(SgfPropBase));
 var MoveAnnotationProp = /** @class */ (function (_super) {
-    tslib.__extends(MoveAnnotationProp, _super);
+    __extends(MoveAnnotationProp, _super);
     function MoveAnnotationProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'move-annotation';
@@ -1039,14 +1037,14 @@ var MoveAnnotationProp = /** @class */ (function (_super) {
     return MoveAnnotationProp;
 }(SgfPropBase));
 var AnnotationProp = /** @class */ (function (_super) {
-    tslib.__extends(AnnotationProp, _super);
+    __extends(AnnotationProp, _super);
     function AnnotationProp() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return AnnotationProp;
 }(SgfPropBase));
 var MarkupProp = /** @class */ (function (_super) {
-    tslib.__extends(MarkupProp, _super);
+    __extends(MarkupProp, _super);
     function MarkupProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'markup';
@@ -1056,7 +1054,7 @@ var MarkupProp = /** @class */ (function (_super) {
         var tokenMatch = str.match(TOKEN_REGEX);
         var valMatches = str.matchAll(/\[([\s\S]*?)\]/g);
         var token = '';
-        var vals = tslib.__spreadArray([], tslib.__read(valMatches), false).map(function (m) { return m[1]; });
+        var vals = __spreadArray([], __read(valMatches), false).map(function (m) { return m[1]; });
         if (tokenMatch)
             token = tokenMatch[1];
         return new MarkupProp(token, vals);
@@ -1092,7 +1090,7 @@ var MarkupProp = /** @class */ (function (_super) {
     return MarkupProp;
 }(SgfPropBase));
 var RootProp = /** @class */ (function (_super) {
-    tslib.__extends(RootProp, _super);
+    __extends(RootProp, _super);
     function RootProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'root';
@@ -1138,7 +1136,7 @@ var RootProp = /** @class */ (function (_super) {
     return RootProp;
 }(SgfPropBase));
 var GameInfoProp = /** @class */ (function (_super) {
-    tslib.__extends(GameInfoProp, _super);
+    __extends(GameInfoProp, _super);
     function GameInfoProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'game-info';
@@ -1183,7 +1181,7 @@ var GameInfoProp = /** @class */ (function (_super) {
     return GameInfoProp;
 }(SgfPropBase));
 var CustomProp = /** @class */ (function (_super) {
-    tslib.__extends(CustomProp, _super);
+    __extends(CustomProp, _super);
     function CustomProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'custom';
@@ -1228,7 +1226,7 @@ var CustomProp = /** @class */ (function (_super) {
     return CustomProp;
 }(SgfPropBase));
 var TimingProp = /** @class */ (function (_super) {
-    tslib.__extends(TimingProp, _super);
+    __extends(TimingProp, _super);
     function TimingProp(token, value) {
         var _this = _super.call(this, token, value) || this;
         _this.type = 'Timing';
@@ -1264,14 +1262,14 @@ var TimingProp = /** @class */ (function (_super) {
     return TimingProp;
 }(SgfPropBase));
 var MiscellaneousProp = /** @class */ (function (_super) {
-    tslib.__extends(MiscellaneousProp, _super);
+    __extends(MiscellaneousProp, _super);
     function MiscellaneousProp() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return MiscellaneousProp;
 }(SgfPropBase));
 
-var cloneMatrix$1 = function (mat) { return mat.map(function (row) { return tslib.__spreadArray([], tslib.__read(row), false); }); };
+var cloneMatrix$1 = function (mat) { return mat.map(function (row) { return __spreadArray([], __read(row), false); }); };
 var liberties = 0;
 var recursionPath = [];
 /**
@@ -1522,14 +1520,14 @@ var Sgf = /** @class */ (function () {
             return;
         // First, get all property value ranges from the original string
         // Use all known SGF property keys from the constants
-        var allPropertyKeys = tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(ROOT_PROP_LIST), false), tslib.__read(MOVE_PROP_LIST), false), tslib.__read(SETUP_PROP_LIST), false), tslib.__read(MARKUP_PROP_LIST), false), tslib.__read(NODE_ANNOTATION_PROP_LIST), false), tslib.__read(MOVE_ANNOTATION_PROP_LIST), false), tslib.__read(GAME_INFO_PROP_LIST), false), tslib.__read(CUSTOM_PROP_LIST), false);
+        var allPropertyKeys = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], __read(ROOT_PROP_LIST), false), __read(MOVE_PROP_LIST), false), __read(SETUP_PROP_LIST), false), __read(MARKUP_PROP_LIST), false), __read(NODE_ANNOTATION_PROP_LIST), false), __read(MOVE_ANNOTATION_PROP_LIST), false), __read(GAME_INFO_PROP_LIST), false), __read(CUSTOM_PROP_LIST), false);
         var propertyValueRanges = buildPropertyValueRanges(sgf, allPropertyKeys).sort(function (a, b) { return a[0] - b[0]; });
         // Remove spaces only outside property value ranges
         var processedSgf = '';
         var lastIndex = 0;
         try {
-            for (var propertyValueRanges_1 = tslib.__values(propertyValueRanges), propertyValueRanges_1_1 = propertyValueRanges_1.next(); !propertyValueRanges_1_1.done; propertyValueRanges_1_1 = propertyValueRanges_1.next()) {
-                var _b = tslib.__read(propertyValueRanges_1_1.value, 2), start = _b[0], end = _b[1];
+            for (var propertyValueRanges_1 = __values(propertyValueRanges), propertyValueRanges_1_1 = propertyValueRanges_1.next(); !propertyValueRanges_1_1.done; propertyValueRanges_1_1 = propertyValueRanges_1.next()) {
+                var _b = __read(propertyValueRanges_1_1.value, 2), start = _b[0], end = _b[1];
                 // Process text before this property value (remove spaces)
                 var beforeProp = sgf.slice(lastIndex, start);
                 processedSgf += beforeProp.replace(/\s+/gm, '');
@@ -1569,7 +1567,7 @@ var Sgf = /** @class */ (function () {
                     var nodeAnnotationProps_1 = [];
                     var moveAnnotationProps_1 = [];
                     var customProps_1 = [];
-                    var matches = tslib.__spreadArray([], tslib.__read(content.matchAll(
+                    var matches = __spreadArray([], __read(content.matchAll(
                     // RegExp(/([A-Z]+\[[a-z\[\]]*\]+)/, 'g')
                     // RegExp(/([A-Z]+\[.*?\]+)/, 'g')
                     // RegExp(/[A-Z]+(\[.*?\]){1,}/, 'g')
@@ -1649,7 +1647,7 @@ var Sgf = /** @class */ (function () {
                             if (node.parent) {
                                 var parentPath = this_1.pathMap.get(node.parent.model.id);
                                 if (parentPath) {
-                                    this_1.pathMap.set(node.model.id, tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(parentPath), false), [node], false));
+                                    this_1.pathMap.set(node.model.id, __spreadArray(__spreadArray([], __read(parentPath), false), [node], false));
                                 }
                             }
                             else {
@@ -1689,7 +1687,7 @@ var Sgf = /** @class */ (function () {
         var content = '';
         node.walk(function (n) {
             var _a = n.model, rootProps = _a.rootProps, moveProps = _a.moveProps, customProps = _a.customProps, setupProps = _a.setupProps, markupProps = _a.markupProps, nodeAnnotationProps = _a.nodeAnnotationProps, moveAnnotationProps = _a.moveAnnotationProps, gameInfoProps = _a.gameInfoProps;
-            var nodes = tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(rootProps), false), tslib.__read(customProps), false), tslib.__read(moveProps), false), tslib.__read(getDeduplicatedProps(setupProps)), false), tslib.__read(getDeduplicatedProps(markupProps)), false), tslib.__read(gameInfoProps), false), tslib.__read(nodeAnnotationProps), false), tslib.__read(moveAnnotationProps), false);
+            var nodes = __spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], __read(rootProps), false), __read(customProps), false), __read(moveProps), false), __read(getDeduplicatedProps(setupProps)), false), __read(getDeduplicatedProps(markupProps)), false), __read(gameInfoProps), false), __read(nodeAnnotationProps), false), __read(moveAnnotationProps), false);
             content += ';';
             nodes.forEach(function (n) {
                 content += n.toString();
@@ -1706,7 +1704,7 @@ var Sgf = /** @class */ (function () {
     return Sgf;
 }());
 
-var cloneMatrix = function (mat) { return mat.map(function (row) { return tslib.__spreadArray([], tslib.__read(row), false); }); };
+var cloneMatrix = function (mat) { return mat.map(function (row) { return __spreadArray([], __read(row), false); }); };
 var compactValues = function (values) {
     return values.filter(Boolean);
 };
@@ -1715,12 +1713,12 @@ var sample = function (values) {
 };
 var cloneProp = function (prop) {
     var clonedProp = Object.assign(Object.create(Object.getPrototypeOf(prop)), prop);
-    clonedProp._values = tslib.__spreadArray([], tslib.__read(prop.values), false);
+    clonedProp._values = __spreadArray([], __read(prop.values), false);
     return clonedProp;
 };
 var cloneSgfNodeModel = function (model) {
-    var _a = model; _a.children; var baseModel = tslib.__rest(_a, ["children"]);
-    return tslib.__assign(tslib.__assign({}, baseModel), { moveProps: model.moveProps.map(cloneProp), setupProps: model.setupProps.map(cloneProp), rootProps: model.rootProps.map(cloneProp), markupProps: model.markupProps.map(cloneProp), gameInfoProps: model.gameInfoProps.map(cloneProp), nodeAnnotationProps: model.nodeAnnotationProps.map(cloneProp), moveAnnotationProps: model.moveAnnotationProps.map(cloneProp), customProps: model.customProps.map(cloneProp) });
+    var _a = model; _a.children; var baseModel = __rest(_a, ["children"]);
+    return __assign(__assign({}, baseModel), { moveProps: model.moveProps.map(cloneProp), setupProps: model.setupProps.map(cloneProp), rootProps: model.rootProps.map(cloneProp), markupProps: model.markupProps.map(cloneProp), gameInfoProps: model.gameInfoProps.map(cloneProp), nodeAnnotationProps: model.nodeAnnotationProps.map(cloneProp), moveAnnotationProps: model.moveAnnotationProps.map(cloneProp), customProps: model.customProps.map(cloneProp) });
 };
 var cloneTreeNode = function (node) {
     var clonedNode = new TNode(node.config, cloneSgfNodeModel(node.model));
@@ -1885,60 +1883,60 @@ var isWrongNode = function (n) {
 // };
 var inPath = function (node, detectionMethod, strategy, preNodes, postNodes) {
     var _a;
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     var path = preNodes !== null && preNodes !== void 0 ? preNodes : node.getPath();
     var postRightNodes = (_a = postNodes === null || postNodes === void 0 ? void 0 : postNodes.filter(function (n) { return detectionMethod(n); })) !== null && _a !== void 0 ? _a : node.all(function (n) { return detectionMethod(n); });
     var preRightNodes = path.filter(function (n) { return detectionMethod(n); });
     switch (strategy) {
-        case exports.PathDetectionStrategy.Post:
+        case PathDetectionStrategy.Post:
             return postRightNodes.length > 0;
-        case exports.PathDetectionStrategy.Pre:
+        case PathDetectionStrategy.Pre:
             return preRightNodes.length > 0;
-        case exports.PathDetectionStrategy.Both:
+        case PathDetectionStrategy.Both:
             return preRightNodes.length > 0 || postRightNodes.length > 0;
         default:
             return false;
     }
 };
 var inRightPath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     return inPath(node, isRightNode, strategy, preNodes, postNodes);
 };
 var inFirstRightPath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     return inPath(node, isFirstRightNode, strategy, preNodes, postNodes);
 };
 var inFirstBranchRightPath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Pre; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Pre; }
     if (!inRightPath(node))
         return false;
     var path = preNodes !== null && preNodes !== void 0 ? preNodes : node.getPath();
     var postRightNodes = postNodes !== null && postNodes !== void 0 ? postNodes : node.all(function () { return true; });
     var result = [];
     switch (strategy) {
-        case exports.PathDetectionStrategy.Post:
+        case PathDetectionStrategy.Post:
             result = postRightNodes.filter(function (n) { return n.getIndex() > 0; });
             break;
-        case exports.PathDetectionStrategy.Pre:
+        case PathDetectionStrategy.Pre:
             result = path.filter(function (n) { return n.getIndex() > 0; });
             break;
-        case exports.PathDetectionStrategy.Both:
+        case PathDetectionStrategy.Both:
             result = path.concat(postRightNodes).filter(function (n) { return n.getIndex() > 0; });
             break;
     }
     return result.length === 0;
 };
 var inChoicePath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     return inPath(node, isChoiceNode, strategy, preNodes, postNodes);
 };
 var inTargetPath = inChoicePath;
 var inVariantPath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     return inPath(node, isVariantNode, strategy, preNodes, postNodes);
 };
 var inWrongPath = function (node, strategy, preNodes, postNodes) {
-    if (strategy === void 0) { strategy = exports.PathDetectionStrategy.Post; }
+    if (strategy === void 0) { strategy = PathDetectionStrategy.Post; }
     return inPath(node, isWrongNode, strategy, preNodes, postNodes);
 };
 var nFormatter = function (num, fixed) {
@@ -2056,11 +2054,11 @@ var a1ToSGF = function (str, type, offsetX, offsetY) {
 var posToSgf = function (x, y, ki) {
     var ax = SGF_LETTERS[x];
     var ay = SGF_LETTERS[y];
-    if (ki === exports.Ki.Empty)
+    if (ki === Ki.Empty)
         return '';
-    if (ki === exports.Ki.White)
+    if (ki === Ki.White)
         return "B[".concat(ax).concat(ay, "]");
-    if (ki === exports.Ki.Black)
+    if (ki === Ki.Black)
         return "W[".concat(ax).concat(ay, "]");
     return '';
 };
@@ -2101,7 +2099,7 @@ var matToListOfTuples = function (mat, xOffset, yOffset) {
 var convertStoneTypeToString = function (type) { return (type === 1 ? 'B' : 'W'); };
 var convertStepsForAI = function (steps, offset) {
     if (offset === void 0) { offset = 0; }
-    var res = tslib.__spreadArray([], tslib.__read(steps), false);
+    var res = __spreadArray([], __read(steps), false);
     res = res.map(function (s) { return sgfOffset(s, offset); });
     var header = "(;FF[4]GM[1]SZ[".concat(19 - offset, "]GN[226]PB[Black]HA[0]PW[White]KM[7.5]DT[2017-08-01]TM[1800]RU[Chinese]CP[Copyright ghost-go.com]AP[ghost-go.com]PL[Black];");
     var count = 0;
@@ -2311,7 +2309,7 @@ var buildMoveNode = function (move, parentNode, props) {
         number = getNodeNumber(parentNode) + 1;
     var nodeData = initNodeData(hash, number);
     nodeData.moveProps = [moveProp];
-    var node = tree.parse(tslib.__assign(tslib.__assign({}, nodeData), props));
+    var node = tree.parse(__assign(__assign({}, nodeData), props));
     return node;
 };
 var getLastIndex = function (root) {
@@ -2378,14 +2376,14 @@ var calcCenter = function (mat, boardSize) {
     var top = topMost < boardSize - 1 - bottomMost;
     var left = leftMost < boardSize - 1 - rightMost;
     if (top && left)
-        return exports.Center.TopLeft;
+        return Center.TopLeft;
     if (!top && left)
-        return exports.Center.BottomLeft;
+        return Center.BottomLeft;
     if (top && !left)
-        return exports.Center.TopRight;
+        return Center.TopRight;
     if (!top && !left)
-        return exports.Center.BottomRight;
-    return exports.Center.Center;
+        return Center.BottomRight;
+    return Center.Center;
 };
 var calcBoardSize = function (mat, boardSize, extent) {
     if (boardSize === void 0) { boardSize = 19; }
@@ -2393,19 +2391,19 @@ var calcBoardSize = function (mat, boardSize, extent) {
     var result = [19, 19];
     var center = calcCenter(mat);
     var _a = calcMost(mat, boardSize), leftMost = _a.leftMost, rightMost = _a.rightMost, topMost = _a.topMost, bottomMost = _a.bottomMost;
-    if (center === exports.Center.TopLeft) {
+    if (center === Center.TopLeft) {
         result[0] = rightMost + extent + 1;
         result[1] = bottomMost + extent + 1;
     }
-    if (center === exports.Center.TopRight) {
+    if (center === Center.TopRight) {
         result[0] = boardSize - leftMost + extent;
         result[1] = bottomMost + extent + 1;
     }
-    if (center === exports.Center.BottomLeft) {
+    if (center === Center.BottomLeft) {
         result[0] = rightMost + extent + 1;
         result[1] = boardSize - topMost + extent;
     }
-    if (center === exports.Center.BottomRight) {
+    if (center === Center.BottomRight) {
         result[0] = boardSize - leftMost + extent;
         result[1] = boardSize - topMost + extent;
     }
@@ -2431,12 +2429,12 @@ var calcAvoidMovesForPartialAnalysis = function (partialArea, boardSize) {
     var e_1, _a, e_2, _b;
     if (boardSize === void 0) { boardSize = 19; }
     var result = [];
-    var _c = tslib.__read(partialArea, 2), _d = tslib.__read(_c[0], 2), x1 = _d[0], y1 = _d[1], _e = tslib.__read(_c[1], 2), x2 = _e[0], y2 = _e[1];
+    var _c = __read(partialArea, 2), _d = __read(_c[0], 2), x1 = _d[0], y1 = _d[1], _e = __read(_c[1], 2), x2 = _e[0], y2 = _e[1];
     try {
-        for (var _f = tslib.__values(A1_LETTERS.slice(0, boardSize)), _g = _f.next(); !_g.done; _g = _f.next()) {
+        for (var _f = __values(A1_LETTERS.slice(0, boardSize)), _g = _f.next(); !_g.done; _g = _f.next()) {
             var col = _g.value;
             try {
-                for (var _h = (e_2 = void 0, tslib.__values(A1_NUMBERS.slice(-boardSize))), _j = _h.next(); !_j.done; _j = _h.next()) {
+                for (var _h = (e_2 = void 0, __values(A1_NUMBERS.slice(-boardSize))), _j = _h.next(); !_j.done; _j = _h.next()) {
                     var row = _j.value;
                     var x = A1_LETTERS.indexOf(col);
                     var y = A1_NUMBERS.indexOf(row);
@@ -2466,44 +2464,44 @@ var calcAvoidMovesForPartialAnalysis = function (partialArea, boardSize) {
 var calcTsumegoFrame = function (mat, extent, boardSize, komi, turn, ko) {
     if (boardSize === void 0) { boardSize = 19; }
     if (komi === void 0) { komi = 7.5; }
-    if (turn === void 0) { turn = exports.Ki.Black; }
+    if (turn === void 0) { turn = Ki.Black; }
     var result = cloneMatrix(mat);
     var partialArea = calcPartialArea(mat, extent, boardSize);
     var center = calcCenter(mat);
     var putBorder = function (mat) {
-        var _a = tslib.__read(partialArea[0], 2), x1 = _a[0], y1 = _a[1];
-        var _b = tslib.__read(partialArea[1], 2), x2 = _b[0], y2 = _b[1];
+        var _a = __read(partialArea[0], 2), x1 = _a[0], y1 = _a[1];
+        var _b = __read(partialArea[1], 2), x2 = _b[0], y2 = _b[1];
         for (var i = x1; i <= x2; i++) {
             for (var j = y1; j <= y2; j++) {
-                if (center === exports.Center.TopLeft &&
+                if (center === Center.TopLeft &&
                     ((i === x2 && i < boardSize - 1) ||
                         (j === y2 && j < boardSize - 1) ||
                         (i === x1 && i > 0) ||
                         (j === y1 && j > 0))) {
                     mat[i][j] = turn;
                 }
-                else if (center === exports.Center.TopRight &&
+                else if (center === Center.TopRight &&
                     ((i === x1 && i > 0) ||
                         (j === y2 && j < boardSize - 1) ||
                         (i === x2 && i < boardSize - 1) ||
                         (j === y1 && j > 0))) {
                     mat[i][j] = turn;
                 }
-                else if (center === exports.Center.BottomLeft &&
+                else if (center === Center.BottomLeft &&
                     ((i === x2 && i < boardSize - 1) ||
                         (j === y1 && j > 0) ||
                         (i === x1 && i > 0) ||
                         (j === y2 && j < boardSize - 1))) {
                     mat[i][j] = turn;
                 }
-                else if (center === exports.Center.BottomRight &&
+                else if (center === Center.BottomRight &&
                     ((i === x1 && i > 0) ||
                         (j === y1 && j > 0) ||
                         (i === x2 && i < boardSize - 1) ||
                         (j === y2 && j < boardSize - 1))) {
                     mat[i][j] = turn;
                 }
-                else if (center === exports.Center.Center) {
+                else if (center === Center.Center) {
                     mat[i][j] = turn;
                 }
             }
@@ -2512,11 +2510,11 @@ var calcTsumegoFrame = function (mat, extent, boardSize, komi, turn, ko) {
     var putOutside = function (mat) {
         var offenceToWin = 10;
         var offenseKomi = turn * komi;
-        var _a = tslib.__read(partialArea[0], 2), x1 = _a[0], y1 = _a[1];
-        var _b = tslib.__read(partialArea[1], 2), x2 = _b[0], y2 = _b[1];
+        var _a = __read(partialArea[0], 2), x1 = _a[0], y1 = _a[1];
+        var _b = __read(partialArea[1], 2), x2 = _b[0], y2 = _b[1];
         // TODO: Hard code for now
         // const blackToAttack = turn === Ki.Black;
-        var blackToAttack = turn === exports.Ki.Black;
+        var blackToAttack = turn === Ki.Black;
         var isize = x2 - x1;
         var jsize = y2 - y1;
         // TODO: 361 is hardcoded
@@ -2531,16 +2529,16 @@ var calcTsumegoFrame = function (mat, extent, boardSize, komi, turn, ko) {
             for (var j = 0; j < boardSize; j++) {
                 if (i < x1 || i > x2 || j < y1 || j > y2) {
                     count++;
-                    var ki = exports.Ki.Empty;
-                    if (center === exports.Center.TopLeft || center === exports.Center.BottomLeft) {
-                        ki = blackToAttack !== count <= defenseArea ? exports.Ki.White : exports.Ki.Black;
+                    var ki = Ki.Empty;
+                    if (center === Center.TopLeft || center === Center.BottomLeft) {
+                        ki = blackToAttack !== count <= defenseArea ? Ki.White : Ki.Black;
                     }
-                    else if (center === exports.Center.TopRight ||
-                        center === exports.Center.BottomRight) {
-                        ki = blackToAttack !== count <= defenseArea ? exports.Ki.Black : exports.Ki.White;
+                    else if (center === Center.TopRight ||
+                        center === Center.BottomRight) {
+                        ki = blackToAttack !== count <= defenseArea ? Ki.Black : Ki.White;
                     }
                     if ((i + j) % 2 === 0 && Math.abs(count - defenseArea) > boardSize) {
-                        ki = exports.Ki.Empty;
+                        ki = Ki.Empty;
                     }
                     mat[i][j] = ki;
                 }
@@ -2595,22 +2593,22 @@ var calcOffset = function (mat) {
     var oox = ox;
     var ooy = oy;
     switch (center) {
-        case exports.Center.TopLeft: {
+        case Center.TopLeft: {
             oox = 0;
             ooy = oy;
             break;
         }
-        case exports.Center.TopRight: {
+        case Center.TopRight: {
             oox = -ox;
             ooy = oy;
             break;
         }
-        case exports.Center.BottomLeft: {
+        case Center.BottomLeft: {
             oox = 0;
             ooy = 0;
             break;
         }
-        case exports.Center.BottomRight: {
+        case Center.BottomRight: {
             oox = -ox;
             ooy = 0;
             break;
@@ -2628,22 +2626,22 @@ var reverseOffset = function (mat, bx, by, boardSize) {
     var oox = ox;
     var ooy = oy;
     switch (center) {
-        case exports.Center.TopLeft: {
+        case Center.TopLeft: {
             oox = 0;
             ooy = -oy;
             break;
         }
-        case exports.Center.TopRight: {
+        case Center.TopRight: {
             oox = ox;
             ooy = -oy;
             break;
         }
-        case exports.Center.BottomLeft: {
+        case Center.BottomLeft: {
             oox = 0;
             ooy = 0;
             break;
         }
-        case exports.Center.BottomRight: {
+        case Center.BottomRight: {
             oox = ox;
             ooy = 0;
             break;
@@ -2738,12 +2736,12 @@ function showKi(mat, steps, isCaptured) {
 }
 // TODO:
 var handleMove = function (mat, i, j, turn, currentNode, onAfterMove) {
-    if (turn === exports.Ki.Empty)
+    if (turn === Ki.Empty)
         return;
     if (canMove(mat, i, j, turn)) {
         // dispatch(uiSlice.actions.setTurn(-turn));
         var value = SGF_LETTERS[i] + SGF_LETTERS[j];
-        var token = turn === exports.Ki.Black ? 'B' : 'W';
+        var token = turn === Ki.Black ? 'B' : 'W';
         var hash_1 = calcHash(currentNode, [MoveProp.from("".concat(token, "[").concat(value, "]"))]);
         var filtered = currentNode.children.filter(function (n) { return n.model.id === hash_1; });
         var node = void 0;
@@ -2796,18 +2794,18 @@ var clearStoneFromCurrentNode = function (currentNode, value) {
  */
 var addStoneToCurrentNode = function (currentNode, mat, i, j, ki) {
     var value = SGF_LETTERS[i] + SGF_LETTERS[j];
-    var token = ki === exports.Ki.White ? 'AW' : 'AB';
+    var token = ki === Ki.White ? 'AW' : 'AB';
     var prop = findProp(currentNode, token);
     var result = false;
-    if (mat[i][j] !== exports.Ki.Empty) {
+    if (mat[i][j] !== Ki.Empty) {
         clearStoneFromCurrentNode(currentNode, value);
     }
     else {
         if (prop) {
-            prop.values = tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(prop.values), false), [value], false);
+            prop.values = __spreadArray(__spreadArray([], __read(prop.values), false), [value], false);
         }
         else {
-            currentNode.model.setupProps = tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(currentNode.model.setupProps), false), [
+            currentNode.model.setupProps = __spreadArray(__spreadArray([], __read(currentNode.model.setupProps), false), [
                 new SetupProp(token, value),
             ], false);
         }
@@ -2829,7 +2827,7 @@ var addStoneToCurrentNode = function (currentNode, mat, i, j, ki) {
  */
 // TODO: The params here is weird
 var addMoveToCurrentNode = function (currentNode, mat, i, j, ki, parentMat) {
-    if (ki === exports.Ki.Empty)
+    if (ki === Ki.Empty)
         return;
     var previousBoardState = parentMat !== undefined
         ? parentMat
@@ -2839,7 +2837,7 @@ var addMoveToCurrentNode = function (currentNode, mat, i, j, ki, parentMat) {
     var node;
     if (canMove(mat, i, j, ki, previousBoardState)) {
         var value = SGF_LETTERS[i] + SGF_LETTERS[j];
-        var token = ki === exports.Ki.Black ? 'B' : 'W';
+        var token = ki === Ki.Black ? 'B' : 'W';
         var hash_2 = calcHash(currentNode, [MoveProp.from("".concat(token, "[").concat(value, "]"))]);
         var filtered = currentNode.children.filter(function (n) { return n.model.id === hash_2; });
         if (filtered.length > 0) {
@@ -2929,20 +2927,20 @@ var calcVariationsMarkup = function (node, policy, activeIndex, defaultBoardSize
                 if (i < 0 || j < 0)
                     return;
                 if (i < size && j < size) {
-                    var mark = exports.Markup.NeutralNode;
+                    var mark = Markup$1.NeutralNode;
                     if (inWrongPath(n)) {
                         mark =
                             n.getIndex() === activeIndex
-                                ? exports.Markup.NegativeActiveNode
-                                : exports.Markup.NegativeNode;
+                                ? Markup$1.NegativeActiveNode
+                                : Markup$1.NegativeNode;
                     }
                     if (inRightPath(n)) {
                         mark =
                             n.getIndex() === activeIndex
-                                ? exports.Markup.PositiveActiveNode
-                                : exports.Markup.PositiveNode;
+                                ? Markup$1.PositiveActiveNode
+                                : Markup$1.PositiveNode;
                     }
-                    if (mat[i][j] === exports.Ki.Empty) {
+                    if (mat[i][j] === Ki.Empty) {
                         switch (policy) {
                             case 'prepend':
                                 markup[i][j] = mark + '|' + markup[i][j];
@@ -3022,12 +3020,12 @@ var calcMatAndMarkup = function (currentNode, defaultBoardSize) {
             if (i < size && j < size) {
                 li = i;
                 lj = j;
-                mat = move(mat, i, j, m.token === 'B' ? exports.Ki.Black : exports.Ki.White);
+                mat = move(mat, i, j, m.token === 'B' ? Ki.Black : Ki.White);
                 if (li !== undefined && lj !== undefined && li >= 0 && lj >= 0) {
                     numMarkup[li][lj] = (node.model.number || index - setupCount).toString();
                 }
                 if (index === path.length - 1) {
-                    markup[li][lj] = exports.Markup.Current;
+                    markup[li][lj] = Markup$1.Current;
                 }
             }
         });
@@ -3092,7 +3090,7 @@ var calcMatAndMarkup = function (currentNode, defaultBoardSize) {
                     var i = SGF_LETTERS.indexOf(value[0]);
                     var j = SGF_LETTERS.indexOf(value[1]);
                     if (i >= 0 && j >= 0 && i < size && j < size) {
-                        visibleAreaMat[i][j] = exports.Ki.Black;
+                        visibleAreaMat[i][j] = Ki.Black;
                         if (setup.token === 'AE')
                             visibleAreaMat[i][j] = 0;
                     }
@@ -3102,7 +3100,7 @@ var calcMatAndMarkup = function (currentNode, defaultBoardSize) {
                 var i = SGF_LETTERS.indexOf(m.value[0]);
                 var j = SGF_LETTERS.indexOf(m.value[1]);
                 if (i >= 0 && j >= 0 && i < size && j < size) {
-                    visibleAreaMat[i][j] = exports.Ki.Black;
+                    visibleAreaMat[i][j] = Ki.Black;
                 }
             });
             return true;
@@ -3121,16 +3119,16 @@ var calcMatAndMarkup = function (currentNode, defaultBoardSize) {
                 var mark = void 0;
                 switch (token) {
                     case 'CR':
-                        mark = exports.Markup.Circle;
+                        mark = Markup$1.Circle;
                         break;
                     case 'SQ':
-                        mark = exports.Markup.Square;
+                        mark = Markup$1.Square;
                         break;
                     case 'TR':
-                        mark = exports.Markup.Triangle;
+                        mark = Markup$1.Triangle;
                         break;
                     case 'MA':
-                        mark = exports.Markup.Cross;
+                        mark = Markup$1.Cross;
                         break;
                     default: {
                         mark = value.split(':')[1];
@@ -3272,7 +3270,7 @@ var extractBoardSize = function (node, defaultBoardSize) {
     return size;
 };
 var getFirstToMoveColorFromRoot = function (root, defaultMoveColor) {
-    if (defaultMoveColor === void 0) { defaultMoveColor = exports.Ki.Black; }
+    if (defaultMoveColor === void 0) { defaultMoveColor = Ki.Black; }
     if (root) {
         var setupNode = root.first(function (n) { return isSetupNode(n); });
         if (setupNode) {
@@ -3286,7 +3284,7 @@ var getFirstToMoveColorFromRoot = function (root, defaultMoveColor) {
     return defaultMoveColor;
 };
 var getFirstToMoveColorFromSgf = function (sgf, defaultMoveColor) {
-    if (defaultMoveColor === void 0) { defaultMoveColor = exports.Ki.Black; }
+    if (defaultMoveColor === void 0) { defaultMoveColor = Ki.Black; }
     var sgfParser = new Sgf(sgf);
     if (sgfParser.root)
         getFirstToMoveColorFromRoot(sgfParser.root, defaultMoveColor);
@@ -3295,13 +3293,13 @@ var getFirstToMoveColorFromSgf = function (sgf, defaultMoveColor) {
 };
 var getMoveColor = function (node, defaultMoveColor) {
     var _a, _b;
-    if (defaultMoveColor === void 0) { defaultMoveColor = exports.Ki.Black; }
+    if (defaultMoveColor === void 0) { defaultMoveColor = Ki.Black; }
     var moveProp = (_b = (_a = node.model) === null || _a === void 0 ? void 0 : _a.moveProps) === null || _b === void 0 ? void 0 : _b[0];
     switch (moveProp === null || moveProp === void 0 ? void 0 : moveProp.token) {
         case 'W':
-            return exports.Ki.White;
+            return Ki.White;
         case 'B':
-            return exports.Ki.Black;
+            return Ki.Black;
         default:
             // console.warn('Default move color is', defaultMoveColor);
             return defaultMoveColor;
@@ -3330,7 +3328,7 @@ var Stone = /** @class */ (function () {
 }());
 
 var FlatStone = /** @class */ (function (_super) {
-    tslib.__extends(FlatStone, _super);
+    __extends(FlatStone, _super);
     function FlatStone(ctx, x, y, ki, themeContext) {
         var _this = _super.call(this, ctx, x, y, ki) || this;
         _this.themeContext = themeContext;
@@ -3361,10 +3359,10 @@ var FlatStone = /** @class */ (function (_super) {
         ctx.arc(x, y, size / 2, 0, 2 * Math.PI, true);
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.getThemeProperty('boardLineColor');
-        if (ki === exports.Ki.Black) {
+        if (ki === Ki.Black) {
             ctx.fillStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.White) {
+        else if (ki === Ki.White) {
             ctx.fillStyle = this.getThemeProperty('flatWhiteColor');
         }
         ctx.fill();
@@ -3375,7 +3373,7 @@ var FlatStone = /** @class */ (function (_super) {
 }(Stone));
 
 var ImageStone = /** @class */ (function (_super) {
-    tslib.__extends(ImageStone, _super);
+    __extends(ImageStone, _super);
     function ImageStone(ctx, x, y, ki, mod, blacks, whites, themeContext) {
         var _this = _super.call(this, ctx, x, y, ki) || this;
         _this.mod = mod;
@@ -3393,7 +3391,7 @@ var ImageStone = /** @class */ (function (_super) {
         if (size <= 0)
             return;
         var img;
-        if (ki === exports.Ki.Black) {
+        if (ki === Ki.Black) {
             img = blacks[mod % blacks.length];
         }
         else {
@@ -3559,7 +3557,7 @@ var AnalysisPoint = /** @class */ (function () {
         this.rootInfo = options.rootInfo;
         this.moveInfo = options.moveInfo;
         this.policyValue = options.policyValue;
-        this.theme = (_a = options.theme) !== null && _a !== void 0 ? _a : exports.AnalysisPointTheme.Default;
+        this.theme = (_a = options.theme) !== null && _a !== void 0 ? _a : AnalysisPointTheme.Default;
         this.outlineColor = options.outlineColor;
     }
     AnalysisPoint.prototype.draw = function () {
@@ -3572,13 +3570,13 @@ var AnalysisPoint = /** @class */ (function () {
         ctx.shadowColor = '#fff';
         ctx.shadowBlur = 0;
         // this.drawDefaultAnalysisPoint();
-        if (theme === exports.AnalysisPointTheme.Default) {
+        if (theme === AnalysisPointTheme.Default) {
             this.drawDefaultAnalysisPoint();
         }
-        else if (theme === exports.AnalysisPointTheme.Problem) {
+        else if (theme === AnalysisPointTheme.Problem) {
             this.drawProblemAnalysisPoint();
         }
-        else if (theme === exports.AnalysisPointTheme.Scenario) {
+        else if (theme === AnalysisPointTheme.Scenario) {
             this.drawScenarioAnalysisPoint();
         }
         ctx.restore();
@@ -3631,7 +3629,7 @@ var Markup = /** @class */ (function () {
 }());
 
 var CircleMarkup = /** @class */ (function (_super) {
-    tslib.__extends(CircleMarkup, _super);
+    __extends(CircleMarkup, _super);
     function CircleMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3644,10 +3642,10 @@ var CircleMarkup = /** @class */ (function (_super) {
         ctx.globalAlpha = globalAlpha;
         ctx.lineWidth = this.getThemeProperty('markupLineWidth');
         ctx.setLineDash(this.lineDash);
-        if (ki === exports.Ki.White) {
+        if (ki === Ki.White) {
             ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.Black) {
+        else if (ki === Ki.Black) {
             ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
         }
         else {
@@ -3666,7 +3664,7 @@ var CircleMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var CrossMarkup = /** @class */ (function (_super) {
-    tslib.__extends(CrossMarkup, _super);
+    __extends(CrossMarkup, _super);
     function CrossMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3678,10 +3676,10 @@ var CrossMarkup = /** @class */ (function (_super) {
         ctx.beginPath();
         ctx.lineWidth = 3;
         ctx.globalAlpha = globalAlpha;
-        if (ki === exports.Ki.White) {
+        if (ki === Ki.White) {
             ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.Black) {
+        else if (ki === Ki.Black) {
             ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
         }
         else {
@@ -3700,7 +3698,7 @@ var CrossMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var TextMarkup = /** @class */ (function (_super) {
-    tslib.__extends(TextMarkup, _super);
+    __extends(TextMarkup, _super);
     function TextMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3710,10 +3708,10 @@ var TextMarkup = /** @class */ (function (_super) {
         var fontSize = size / 1.5;
         ctx.save();
         ctx.globalAlpha = globalAlpha;
-        if (ki === exports.Ki.White) {
+        if (ki === Ki.White) {
             ctx.fillStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.Black) {
+        else if (ki === Ki.Black) {
             ctx.fillStyle = this.getThemeProperty('flatWhiteColor');
         }
         else {
@@ -3741,7 +3739,7 @@ var TextMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var SquareMarkup = /** @class */ (function (_super) {
-    tslib.__extends(SquareMarkup, _super);
+    __extends(SquareMarkup, _super);
     function SquareMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3752,10 +3750,10 @@ var SquareMarkup = /** @class */ (function (_super) {
         ctx.lineWidth = this.getThemeProperty('markupLineWidth');
         ctx.globalAlpha = globalAlpha;
         var size = s * 0.55;
-        if (ki === exports.Ki.White) {
+        if (ki === Ki.White) {
             ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.Black) {
+        else if (ki === Ki.Black) {
             ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
         }
         else {
@@ -3770,7 +3768,7 @@ var SquareMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var TriangleMarkup = /** @class */ (function (_super) {
-    tslib.__extends(TriangleMarkup, _super);
+    __extends(TriangleMarkup, _super);
     function TriangleMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3785,10 +3783,10 @@ var TriangleMarkup = /** @class */ (function (_super) {
         ctx.lineTo(x - size * Math.cos(0.523), y + size * Math.sin(0.523));
         ctx.lineTo(x + size * Math.cos(0.523), y + size * Math.sin(0.523));
         ctx.lineWidth = this.getThemeProperty('markupLineWidth');
-        if (ki === exports.Ki.White) {
+        if (ki === Ki.White) {
             ctx.strokeStyle = this.getThemeProperty('flatBlackColor');
         }
-        else if (ki === exports.Ki.Black) {
+        else if (ki === Ki.Black) {
             ctx.strokeStyle = this.getThemeProperty('flatWhiteColor');
         }
         else {
@@ -3804,7 +3802,7 @@ var TriangleMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var GreenPlusMarkup = /** @class */ (function (_super) {
-    tslib.__extends(GreenPlusMarkup, _super);
+    __extends(GreenPlusMarkup, _super);
     function GreenPlusMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3830,7 +3828,7 @@ var GreenPlusMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var RedCrossMarkup = /** @class */ (function (_super) {
-    tslib.__extends(RedCrossMarkup, _super);
+    __extends(RedCrossMarkup, _super);
     function RedCrossMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3856,7 +3854,7 @@ var RedCrossMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var YellowTriangleMarkup = /** @class */ (function (_super) {
-    tslib.__extends(YellowTriangleMarkup, _super);
+    __extends(YellowTriangleMarkup, _super);
     function YellowTriangleMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3881,7 +3879,7 @@ var YellowTriangleMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var NodeMarkup = /** @class */ (function (_super) {
-    tslib.__extends(NodeMarkup, _super);
+    __extends(NodeMarkup, _super);
     function NodeMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3905,7 +3903,7 @@ var NodeMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var ActiveNodeMarkup = /** @class */ (function (_super) {
-    tslib.__extends(ActiveNodeMarkup, _super);
+    __extends(ActiveNodeMarkup, _super);
     function ActiveNodeMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3938,7 +3936,7 @@ var ActiveNodeMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var CircleSolidMarkup = /** @class */ (function (_super) {
-    tslib.__extends(CircleSolidMarkup, _super);
+    __extends(CircleSolidMarkup, _super);
     function CircleSolidMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3951,10 +3949,10 @@ var CircleSolidMarkup = /** @class */ (function (_super) {
         ctx.globalAlpha = globalAlpha;
         ctx.lineWidth = this.getThemeProperty('markupLineWidth');
         ctx.setLineDash(this.lineDash);
-        if (ki === exports.Ki.Black) {
+        if (ki === Ki.Black) {
             ctx.fillStyle = this.getThemeProperty('flatWhiteColor');
         }
-        else if (ki === exports.Ki.White) {
+        else if (ki === Ki.White) {
             ctx.fillStyle = this.getThemeProperty('flatBlackColor');
         }
         else {
@@ -3973,7 +3971,7 @@ var CircleSolidMarkup = /** @class */ (function (_super) {
 }(Markup));
 
 var HighlightMarkup = /** @class */ (function (_super) {
-    tslib.__extends(HighlightMarkup, _super);
+    __extends(HighlightMarkup, _super);
     function HighlightMarkup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3985,7 +3983,7 @@ var HighlightMarkup = /** @class */ (function (_super) {
         ctx.globalAlpha = 0.6;
         var size = s * 0.4;
         ctx.fillStyle = this.getThemeProperty('highlightColor');
-        if (ki === exports.Ki.White || ki === exports.Ki.Black) {
+        if (ki === Ki.White || ki === Ki.Black) {
             size = s * 0.35;
         }
         ctx.arc(x, y, size, 0, 2 * Math.PI, true);
@@ -4013,7 +4011,7 @@ var EffectBase = /** @class */ (function () {
 
 var banSvg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-ban\" viewBox=\"0 0 16 16\">\n  <path d=\"M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0\"/>\n</svg>";
 var BanEffect = /** @class */ (function (_super) {
-    tslib.__extends(BanEffect, _super);
+    __extends(BanEffect, _super);
     function BanEffect(ctx, x, y, size, ki) {
         var _this = _super.call(this, ctx, x, y, size, ki) || this;
         _this.ctx = ctx;
@@ -4065,7 +4063,7 @@ var BanEffect = /** @class */ (function (_super) {
         };
         // Convert SVG string to a data URL
         new Blob([banSvg], { type: 'image/svg+xml' });
-        var svgDataUrl = "data:image/svg+xml;base64,".concat(jsBase64.encode(banSvg));
+        var svgDataUrl = "data:image/svg+xml;base64,".concat(encode(banSvg));
         _this.img = new Image();
         _this.img.src = svgDataUrl;
         return _this;
@@ -4121,26 +4119,26 @@ var getAllThemeResources = function (theme, themeResources) {
     if (resources.board)
         allImages.push(resources.board);
     if (resources.blacks)
-        allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.blacks), false));
+        allImages.push.apply(allImages, __spreadArray([], __read(resources.blacks), false));
     if (resources.whites)
-        allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.whites), false));
+        allImages.push.apply(allImages, __spreadArray([], __read(resources.whites), false));
     // Add lowRes resources if they exist
     if (resources.lowRes) {
         if (resources.lowRes.board)
             allImages.push(resources.lowRes.board);
         if (resources.lowRes.blacks)
-            allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.lowRes.blacks), false));
+            allImages.push.apply(allImages, __spreadArray([], __read(resources.lowRes.blacks), false));
         if (resources.lowRes.whites)
-            allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.lowRes.whites), false));
+            allImages.push.apply(allImages, __spreadArray([], __read(resources.lowRes.whites), false));
     }
     // Add microRes resources if they exist
     if (resources.microRes) {
         if (resources.microRes.board)
             allImages.push(resources.microRes.board);
         if (resources.microRes.blacks)
-            allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.microRes.blacks), false));
+            allImages.push.apply(allImages, __spreadArray([], __read(resources.microRes.blacks), false));
         if (resources.microRes.whites)
-            allImages.push.apply(allImages, tslib.__spreadArray([], tslib.__read(resources.microRes.whites), false));
+            allImages.push.apply(allImages, __spreadArray([], __read(resources.microRes.whites), false));
     }
     // Remove duplicates
     return Array.from(new Set(allImages));
@@ -4195,19 +4193,19 @@ if (typeof window !== 'undefined') {
 var DEFAULT_THEME_OPTIONS = (_a = {
         default: BASE_THEME_CONFIG
     },
-    _a[exports.Theme.Flat] = {
+    _a[Theme.Flat] = {
         boardBackgroundColor: '#e6bb85',
     },
-    _a[exports.Theme.Warm] = {
+    _a[Theme.Warm] = {
         boardBackgroundColor: '#C18B50',
     },
-    _a[exports.Theme.Dark] = {
+    _a[Theme.Dark] = {
         activeColor: '#9CA3AF',
         inactiveColor: '#666666',
         boardLineColor: '#9CA3AF',
         boardBackgroundColor: '#2B3035',
     },
-    _a[exports.Theme.YunziMonkeyDark] = {
+    _a[Theme.YunziMonkeyDark] = {
         activeColor: '#A1C9AF',
         inactiveColor: '#A1C9AF',
         boardLineColor: '#A1C9AF',
@@ -4218,7 +4216,7 @@ var DEFAULT_THEME_OPTIONS = (_a = {
         shadowColor: 'rgba(0, 0, 0, 0.1)',
         stoneRatio: 0.5115,
     },
-    _a[exports.Theme.HighContrast] = {
+    _a[Theme.HighContrast] = {
         // High contrast theme, friendly for all types of color blindness
         boardBackgroundColor: '#F5F5DC', // Beige background, gentle on eyes
         boardLineColor: '#2F4F4F', // Dark slate gray lines for high contrast
@@ -4251,8 +4249,8 @@ var GhostBan = /** @class */ (function () {
             extent: 3,
             interactive: false,
             coordinate: true,
-            theme: exports.Theme.BlackAndWhite,
-            analysisPointTheme: exports.AnalysisPointTheme.Default,
+            theme: Theme.BlackAndWhite,
+            analysisPointTheme: AnalysisPointTheme.Default,
             background: false,
             showAnalysis: false,
             showOwnership: false,
@@ -4263,7 +4261,7 @@ var GhostBan = /** @class */ (function () {
             adaptiveStarSize: true,
             mobileIndicatorOffset: 0,
         };
-        this.cursor = exports.Cursor.None;
+        this.cursor = Cursor.None;
         this.cursorValue = '';
         this.touchMoving = false;
         this.touchStartPoint = new DOMPoint();
@@ -4349,31 +4347,31 @@ var GhostBan = /** @class */ (function () {
             var boardSize = _this.options.boardSize;
             if ((visibleArea[0][0] === 0 && visibleArea[0][1] === boardSize - 1) ||
                 (visibleArea[1][0] === 0 && visibleArea[1][1] === boardSize - 1)) {
-                return exports.Center.Center;
+                return Center.Center;
             }
             if (visibleArea[0][0] === 0) {
                 if (visibleArea[1][0] === 0)
-                    return exports.Center.TopLeft;
+                    return Center.TopLeft;
                 else if (visibleArea[1][1] === boardSize - 1)
-                    return exports.Center.BottomLeft;
+                    return Center.BottomLeft;
                 else
-                    return exports.Center.Left;
+                    return Center.Left;
             }
             else if (visibleArea[0][1] === boardSize - 1) {
                 if (visibleArea[1][0] === 0)
-                    return exports.Center.TopRight;
+                    return Center.TopRight;
                 else if (visibleArea[1][1] === boardSize - 1)
-                    return exports.Center.BottomRight;
+                    return Center.BottomRight;
                 else
-                    return exports.Center.Right;
+                    return Center.Right;
             }
             else {
                 if (visibleArea[1][0] === 0)
-                    return exports.Center.Top;
+                    return Center.Top;
                 else if (visibleArea[1][1] === boardSize - 1)
-                    return exports.Center.Bottom;
+                    return Center.Bottom;
                 else
-                    return exports.Center.Center;
+                    return Center.Center;
             }
         };
         this.clearAllCanvas = function () {
@@ -4445,7 +4443,7 @@ var GhostBan = /** @class */ (function () {
         this.drawAnalysis = function (analysis) {
             if (analysis === void 0) { analysis = _this.analysis; }
             var canvas = _this.analysisCanvas;
-            var _a = _this.options, _b = _a.theme, theme = _b === void 0 ? exports.Theme.BlackAndWhite : _b, analysisPointTheme = _a.analysisPointTheme, boardSize = _a.boardSize; _a.forceAnalysisBoardSize;
+            var _a = _this.options, _b = _a.theme, theme = _b === void 0 ? Theme.BlackAndWhite : _b, analysisPointTheme = _a.analysisPointTheme, boardSize = _a.boardSize; _a.forceAnalysisBoardSize;
             var _c = _this, mat = _c.mat, markup = _c.markup;
             if (!canvas || !analysis)
                 return;
@@ -4472,14 +4470,14 @@ var GhostBan = /** @class */ (function () {
                 var y = scaledPadding + j * space;
                 var ratio = 0.46;
                 ctx.save();
-                if (theme !== exports.Theme.Subdued &&
-                    theme !== exports.Theme.BlackAndWhite &&
-                    theme !== exports.Theme.Flat &&
-                    theme !== exports.Theme.Warm &&
-                    theme !== exports.Theme.Dark) {
+                if (theme !== Theme.Subdued &&
+                    theme !== Theme.BlackAndWhite &&
+                    theme !== Theme.Flat &&
+                    theme !== Theme.Warm &&
+                    theme !== Theme.Dark) {
                     ctx.shadowOffsetX = 30;
                     ctx.shadowOffsetY = 30;
-                    ctx.shadowColor = _this.getThemeProperty(exports.ThemePropertyKey.ShadowColor);
+                    ctx.shadowColor = _this.getThemeProperty(ThemePropertyKey.ShadowColor);
                     ctx.shadowBlur = 8;
                 }
                 else {
@@ -4489,21 +4487,21 @@ var GhostBan = /** @class */ (function () {
                     ctx.shadowBlur = 0;
                 }
                 var outlineColor;
-                if (markup[i][j].includes(exports.Markup.PositiveNode)) {
-                    outlineColor = _this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor);
+                if (markup[i][j].includes(Markup$1.PositiveNode)) {
+                    outlineColor = _this.getThemeProperty(ThemePropertyKey.PositiveNodeColor);
                 }
-                if (markup[i][j].includes(exports.Markup.NegativeNode)) {
-                    outlineColor = _this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor);
+                if (markup[i][j].includes(Markup$1.NegativeNode)) {
+                    outlineColor = _this.getThemeProperty(ThemePropertyKey.NegativeNodeColor);
                 }
-                if (markup[i][j].includes(exports.Markup.NeutralNode)) {
-                    outlineColor = _this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor);
+                if (markup[i][j].includes(Markup$1.NeutralNode)) {
+                    outlineColor = _this.getThemeProperty(ThemePropertyKey.NeutralNodeColor);
                 }
                 var policyValue;
                 // Convert m.move to row-major index for policy array
                 // KataGo's policy array is stored in row-major order: policy[row * boardSize + col]
                 var _c = a1ToPos(m.move), col = _c.x, row = _c.y;
                 var policyIndex = row * analysisBoardSize + col;
-                if (analysisPointTheme === exports.AnalysisPointTheme.Scenario) {
+                if (analysisPointTheme === AnalysisPointTheme.Scenario) {
                     if (analysis.humanPolicy && analysis.humanPolicy.length > 0) {
                         policyValue = analysis.humanPolicy[policyIndex];
                     }
@@ -4558,8 +4556,8 @@ var GhostBan = /** @class */ (function () {
                         continue;
                     var stoneValue = ((_c = _this.mat[i]) === null || _c === void 0 ? void 0 : _c[j]) || 0;
                     var shouldShow = stoneValue === 0 ||
-                        (stoneValue === exports.Ki.Black && ownershipValue < 0) ||
-                        (stoneValue === exports.Ki.White && ownershipValue > 0);
+                        (stoneValue === Ki.Black && ownershipValue < 0) ||
+                        (stoneValue === Ki.White && ownershipValue > 0);
                     if (!shouldShow)
                         continue;
                     var x = scaledPadding + i * space;
@@ -4603,70 +4601,70 @@ var GhostBan = /** @class */ (function () {
                                 var ctx = canvas.getContext('2d');
                                 if (ctx) {
                                     switch (value) {
-                                        case exports.Markup.Circle: {
+                                        case Markup$1.Circle: {
                                             markup_1 = new CircleMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
-                                        case exports.Markup.Current: {
+                                        case Markup$1.Current: {
                                             markup_1 = new CircleSolidMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
-                                        case exports.Markup.PositiveActiveNode:
-                                        case exports.Markup.PositiveDashedActiveNode:
-                                        case exports.Markup.PositiveDottedActiveNode:
-                                        case exports.Markup.NegativeActiveNode:
-                                        case exports.Markup.NegativeDashedActiveNode:
-                                        case exports.Markup.NegativeDottedActiveNode:
-                                        case exports.Markup.NeutralActiveNode:
-                                        case exports.Markup.NeutralDashedActiveNode:
-                                        case exports.Markup.NeutralDottedActiveNode:
-                                        case exports.Markup.WarningActiveNode:
-                                        case exports.Markup.WarningDashedActiveNode:
-                                        case exports.Markup.WarningDottedActiveNode:
-                                        case exports.Markup.DefaultActiveNode:
-                                        case exports.Markup.DefaultDashedActiveNode:
-                                        case exports.Markup.DefaultDottedActiveNode: {
+                                        case Markup$1.PositiveActiveNode:
+                                        case Markup$1.PositiveDashedActiveNode:
+                                        case Markup$1.PositiveDottedActiveNode:
+                                        case Markup$1.NegativeActiveNode:
+                                        case Markup$1.NegativeDashedActiveNode:
+                                        case Markup$1.NegativeDottedActiveNode:
+                                        case Markup$1.NeutralActiveNode:
+                                        case Markup$1.NeutralDashedActiveNode:
+                                        case Markup$1.NeutralDottedActiveNode:
+                                        case Markup$1.WarningActiveNode:
+                                        case Markup$1.WarningDashedActiveNode:
+                                        case Markup$1.WarningDottedActiveNode:
+                                        case Markup$1.DefaultActiveNode:
+                                        case Markup$1.DefaultDashedActiveNode:
+                                        case Markup$1.DefaultDottedActiveNode: {
                                             var _b = _this.nodeMarkupStyles[value], color = _b.color, lineDash = _b.lineDash;
-                                            markup_1 = new ActiveNodeMarkup(ctx, x, y, space, ki, _this.createThemeContext(), exports.Markup.Circle);
+                                            markup_1 = new ActiveNodeMarkup(ctx, x, y, space, ki, _this.createThemeContext(), Markup$1.Circle);
                                             markup_1.setColor(color);
                                             markup_1.setLineDash(lineDash);
                                             break;
                                         }
-                                        case exports.Markup.PositiveNode:
-                                        case exports.Markup.PositiveDashedNode:
-                                        case exports.Markup.PositiveDottedNode:
-                                        case exports.Markup.NegativeNode:
-                                        case exports.Markup.NegativeDashedNode:
-                                        case exports.Markup.NegativeDottedNode:
-                                        case exports.Markup.NeutralNode:
-                                        case exports.Markup.NeutralDashedNode:
-                                        case exports.Markup.NeutralDottedNode:
-                                        case exports.Markup.WarningNode:
-                                        case exports.Markup.WarningDashedNode:
-                                        case exports.Markup.WarningDottedNode:
-                                        case exports.Markup.DefaultNode:
-                                        case exports.Markup.DefaultDashedNode:
-                                        case exports.Markup.DefaultDottedNode:
-                                        case exports.Markup.Node: {
+                                        case Markup$1.PositiveNode:
+                                        case Markup$1.PositiveDashedNode:
+                                        case Markup$1.PositiveDottedNode:
+                                        case Markup$1.NegativeNode:
+                                        case Markup$1.NegativeDashedNode:
+                                        case Markup$1.NegativeDottedNode:
+                                        case Markup$1.NeutralNode:
+                                        case Markup$1.NeutralDashedNode:
+                                        case Markup$1.NeutralDottedNode:
+                                        case Markup$1.WarningNode:
+                                        case Markup$1.WarningDashedNode:
+                                        case Markup$1.WarningDottedNode:
+                                        case Markup$1.DefaultNode:
+                                        case Markup$1.DefaultDashedNode:
+                                        case Markup$1.DefaultDottedNode:
+                                        case Markup$1.Node: {
                                             var _c = _this.nodeMarkupStyles[value], color = _c.color, lineDash = _c.lineDash;
-                                            markup_1 = new NodeMarkup(ctx, x, y, space, ki, _this.createThemeContext(), exports.Markup.Circle);
+                                            markup_1 = new NodeMarkup(ctx, x, y, space, ki, _this.createThemeContext(), Markup$1.Circle);
                                             markup_1.setColor(color);
                                             markup_1.setLineDash(lineDash);
                                             break;
                                         }
-                                        case exports.Markup.Square: {
+                                        case Markup$1.Square: {
                                             markup_1 = new SquareMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
-                                        case exports.Markup.Triangle: {
+                                        case Markup$1.Triangle: {
                                             markup_1 = new TriangleMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
-                                        case exports.Markup.Cross: {
+                                        case Markup$1.Cross: {
                                             markup_1 = new CrossMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
-                                        case exports.Markup.Highlight: {
+                                        case Markup$1.Highlight: {
                                             markup_1 = new HighlightMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                                             break;
                                         }
@@ -4723,14 +4721,14 @@ var GhostBan = /** @class */ (function () {
                 var ctx = board.getContext('2d');
                 if (ctx) {
                     setImageSmoothingQuality(ctx);
-                    if (theme === exports.Theme.BlackAndWhite ||
-                        theme === exports.Theme.Flat ||
-                        theme === exports.Theme.Warm ||
-                        theme === exports.Theme.Dark ||
-                        theme === exports.Theme.HighContrast) {
+                    if (theme === Theme.BlackAndWhite ||
+                        theme === Theme.Flat ||
+                        theme === Theme.Warm ||
+                        theme === Theme.Dark ||
+                        theme === Theme.HighContrast) {
                         board.style.boxShadow =
-                            theme === exports.Theme.BlackAndWhite ? '0px 0px 0px #000000' : '';
-                        ctx.fillStyle = _this.getThemeProperty(exports.ThemePropertyKey.BoardBackgroundColor);
+                            theme === Theme.BlackAndWhite ? '0px 0px 0px #000000' : '';
+                        ctx.fillStyle = _this.getThemeProperty(ThemePropertyKey.BoardBackgroundColor);
                         // ctx.fillRect(
                         //   -padding,
                         //   -padding,
@@ -4746,7 +4744,7 @@ var GhostBan = /** @class */ (function () {
                             var boardUrl = resources.board;
                             var boardRes = images[boardUrl];
                             if (boardRes) {
-                                if (theme === exports.Theme.Walnut || theme === exports.Theme.YunziMonkeyDark) {
+                                if (theme === Theme.Walnut || theme === Theme.YunziMonkeyDark) {
                                     ctx.drawImage(boardRes, 0, 0, board.width, board.height);
                                 }
                                 else {
@@ -4768,16 +4766,16 @@ var GhostBan = /** @class */ (function () {
                 return;
             var _a = _this, visibleArea = _a.visibleArea, options = _a.options, mat = _a.mat, preventMoveMat = _a.preventMoveMat, cursorPosition = _a.cursorPosition;
             var zoom = options.zoom, boardSize = options.boardSize, adaptiveBoardLine = options.adaptiveBoardLine; options.theme;
-            var boardLineWidth = _this.getThemeProperty(exports.ThemePropertyKey.BoardLineWidth);
-            var boardEdgeLineWidth = _this.getThemeProperty(exports.ThemePropertyKey.BoardEdgeLineWidth);
-            var boardLineExtent = _this.getThemeProperty(exports.ThemePropertyKey.BoardLineExtent);
+            var boardLineWidth = _this.getThemeProperty(ThemePropertyKey.BoardLineWidth);
+            var boardEdgeLineWidth = _this.getThemeProperty(ThemePropertyKey.BoardEdgeLineWidth);
+            var boardLineExtent = _this.getThemeProperty(ThemePropertyKey.BoardLineExtent);
             var ctx = board.getContext('2d');
             if (ctx) {
                 var _b = _this.calcSpaceAndPadding(), space = _b.space, scaledPadding = _b.scaledPadding;
                 var extendSpace = zoom ? boardLineExtent * space : 0;
-                var activeColor = _this.getThemeProperty(exports.ThemePropertyKey.ActiveColor);
-                var inactiveColor = _this.getThemeProperty(exports.ThemePropertyKey.InactiveColor);
-                ctx.fillStyle = _this.getThemeProperty(exports.ThemePropertyKey.BoardLineColor);
+                var activeColor = _this.getThemeProperty(ThemePropertyKey.ActiveColor);
+                var inactiveColor = _this.getThemeProperty(ThemePropertyKey.InactiveColor);
+                ctx.fillStyle = _this.getThemeProperty(ThemePropertyKey.BoardLineColor);
                 var adaptiveFactor = 0.001;
                 var touchingFactor = 2.5;
                 var edgeLineWidth = adaptiveBoardLine
@@ -4786,7 +4784,7 @@ var GhostBan = /** @class */ (function () {
                 var lineWidth = adaptiveBoardLine
                     ? board.width * adaptiveFactor
                     : boardLineWidth;
-                var _c = tslib.__read(cursorPosition, 2), cursorX = _c[0], cursorY = _c[1];
+                var _c = __read(cursorPosition, 2), cursorX = _c[0], cursorY = _c[1];
                 var isValidPosition = cursorX >= 0 &&
                     cursorY >= 0 &&
                     cursorX < boardSize &&
@@ -4879,7 +4877,7 @@ var GhostBan = /** @class */ (function () {
             if (_this.options.boardSize !== 19)
                 return;
             var adaptiveStarSize = _this.options.adaptiveStarSize;
-            var starSizeOptions = _this.getThemeProperty(exports.ThemePropertyKey.StarSize);
+            var starSizeOptions = _this.getThemeProperty(ThemePropertyKey.StarSize);
             var visibleArea = _this.visibleArea;
             var ctx = board.getContext('2d');
             var starSize = adaptiveStarSize ? board.width * 0.0035 : starSizeOptions;
@@ -4917,7 +4915,7 @@ var GhostBan = /** @class */ (function () {
                 ctx.font = "bold ".concat(space / 3, "px Helvetica");
                 var center_1 = _this.calcCenter();
                 var offset_1 = space / 1.5;
-                if (center_1 === exports.Center.Center &&
+                if (center_1 === Center.Center &&
                     visibleArea[0][0] === 0 &&
                     visibleArea[0][1] === boardSize - 1) {
                     offset_1 -= scaledPadding / 2;
@@ -4926,27 +4924,27 @@ var GhostBan = /** @class */ (function () {
                     var x = space * index + scaledPadding;
                     var offsetTop = offset_1;
                     var offsetBottom = offset_1;
-                    if (center_1 === exports.Center.TopLeft ||
-                        center_1 === exports.Center.TopRight ||
-                        center_1 === exports.Center.Top) {
+                    if (center_1 === Center.TopLeft ||
+                        center_1 === Center.TopRight ||
+                        center_1 === Center.Top) {
                         offsetTop -= space * boardLineExtent;
                     }
-                    if (center_1 === exports.Center.BottomLeft ||
-                        center_1 === exports.Center.BottomRight ||
-                        center_1 === exports.Center.Bottom) {
+                    if (center_1 === Center.BottomLeft ||
+                        center_1 === Center.BottomRight ||
+                        center_1 === Center.Bottom) {
                         offsetBottom -= (space * boardLineExtent) / 2;
                     }
                     var y1 = visibleArea[1][0] * space + padding - offsetTop;
                     var y2 = y1 + zoomedBoardSize * space + offsetBottom * 2;
                     if (index >= visibleArea[0][0] && index <= visibleArea[0][1]) {
-                        if (center_1 !== exports.Center.BottomLeft &&
-                            center_1 !== exports.Center.BottomRight &&
-                            center_1 !== exports.Center.Bottom) {
+                        if (center_1 !== Center.BottomLeft &&
+                            center_1 !== Center.BottomRight &&
+                            center_1 !== Center.Bottom) {
                             ctx.fillText(l, x, y1);
                         }
-                        if (center_1 !== exports.Center.TopLeft &&
-                            center_1 !== exports.Center.TopRight &&
-                            center_1 !== exports.Center.Top) {
+                        if (center_1 !== Center.TopLeft &&
+                            center_1 !== Center.TopRight &&
+                            center_1 !== Center.Top) {
                             ctx.fillText(l, x, y2);
                         }
                     }
@@ -4955,27 +4953,27 @@ var GhostBan = /** @class */ (function () {
                     var y = space * index + scaledPadding;
                     var offsetLeft = offset_1;
                     var offsetRight = offset_1;
-                    if (center_1 === exports.Center.TopLeft ||
-                        center_1 === exports.Center.BottomLeft ||
-                        center_1 === exports.Center.Left) {
+                    if (center_1 === Center.TopLeft ||
+                        center_1 === Center.BottomLeft ||
+                        center_1 === Center.Left) {
                         offsetLeft -= space * boardLineExtent;
                     }
-                    if (center_1 === exports.Center.TopRight ||
-                        center_1 === exports.Center.BottomRight ||
-                        center_1 === exports.Center.Right) {
+                    if (center_1 === Center.TopRight ||
+                        center_1 === Center.BottomRight ||
+                        center_1 === Center.Right) {
                         offsetRight -= (space * boardLineExtent) / 2;
                     }
                     var x1 = visibleArea[0][0] * space + padding - offsetLeft;
                     var x2 = x1 + zoomedBoardSize * space + 2 * offsetRight;
                     if (index >= visibleArea[1][0] && index <= visibleArea[1][1]) {
-                        if (center_1 !== exports.Center.TopRight &&
-                            center_1 !== exports.Center.BottomRight &&
-                            center_1 !== exports.Center.Right) {
+                        if (center_1 !== Center.TopRight &&
+                            center_1 !== Center.BottomRight &&
+                            center_1 !== Center.Right) {
                             ctx.fillText(l.toString(), x1, y);
                         }
-                        if (center_1 !== exports.Center.TopLeft &&
-                            center_1 !== exports.Center.BottomLeft &&
-                            center_1 !== exports.Center.Left) {
+                        if (center_1 !== Center.TopLeft &&
+                            center_1 !== Center.BottomLeft &&
+                            center_1 !== Center.Left) {
                             ctx.fillText(l.toString(), x2, y);
                         }
                     }
@@ -5024,13 +5022,13 @@ var GhostBan = /** @class */ (function () {
                         var ctx = canvas.getContext('2d');
                         if (ctx) {
                             switch (value) {
-                                case exports.Effect.Ban: {
+                                case Effect.Ban: {
                                     effect = new BanEffect(ctx, x, y, space, ki);
                                     effect.play();
                                     break;
                                 }
                             }
-                            effectMat[i][j] = exports.Effect.None;
+                            effectMat[i][j] = Effect.None;
                         }
                     }
                 }
@@ -5043,7 +5041,7 @@ var GhostBan = /** @class */ (function () {
             var canvas = _this.cursorCanvas;
             if (canvas) {
                 _this.clearCursorCanvas();
-                if (_this.cursor === exports.Cursor.None)
+                if (_this.cursor === Cursor.None)
                     return;
                 if (isMobileDevice() && !_this.touchMoving)
                     return;
@@ -5051,49 +5049,49 @@ var GhostBan = /** @class */ (function () {
                 var ctx = canvas.getContext('2d');
                 var space = _this.calcSpaceAndPadding().space;
                 var _d = _this, visibleArea = _d.visibleArea, cursor = _d.cursor, cursorValue = _d.cursorValue;
-                var _e = tslib.__read(_this.cursorPosition, 2), idx = _e[0], idy = _e[1];
+                var _e = __read(_this.cursorPosition, 2), idx = _e[0], idy = _e[1];
                 if (idx < visibleArea[0][0] || idx > visibleArea[0][1])
                     return;
                 if (idy < visibleArea[1][0] || idy > visibleArea[1][1])
                     return;
                 var x = idx * space + space / 2 + padding;
                 var y = idy * space + space / 2 + padding;
-                var ki = ((_b = (_a = _this.mat) === null || _a === void 0 ? void 0 : _a[idx]) === null || _b === void 0 ? void 0 : _b[idy]) || exports.Ki.Empty;
+                var ki = ((_b = (_a = _this.mat) === null || _a === void 0 ? void 0 : _a[idx]) === null || _b === void 0 ? void 0 : _b[idy]) || Ki.Empty;
                 if (ctx) {
                     var cur = void 0;
                     var size = space * 0.8;
-                    if (cursor === exports.Cursor.Circle) {
+                    if (cursor === Cursor.Circle) {
                         cur = new CircleMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                         cur.setGlobalAlpha(0.8);
                     }
-                    else if (cursor === exports.Cursor.Square) {
+                    else if (cursor === Cursor.Square) {
                         cur = new SquareMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                         cur.setGlobalAlpha(0.8);
                     }
-                    else if (cursor === exports.Cursor.Triangle) {
+                    else if (cursor === Cursor.Triangle) {
                         cur = new TriangleMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                         cur.setGlobalAlpha(0.8);
                     }
-                    else if (cursor === exports.Cursor.Cross) {
+                    else if (cursor === Cursor.Cross) {
                         cur = new CrossMarkup(ctx, x, y, space, ki, _this.createThemeContext());
                         cur.setGlobalAlpha(0.8);
                     }
-                    else if (cursor === exports.Cursor.Text) {
+                    else if (cursor === Cursor.Text) {
                         cur = new TextMarkup(ctx, x, y, space, ki, _this.createThemeContext(), cursorValue);
                         cur.setGlobalAlpha(0.8);
                     }
-                    else if (ki === exports.Ki.Empty && cursor === exports.Cursor.BlackStone) {
-                        cur = new FlatStone(ctx, x, y, exports.Ki.Black, _this.createThemeContext());
+                    else if (ki === Ki.Empty && cursor === Cursor.BlackStone) {
+                        cur = new FlatStone(ctx, x, y, Ki.Black, _this.createThemeContext());
                         cur.setSize(size);
                         cur.setGlobalAlpha(0.5);
                     }
-                    else if (ki === exports.Ki.Empty && cursor === exports.Cursor.WhiteStone) {
-                        cur = new FlatStone(ctx, x, y, exports.Ki.White, _this.createThemeContext());
+                    else if (ki === Ki.Empty && cursor === Cursor.WhiteStone) {
+                        cur = new FlatStone(ctx, x, y, Ki.White, _this.createThemeContext());
                         cur.setSize(size);
                         cur.setGlobalAlpha(0.5);
                     }
-                    else if (cursor === exports.Cursor.Clear) {
-                        cur = new FlatStone(ctx, x, y, exports.Ki.Empty, _this.createThemeContext());
+                    else if (cursor === Cursor.Clear) {
+                        cur = new FlatStone(ctx, x, y, Ki.Empty, _this.createThemeContext());
                         cur.setSize(size);
                     }
                     cur === null || cur === void 0 ? void 0 : cur.draw();
@@ -5104,7 +5102,7 @@ var GhostBan = /** @class */ (function () {
             if (mat === void 0) { mat = _this.mat; }
             if (canvas === void 0) { canvas = _this.canvas; }
             if (clear === void 0) { clear = true; }
-            var _a = _this.options, _b = _a.theme, theme = _b === void 0 ? exports.Theme.BlackAndWhite : _b, themeResources = _a.themeResources;
+            var _a = _this.options, _b = _a.theme, theme = _b === void 0 ? Theme.BlackAndWhite : _b, themeResources = _a.themeResources;
             if (clear)
                 _this.clearCanvas();
             if (canvas) {
@@ -5120,12 +5118,12 @@ var GhostBan = /** @class */ (function () {
                                 var y = scaledPadding + j * space;
                                 var ratio = _this.getThemeProperty('stoneRatio');
                                 ctx.save();
-                                if (theme !== exports.Theme.Subdued &&
-                                    theme !== exports.Theme.BlackAndWhite &&
-                                    theme !== exports.Theme.Flat &&
-                                    theme !== exports.Theme.Warm &&
-                                    theme !== exports.Theme.Dark &&
-                                    theme !== exports.Theme.HighContrast) {
+                                if (theme !== Theme.Subdued &&
+                                    theme !== Theme.BlackAndWhite &&
+                                    theme !== Theme.Flat &&
+                                    theme !== Theme.Warm &&
+                                    theme !== Theme.Dark &&
+                                    theme !== Theme.HighContrast) {
                                     ctx.shadowOffsetX = 3;
                                     ctx.shadowOffsetY = 3;
                                     ctx.shadowColor = _this.getThemeProperty('shadowColor');
@@ -5138,15 +5136,15 @@ var GhostBan = /** @class */ (function () {
                                 }
                                 var stone = void 0;
                                 switch (theme) {
-                                    case exports.Theme.BlackAndWhite:
-                                    case exports.Theme.Flat:
-                                    case exports.Theme.Warm:
-                                    case exports.Theme.HighContrast: {
+                                    case Theme.BlackAndWhite:
+                                    case Theme.Flat:
+                                    case Theme.Warm:
+                                    case Theme.HighContrast: {
                                         stone = new FlatStone(ctx, x, y, value, _this.createThemeContext());
                                         stone.setSize(space * ratio * 2);
                                         break;
                                     }
-                                    case exports.Theme.Dark: {
+                                    case Theme.Dark: {
                                         stone = new FlatStone(ctx, x, y, value, _this.createThemeContext());
                                         stone.setSize(space * ratio * 2);
                                         break;
@@ -5171,14 +5169,14 @@ var GhostBan = /** @class */ (function () {
                 }
             }
         };
-        this.options = tslib.__assign(tslib.__assign(tslib.__assign({}, this.defaultOptions), options), { themeOptions: tslib.__assign(tslib.__assign({}, this.defaultOptions.themeOptions), (options.themeOptions || {})) });
-        this.customMarkupRenderers = tslib.__assign(tslib.__assign({}, this.getDefaultCustomMarkupRenderers()), (options.customMarkupRenderers || {}));
+        this.options = __assign(__assign(__assign({}, this.defaultOptions), options), { themeOptions: __assign(__assign({}, this.defaultOptions.themeOptions), (options.themeOptions || {})) });
+        this.customMarkupRenderers = __assign(__assign({}, this.getDefaultCustomMarkupRenderers()), (options.customMarkupRenderers || {}));
         var size = this.options.boardSize;
         this.mat = zeros([size, size]);
         this.preventMoveMat = zeros([size, size]);
         this.markup = empty([size, size]);
         this.effectMat = empty([size, size]);
-        this.turn = exports.Ki.Black;
+        this.turn = Ki.Black;
         this.cursorPosition = [-1, -1];
         this.actualCursorPosition = [-1, -1];
         this.maxhv = size;
@@ -5211,17 +5209,17 @@ var GhostBan = /** @class */ (function () {
     GhostBan.prototype.getDefaultCustomMarkupRenderers = function () {
         var _a;
         return _a = {},
-            _a[exports.Markup.GreenPlus] = function (_a) {
+            _a[Markup$1.GreenPlus] = function (_a) {
                 var ctx = _a.ctx, x = _a.x, y = _a.y, s = _a.s, ki = _a.ki, themeContext = _a.themeContext;
                 var markup = new GreenPlusMarkup(ctx, x, y, s, ki, themeContext);
                 markup.draw();
             },
-            _a[exports.Markup.RedCross] = function (_a) {
+            _a[Markup$1.RedCross] = function (_a) {
                 var ctx = _a.ctx, x = _a.x, y = _a.y, s = _a.s, ki = _a.ki, themeContext = _a.themeContext;
                 var markup = new RedCrossMarkup(ctx, x, y, s, ki, themeContext);
                 markup.draw();
             },
-            _a[exports.Markup.YellowTriangle] = function (_a) {
+            _a[Markup$1.YellowTriangle] = function (_a) {
                 var ctx = _a.ctx, x = _a.x, y = _a.y, s = _a.s, ki = _a.ki, themeContext = _a.themeContext;
                 var markup = new YellowTriangleMarkup(ctx, x, y, s, ki, themeContext);
                 markup.draw();
@@ -5235,131 +5233,131 @@ var GhostBan = /** @class */ (function () {
         delete this.customMarkupRenderers[name];
     };
     GhostBan.prototype.setCustomMarkups = function (renderers) {
-        this.customMarkupRenderers = tslib.__assign({}, renderers);
+        this.customMarkupRenderers = __assign({}, renderers);
     };
     GhostBan.prototype.updateNodeMarkupStyles = function () {
         var _a;
         var defaultDashedLineDash = [8, 6];
         var defaultDottedLineDash = [4, 4];
         this.nodeMarkupStyles = (_a = {},
-            _a[exports.Markup.PositiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.NegativeNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.NeutralNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.DefaultNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.WarningNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.PositiveDashedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveDashedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.NegativeDashedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeDashedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.NeutralDashedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralDashedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.DefaultDashedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultDashedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.WarningDashedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningDashedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.PositiveDottedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveDottedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.NegativeDottedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeDottedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.NeutralDottedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralDottedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.DefaultDottedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultDottedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.WarningDottedNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningDottedNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.PositiveActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.NegativeActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.NeutralActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.DefaultActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.WarningActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: [],
             },
-            _a[exports.Markup.PositiveDashedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveDashedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.NegativeDashedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeDashedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.NeutralDashedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralDashedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.DefaultDashedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultDashedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.WarningDashedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningDashedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: defaultDashedLineDash,
             },
-            _a[exports.Markup.PositiveDottedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.PositiveNodeColor),
+            _a[Markup$1.PositiveDottedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.PositiveNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.NegativeDottedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NegativeNodeColor),
+            _a[Markup$1.NegativeDottedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NegativeNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.NeutralDottedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.NeutralNodeColor),
+            _a[Markup$1.NeutralDottedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.NeutralNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.DefaultDottedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.DefaultNodeColor),
+            _a[Markup$1.DefaultDottedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.DefaultNodeColor),
                 lineDash: defaultDottedLineDash,
             },
-            _a[exports.Markup.WarningDottedActiveNode] = {
-                color: this.getThemeProperty(exports.ThemePropertyKey.WarningNodeColor),
+            _a[Markup$1.WarningDottedActiveNode] = {
+                color: this.getThemeProperty(ThemePropertyKey.WarningNodeColor),
                 lineDash: defaultDottedLineDash,
             },
             _a);
@@ -5377,7 +5375,7 @@ var GhostBan = /** @class */ (function () {
      * Record current board state as history state for ko rule checking in next move
      */
     GhostBan.prototype.recordCurrentBoardState = function () {
-        this.previousBoardState = this.mat.map(function (row) { return tslib.__spreadArray([], tslib.__read(row), false); });
+        this.previousBoardState = this.mat.map(function (row) { return __spreadArray([], __read(row), false); });
     };
     GhostBan.prototype.setBoardSize = function (size) {
         this.options.boardSize = Math.min(size, MAX_BOARD_SIZE);
@@ -5460,7 +5458,7 @@ var GhostBan = /** @class */ (function () {
     GhostBan.prototype.setOptions = function (options) {
         var previousShowAnalysis = this.options.showAnalysis;
         var previousShowOwnership = this.options.showOwnership;
-        this.options = tslib.__assign(tslib.__assign(tslib.__assign({}, this.options), options), { themeOptions: tslib.__assign(tslib.__assign({}, this.options.themeOptions), (options.themeOptions || {})) });
+        this.options = __assign(__assign(__assign({}, this.options), options), { themeOptions: __assign(__assign({}, this.options.themeOptions), (options.themeOptions || {})) });
         this.updateNodeMarkupStyles();
         this.renderInteractive();
         if (previousShowAnalysis && !this.options.showAnalysis) {
@@ -5537,7 +5535,7 @@ var GhostBan = /** @class */ (function () {
         // Get all theme resources for preloading (all resolutions)
         var allThemeImages = getAllThemeResources(theme, themeResources);
         this.options.theme = theme;
-        this.options = tslib.__assign(tslib.__assign(tslib.__assign(tslib.__assign({}, this.options), { theme: theme }), options), { themeOptions: tslib.__assign(tslib.__assign({}, this.options.themeOptions), (options.themeOptions || {})) });
+        this.options = __assign(__assign(__assign(__assign({}, this.options), { theme: theme }), options), { themeOptions: __assign(__assign({}, this.options.themeOptions), (options.themeOptions || {})) });
         this.updateNodeMarkupStyles();
         // Redraw callback after image loading completes
         var onImageLoaded = function (url) {
@@ -5567,7 +5565,7 @@ var GhostBan = /** @class */ (function () {
         if (!canvas)
             return;
         var _b = this.options, boardSize = _b.boardSize, extent = _b.extent, padding = _b.padding, dynamicPadding = _b.dynamicPadding;
-        var boardLineExtent = this.getThemeProperty(exports.ThemePropertyKey.BoardLineExtent);
+        var boardLineExtent = this.getThemeProperty(ThemePropertyKey.BoardLineExtent);
         var zoomedVisibleArea = calcVisibleArea(this.visibleAreaMat, extent, false);
         var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext('2d');
         var boardCtx = board === null || board === void 0 ? void 0 : board.getContext('2d');
@@ -5599,10 +5597,10 @@ var GhostBan = /** @class */ (function () {
                 this.options.padding = DEFAULT_OPTIONS.padding;
             }
             var extraVisibleSize = boardLineExtent * 2 + 1;
-            if (center === exports.Center.TopRight ||
-                center === exports.Center.TopLeft ||
-                center === exports.Center.BottomRight ||
-                center === exports.Center.BottomLeft) {
+            if (center === Center.TopRight ||
+                center === Center.TopLeft ||
+                center === Center.BottomRight ||
+                center === Center.BottomLeft) {
                 extraVisibleSize = boardLineExtent + 0.5;
             }
             var zoomedBoardSize = visibleAreaSize + extraVisibleSize;
@@ -5681,142 +5679,5 @@ var GhostBan = /** @class */ (function () {
     return GhostBan;
 }());
 
-exports.A1_LETTERS = A1_LETTERS;
-exports.A1_LETTERS_WITH_I = A1_LETTERS_WITH_I;
-exports.A1_NUMBERS = A1_NUMBERS;
-exports.AnnotationProp = AnnotationProp;
-exports.BASE_THEME_CONFIG = BASE_THEME_CONFIG;
-exports.CUSTOM_PROP_LIST = CUSTOM_PROP_LIST;
-exports.CustomProp = CustomProp;
-exports.DEFAULT_BOARD_SIZE = DEFAULT_BOARD_SIZE;
-exports.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
-exports.DOT_SIZE = DOT_SIZE;
-exports.EXPAND_H = EXPAND_H;
-exports.EXPAND_V = EXPAND_V;
-exports.GAME_INFO_PROP_LIST = GAME_INFO_PROP_LIST;
-exports.GameInfoProp = GameInfoProp;
-exports.GhostBan = GhostBan;
-exports.LIGHT_GREEN_RGB = LIGHT_GREEN_RGB;
-exports.LIGHT_RED_RGB = LIGHT_RED_RGB;
-exports.LIGHT_YELLOW_RGB = LIGHT_YELLOW_RGB;
-exports.LIST_OF_POINTS_PROP = LIST_OF_POINTS_PROP;
-exports.MARKUP_PROP_LIST = MARKUP_PROP_LIST;
-exports.MAX_BOARD_SIZE = MAX_BOARD_SIZE;
-exports.MISCELLANEOUS_PROP_LIST = MISCELLANEOUS_PROP_LIST;
-exports.MOVE_ANNOTATION_PROP_LIST = MOVE_ANNOTATION_PROP_LIST;
-exports.MOVE_PROP_LIST = MOVE_PROP_LIST;
-exports.MarkupProp = MarkupProp;
-exports.MiscellaneousProp = MiscellaneousProp;
-exports.MoveAnnotationProp = MoveAnnotationProp;
-exports.MoveProp = MoveProp;
-exports.NODE_ANNOTATION_PROP_LIST = NODE_ANNOTATION_PROP_LIST;
-exports.NodeAnnotationProp = NodeAnnotationProp;
-exports.RESPONSE_TIME = RESPONSE_TIME;
-exports.ROOT_PROP_LIST = ROOT_PROP_LIST;
-exports.RootProp = RootProp;
-exports.SETUP_PROP_LIST = SETUP_PROP_LIST;
-exports.SGF_LETTERS = SGF_LETTERS;
-exports.SetupProp = SetupProp;
-exports.Sgf = Sgf;
-exports.SgfPropBase = SgfPropBase;
-exports.THEME_RESOURCES = THEME_RESOURCES;
-exports.TIMING_PROP_LIST = TIMING_PROP_LIST;
-exports.TNode = TNode;
-exports.TimingProp = TimingProp;
-exports.TreeModel = TreeModel;
-exports.YELLOW_RGB = YELLOW_RGB;
-exports.a1ToIndex = a1ToIndex;
-exports.a1ToPos = a1ToPos;
-exports.a1ToSGF = a1ToSGF;
-exports.addMoveToCurrentNode = addMoveToCurrentNode;
-exports.addStoneToCurrentNode = addStoneToCurrentNode;
-exports.buildMoveNode = buildMoveNode;
-exports.buildPropertyValueRanges = buildPropertyValueRanges;
-exports.calcAnalysisPointColor = calcAnalysisPointColor;
-exports.calcAvoidMovesForPartialAnalysis = calcAvoidMovesForPartialAnalysis;
-exports.calcBoardSize = calcBoardSize;
-exports.calcCenter = calcCenter;
-exports.calcDoubtfulMovesThresholdRange = calcDoubtfulMovesThresholdRange;
-exports.calcHash = calcHash;
-exports.calcMatAndMarkup = calcMatAndMarkup;
-exports.calcMost = calcMost;
-exports.calcOffset = calcOffset;
-exports.calcPartialArea = calcPartialArea;
-exports.calcPreventMoveMat = calcPreventMoveMat;
-exports.calcPreventMoveMatForDisplayOnly = calcPreventMoveMatForDisplayOnly;
-exports.calcScoreDiff = calcScoreDiff;
-exports.calcScoreDiffText = calcScoreDiffText;
-exports.calcTsumegoFrame = calcTsumegoFrame;
-exports.calcVariationsMarkup = calcVariationsMarkup;
-exports.calcVisibleArea = calcVisibleArea;
-exports.calcWinrateDiff = calcWinrateDiff;
-exports.calcWinrateDiffText = calcWinrateDiffText;
-exports.canMove = canMove;
-exports.clearStoneFromCurrentNode = clearStoneFromCurrentNode;
-exports.convertStepsForAI = convertStepsForAI;
-exports.convertStoneTypeToString = convertStoneTypeToString;
-exports.cutMoveNodes = cutMoveNodes;
-exports.detectST = detectST;
-exports.empty = empty;
-exports.execCapture = execCapture;
-exports.extractAnswerType = extractAnswerType;
-exports.extractBoardSize = extractBoardSize;
-exports.extractPAI = extractPAI;
-exports.extractPI = extractPI;
-exports.findProp = findProp;
-exports.findProps = findProps;
-exports.genMove = genMove;
-exports.getDeduplicatedProps = getDeduplicatedProps;
-exports.getFirstToMoveColorFromRoot = getFirstToMoveColorFromRoot;
-exports.getFirstToMoveColorFromSgf = getFirstToMoveColorFromSgf;
-exports.getIndexFromAnalysis = getIndexFromAnalysis;
-exports.getLastIndex = getLastIndex;
-exports.getMoveColor = getMoveColor;
-exports.getNodeNumber = getNodeNumber;
-exports.getRoot = getRoot;
-exports.handleMove = handleMove;
-exports.inChoicePath = inChoicePath;
-exports.inFirstBranchRightPath = inFirstBranchRightPath;
-exports.inFirstRightPath = inFirstRightPath;
-exports.inPath = inPath;
-exports.inRightPath = inRightPath;
-exports.inTargetPath = inTargetPath;
-exports.inVariantPath = inVariantPath;
-exports.inWrongPath = inWrongPath;
-exports.initNodeData = initNodeData;
-exports.initialRootNode = initialRootNode;
-exports.isAnswerNode = isAnswerNode;
-exports.isCharacterInNode = isCharacterInNode;
-exports.isChoiceNode = isChoiceNode;
-exports.isFirstRightNode = isFirstRightNode;
-exports.isForceNode = isForceNode;
-exports.isInAnyRange = isInAnyRange;
-exports.isMainPath = isMainPath;
-exports.isMoveNode = isMoveNode;
-exports.isPreventMoveNode = isPreventMoveNode;
-exports.isRightNode = isRightNode;
-exports.isRootNode = isRootNode;
-exports.isSetupNode = isSetupNode;
-exports.isTargetNode = isTargetNode;
-exports.isVariantNode = isVariantNode;
-exports.isWrongNode = isWrongNode;
-exports.matToListOfTuples = matToListOfTuples;
-exports.matToPosition = matToPosition;
-exports.move = move;
-exports.nFormatter = nFormatter;
-exports.offsetA1Move = offsetA1Move;
-exports.pathToAiMoves = pathToAiMoves;
-exports.pathToIndexes = pathToIndexes;
-exports.pathToInitialStones = pathToInitialStones;
-exports.posToA1 = posToA1;
-exports.posToSgf = posToSgf;
-exports.reverseOffset = reverseOffset;
-exports.reverseOffsetA1Move = reverseOffsetA1Move;
-exports.round2 = round2;
-exports.round3 = round3;
-exports.sgfOffset = sgfOffset;
-exports.sgfToA1 = sgfToA1;
-exports.sgfToPos = sgfToPos;
-exports.showKi = showKi;
-exports.zeros = zeros;
-//# sourceMappingURL=index.js.map
+export { A1_LETTERS, A1_LETTERS_WITH_I, A1_NUMBERS, AnalysisPointTheme, AnnotationProp, BASE_THEME_CONFIG, CUSTOM_PROP_LIST, Center, Cursor, CustomProp, DEFAULT_BOARD_SIZE, DEFAULT_OPTIONS, DOT_SIZE, EXPAND_H, EXPAND_V, Effect, GAME_INFO_PROP_LIST, GameInfoProp, GhostBan, Ki, LIGHT_GREEN_RGB, LIGHT_RED_RGB, LIGHT_YELLOW_RGB, LIST_OF_POINTS_PROP, MARKUP_PROP_LIST, MAX_BOARD_SIZE, MISCELLANEOUS_PROP_LIST, MOVE_ANNOTATION_PROP_LIST, MOVE_PROP_LIST, Markup$1 as Markup, MarkupProp, MiscellaneousProp, MoveAnnotationProp, MoveProp, NODE_ANNOTATION_PROP_LIST, NodeAnnotationProp, PathDetectionStrategy, ProblemAnswerType, RESPONSE_TIME, ROOT_PROP_LIST, RootProp, SETUP_PROP_LIST, SGF_LETTERS, SetupProp, Sgf, SgfPropBase, THEME_RESOURCES, TIMING_PROP_LIST, TNode, Theme, ThemePropertyKey, TimingProp, TreeModel, YELLOW_RGB, a1ToIndex, a1ToPos, a1ToSGF, addMoveToCurrentNode, addStoneToCurrentNode, buildMoveNode, buildPropertyValueRanges, calcAnalysisPointColor, calcAvoidMovesForPartialAnalysis, calcBoardSize, calcCenter, calcDoubtfulMovesThresholdRange, calcHash, calcMatAndMarkup, calcMost, calcOffset, calcPartialArea, calcPreventMoveMat, calcPreventMoveMatForDisplayOnly, calcScoreDiff, calcScoreDiffText, calcTsumegoFrame, calcVariationsMarkup, calcVisibleArea, calcWinrateDiff, calcWinrateDiffText, canMove, clearStoneFromCurrentNode, convertStepsForAI, convertStoneTypeToString, cutMoveNodes, detectST, empty, execCapture, extractAnswerType, extractBoardSize, extractPAI, extractPI, findProp, findProps, genMove, getDeduplicatedProps, getFirstToMoveColorFromRoot, getFirstToMoveColorFromSgf, getIndexFromAnalysis, getLastIndex, getMoveColor, getNodeNumber, getRoot, handleMove, inChoicePath, inFirstBranchRightPath, inFirstRightPath, inPath, inRightPath, inTargetPath, inVariantPath, inWrongPath, initNodeData, initialRootNode, isAnswerNode, isCharacterInNode, isChoiceNode, isFirstRightNode, isForceNode, isInAnyRange, isMainPath, isMoveNode, isPreventMoveNode, isRightNode, isRootNode, isSetupNode, isTargetNode, isVariantNode, isWrongNode, matToListOfTuples, matToPosition, move, nFormatter, offsetA1Move, pathToAiMoves, pathToIndexes, pathToInitialStones, posToA1, posToSgf, reverseOffset, reverseOffsetA1Move, round2, round3, sgfOffset, sgfToA1, sgfToPos, showKi, zeros };
+//# sourceMappingURL=index.esm.js.map

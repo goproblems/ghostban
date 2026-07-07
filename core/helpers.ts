@@ -1,8 +1,16 @@
-import {filter, findLastIndex} from 'lodash';
+import SparkMD5 from 'spark-md5';
 import {TNode} from './tree';
 import {MoveProp, SgfPropBase} from './props';
 
-const SparkMD5 = require('spark-md5');
+const findLastPropIndex = (props: SgfPropBase[], target: SgfPropBase) => {
+  for (let index = props.length - 1; index >= 0; index--) {
+    const prop = props[index];
+    if (prop.token === target.token && prop.value === target.value) {
+      return index;
+    }
+  }
+  return -1;
+};
 
 export const calcHash = (
   node: TNode | null | undefined,
@@ -116,15 +124,9 @@ export function isInAnyRange(index: number, ranges: Range[]): boolean {
 }
 
 export const getDeduplicatedProps = (targetProps: SgfPropBase[]) => {
-  return filter(
-    targetProps,
+  return targetProps.filter(
     (prop: SgfPropBase, index: number) =>
-      index ===
-      findLastIndex(
-        targetProps,
-        (lastPro: SgfPropBase) =>
-          prop.token === lastPro.token && prop.value === lastPro.value
-      )
+      index === findLastPropIndex(targetProps, prop)
   );
 };
 

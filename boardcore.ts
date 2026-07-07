@@ -1,5 +1,6 @@
-import {cloneDeep} from 'lodash';
 import {SGF_LETTERS} from './const';
+
+const cloneMatrix = (mat: number[][]) => mat.map(row => [...row]);
 
 // TODO: Duplicate with helpers.ts to avoid circular dependency
 export const sgfToPos = (str: string) => {
@@ -193,7 +194,7 @@ export const simulateMoveWithCapture = (
   j: number,
   ki: number
 ): number[][] => {
-  const newMat = cloneDeep(mat);
+  const newMat = cloneMatrix(mat);
   newMat[i][j] = ki;
 
   // Execute captures
@@ -227,7 +228,7 @@ export const canMove = (
   }
 
   // Check suicide rule: if after placing the stone it has no liberties and cannot capture opponent stones, it's illegal
-  const newArray = cloneDeep(mat);
+  const newArray = cloneMatrix(mat);
   newArray[i][j] = ki;
   const {liberty} = calcLiberty(newArray, i, j, ki);
 
@@ -248,7 +249,7 @@ export const showKi = (
   steps: string[],
   isCaptured = true
 ) => {
-  let newMat = cloneDeep(array);
+  let newMat = cloneMatrix(array);
   let hasMoved = false;
   steps.forEach(str => {
     const {

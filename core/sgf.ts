@@ -1,4 +1,3 @@
-import {compact, replace} from 'lodash';
 import {
   buildPropertyValueRanges,
   isInAnyRange,
@@ -109,7 +108,7 @@ export class Sgf {
    */
   toSgfWithoutAnalysis() {
     const sgf = `(${this.nodeToString(this.root)})`;
-    return replace(sgf, /](A\[.*?\])/g, ']');
+    return sgf.replace(/](A\[.*?\])/g, ']');
   }
 
   /**
@@ -319,7 +318,7 @@ export class Sgf {
         moveAnnotationProps,
         gameInfoProps,
       } = n.model;
-      const nodes = compact([
+      const nodes = [
         ...rootProps,
         ...customProps,
         ...moveProps,
@@ -328,7 +327,7 @@ export class Sgf {
         ...gameInfoProps,
         ...nodeAnnotationProps,
         ...moveAnnotationProps,
-      ]);
+      ];
       content += ';';
       nodes.forEach((n: SgfPropBase) => {
         content += n.toString();

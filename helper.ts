@@ -1,5 +1,5 @@
 import {TreeModel, TNode} from './core/tree';
-import {cloneDeep, flattenDepth, clone, sum, compact, sample} from 'lodash';
+import SparkMD5 from 'spark-md5';
 import {SgfNode, SgfNodeOptions} from './core/types';
 import {
   isMoveNode,
@@ -60,7 +60,50 @@ import {Sgf} from './core/sgf';
 
 type Strategy = 'post' | 'pre' | 'both';
 
-const SparkMD5 = require('spark-md5');
+const cloneMatrix = (mat: number[][]) => mat.map(row => [...row]);
+
+const compactValues = <T>(
+  values: Array<T | null | undefined | false | '' | 0>
+) =>
+  values.filter(Boolean) as T[];
+
+const sample = <T>(values: T[]): T | undefined =>
+  values[Math.floor(Math.random() * values.length)];
+
+const cloneProp = <T extends SgfPropBase>(prop: T): T => {
+  const clonedProp = Object.assign(
+    Object.create(Object.getPrototypeOf(prop)),
+    prop
+  ) as T & {_values: string[]};
+  clonedProp._values = [...prop.values];
+  return clonedProp;
+};
+
+const cloneSgfNodeModel = (model: TNode['model']): TNode['model'] => {
+  const {children: _children, ...baseModel} = model as TNode['model'] & {
+    children?: unknown;
+  };
+
+  return {
+    ...baseModel,
+    moveProps: model.moveProps.map(cloneProp),
+    setupProps: model.setupProps.map(cloneProp),
+    rootProps: model.rootProps.map(cloneProp),
+    markupProps: model.markupProps.map(cloneProp),
+    gameInfoProps: model.gameInfoProps.map(cloneProp),
+    nodeAnnotationProps: model.nodeAnnotationProps.map(cloneProp),
+    moveAnnotationProps: model.moveAnnotationProps.map(cloneProp),
+    customProps: model.customProps.map(cloneProp),
+  };
+};
+
+const cloneTreeNode = (node: TNode): TNode => {
+  const clonedNode = new TNode(node.config, cloneSgfNodeModel(node.model));
+  node.children.forEach(child => {
+    clonedNode.addChild(cloneTreeNode(child));
+  });
+  return clonedNode;
+};
 
 export const calcDoubtfulMovesThresholdRange = (threshold: number) => {
   // 8D-9D
@@ -363,7 +406,7 @@ export const pathToInitialStones = (
   path: TNode[],
   xOffset = 0,
   yOffset = 0
-): string[] => {
+): string[][] => {
   const inits = path
     .filter(n => n.model.setupProps.length > 0)
     .map(n => {
@@ -376,7 +419,10 @@ export const pathToInitialStones = (
         });
       });
     });
-  return flattenDepth(inits[0], 1);
+  return (inits[0] ?? []).reduce<string[][]>(
+    (result, setupStones) => result.concat(setupStones),
+    []
+  );
 };
 
 export const pathToAiMoves = (path: TNode[], xOffset = 0, yOffset = 0) => {
@@ -399,7 +445,7 @@ export const getIndexFromAnalysis = (a: Analysis) => {
 };
 
 export const isMainPath = (node: TNode) => {
-  return sum(node.getPath().map(n => n.getIndex())) === 0;
+  return node.getPath().reduce((total, n) => total + n.getIndex(), 0) === 0;
 };
 
 export const sgfToPos = (str: string) => {
@@ -437,9 +483,8 @@ export const a1ToIndex = (move: string, boardSize = 19) => {
 
 export const sgfOffset = (sgf: any, offset = 0) => {
   if (offset === 0) return sgf;
-  const res = clone(sgf);
   const charIndex = SGF_LETTERS.indexOf(sgf[2]) - offset;
-  return res.substr(0, 2) + SGF_LETTERS[charIndex] + res.substr(2 + 1);
+  return sgf.substr(0, 2) + SGF_LETTERS[charIndex] + sgf.substr(2 + 1);
 };
 
 export const a1ToSGF = (str: any, type = 'B', offsetX = 0, offsetY = 0) => {
@@ -504,7 +549,7 @@ export const matToListOfTuples = (
 export const convertStoneTypeToString = (type: any) => (type === 1 ? 'B' : 'W');
 
 export const convertStepsForAI = (steps: any, offset = 0) => {
-  let res = clone(steps);
+  let res = [...steps];
   res = res.map((s: any) => sgfOffset(s, offset));
   const header = `(;FF[4]GM[1]SZ[${
     19 - offset
@@ -774,7 +819,7 @@ export const getLastIndex = (root: TNode) => {
 };
 
 export const cutMoveNodes = (root: TNode, returnRoot?: boolean) => {
-  let node = cloneDeep(root);
+  let node = cloneTreeNode(root);
   while (node && node.hasChildren() && node.model.moveProps.length === 0) {
     node = node.children[0];
     node.children = [];
@@ -912,7 +957,7 @@ export const calcTsumegoFrame = (
   turn: Ki = Ki.Black,
   ko = false
 ): number[][] => {
-  const result = cloneDeep(mat);
+  const result = cloneMatrix(mat);
   const partialArea = calcPartialArea(mat, extent, boardSize);
   const center = calcCenter(mat);
   const putBorder = (mat: number[][]) => {
@@ -1191,13 +1236,13 @@ export function calcVisibleArea(
 
 export function move(mat: number[][], i: number, j: number, ki: number) {
   if (i < 0 || j < 0) return mat;
-  const newMat = cloneDeep(mat);
+  const newMat = cloneMatrix(mat);
   newMat[i][j] = ki;
   return execCapture(newMat, i, j, -ki);
 }
 
 export function showKi(mat: number[][], steps: string[], isCaptured = true) {
-  let newMat = cloneDeep(mat);
+  let newMat = cloneMatrix(mat);
   let hasMoved = false;
   steps.forEach(str => {
     const {
@@ -1770,7 +1815,7 @@ export const genMove = (
 ): TNode | undefined => {
   let nextNode;
   const getPath = (node: TNode) => {
-    const newPath = compact(
+    const newPath = compactValues(
       node.getPath().map(n => n.model.moveProps[0]?.toString())
     ).join(';');
     return newPath;

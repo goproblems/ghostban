@@ -1,4 +1,3 @@
-import {chunk} from 'lodash';
 import {Theme, ThemeConfig} from './types';
 
 const settings = {cdn: 'https://s.shaowq.com'};
