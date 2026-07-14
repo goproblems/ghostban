@@ -130,6 +130,20 @@ export declare const reverseOffset: (mat: number[][], bx?: number, by?: number, 
 };
 export declare function calcVisibleArea(mat: number[][] | undefined, extent: number, allowRectangle?: boolean): number[][];
 export declare function move(mat: number[][], i: number, j: number, ki: number): number[][];
+export type A1MoveReplayStone = {
+    move: string;
+    x: number;
+    y: number;
+    ki: Ki;
+    index: number;
+};
+export type A1MoveReplayResult = {
+    arrangement: number[][];
+    hasMoved: boolean;
+    stones: A1MoveReplayStone[];
+    lastMove: A1MoveReplayStone | null;
+};
+export declare function showA1Moves(mat: number[][], moves: string[], isCaptured?: boolean, firstMoveColor?: Ki): A1MoveReplayResult;
 export declare function showKi(mat: number[][], steps: string[], isCaptured?: boolean): {
     arrangement: number[][];
     hasMoved: boolean;

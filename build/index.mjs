@@ -2,7 +2,7 @@
   /**
    * @license
    * author: BAI TIANLIANG
-   * ghostban.js v3.0.0-alpha.159
+   * ghostban.js v3.0.0-alpha.160
    * Released under the MIT license.
    */
 
@@ -2710,6 +2710,66 @@ function move(mat, i, j, ki) {
     var newMat = cloneMatrix(mat);
     newMat[i][j] = ki;
     return execCapture(newMat, i, j, -ki);
+}
+var a1MoveToPoint = function (move, boardSize) {
+    var normalizedMove = move.trim().toUpperCase();
+    if (normalizedMove === 'PASS')
+        return null;
+    var match = /^([A-Z])(\d{1,2})$/.exec(normalizedMove);
+    if (!match)
+        return null;
+    var x = A1_LETTERS.indexOf(match[1]);
+    var y = A1_NUMBERS.indexOf(Number(match[2]));
+    if (x < 0 || y < 0 || x >= boardSize || y >= boardSize)
+        return null;
+    return { move: "".concat(A1_LETTERS[x]).concat(A1_NUMBERS[y]), x: x, y: y };
+};
+function showA1Moves(mat, moves, isCaptured, firstMoveColor) {
+    if (isCaptured === void 0) { isCaptured = true; }
+    if (firstMoveColor === void 0) { firstMoveColor = Ki.Black; }
+    var boardSize = mat.length;
+    var newMat = cloneMatrix(mat);
+    var hasMoved = false;
+    var lastMove = null;
+    var stonesByPoint = new Map();
+    moves.forEach(function (move, index) {
+        var _a;
+        var point = a1MoveToPoint(move, boardSize);
+        var ki = index % 2 === 0 ? firstMoveColor : -firstMoveColor;
+        if (point === null) {
+            if (move.trim().toUpperCase() === 'PASS') {
+                hasMoved = true;
+                lastMove = null;
+            }
+            return;
+        }
+        if (isCaptured && !canMove(newMat, point.x, point.y, ki)) {
+            return;
+        }
+        if (isCaptured) {
+            newMat[point.x][point.y] = ki;
+            newMat = execCapture(newMat, point.x, point.y, -ki);
+        }
+        else {
+            newMat[point.x][point.y] = ki;
+        }
+        hasMoved = true;
+        var stone = __assign(__assign({}, point), { ki: ki, index: index + 1 });
+        stonesByPoint.set("".concat(point.x, ",").concat(point.y), stone);
+        Array.from(stonesByPoint.entries()).forEach(function (_a) {
+            var _b = __read(_a, 2), key = _b[0], currentStone = _b[1];
+            if (newMat[currentStone.x][currentStone.y] !== currentStone.ki) {
+                stonesByPoint.delete(key);
+            }
+        });
+        lastMove = (_a = stonesByPoint.get("".concat(point.x, ",").concat(point.y))) !== null && _a !== void 0 ? _a : null;
+    });
+    return {
+        arrangement: newMat,
+        hasMoved: hasMoved,
+        stones: Array.from(stonesByPoint.values()).sort(function (left, right) { return left.index - right.index; }),
+        lastMove: lastMove,
+    };
 }
 function showKi(mat, steps, isCaptured) {
     if (isCaptured === void 0) { isCaptured = true; }
@@ -5690,5 +5750,5 @@ var GhostBan = /** @class */ (function () {
     return GhostBan;
 }());
 
-export { A1_LETTERS, A1_LETTERS_WITH_I, A1_NUMBERS, AnalysisPointTheme, AnnotationProp, BASE_THEME_CONFIG, CUSTOM_PROP_LIST, Center, Cursor, CustomProp, DEFAULT_BOARD_SIZE, DEFAULT_OPTIONS, DOT_SIZE, EXPAND_H, EXPAND_V, Effect, GAME_INFO_PROP_LIST, GameInfoProp, GhostBan, Ki, LIGHT_GREEN_RGB, LIGHT_RED_RGB, LIGHT_YELLOW_RGB, LIST_OF_POINTS_PROP, MARKUP_PROP_LIST, MAX_BOARD_SIZE, MISCELLANEOUS_PROP_LIST, MOVE_ANNOTATION_PROP_LIST, MOVE_PROP_LIST, Markup$1 as Markup, MarkupProp, MiscellaneousProp, MoveAnnotationProp, MoveProp, NODE_ANNOTATION_PROP_LIST, NodeAnnotationProp, PathDetectionStrategy, ProblemAnswerType, RESPONSE_TIME, ROOT_PROP_LIST, RootProp, SETUP_PROP_LIST, SGF_LETTERS, SetupProp, Sgf, SgfPropBase, THEME_RESOURCES, TIMING_PROP_LIST, TNode, Theme, ThemePropertyKey, TimingProp, TreeModel, YELLOW_RGB, a1ToIndex, a1ToPos, a1ToSGF, addMoveToCurrentNode, addStoneToCurrentNode, buildMoveNode, buildPropertyValueRanges, calcAnalysisPointColor, calcAvoidMovesForPartialAnalysis, calcBoardSize, calcCenter, calcDoubtfulMovesThresholdRange, calcHash, calcMatAndMarkup, calcMost, calcOffset, calcPartialArea, calcPreventMoveMat, calcPreventMoveMatForDisplayOnly, calcScoreDiff, calcScoreDiffText, calcTsumegoFrame, calcVariationsMarkup, calcVisibleArea, calcWinrateDiff, calcWinrateDiffText, canMove, clearStoneFromCurrentNode, convertStepsForAI, convertStoneTypeToString, cutMoveNodes, detectST, empty, execCapture, extractAnswerType, extractBoardSize, extractPAI, extractPI, findProp, findProps, genMove, getDeduplicatedProps, getFirstToMoveColorFromRoot, getFirstToMoveColorFromSgf, getIndexFromAnalysis, getLastIndex, getMoveColor, getNodeNumber, getRoot, handleMove, inChoicePath, inFirstBranchRightPath, inFirstRightPath, inPath, inRightPath, inTargetPath, inVariantPath, inWrongPath, initNodeData, initialRootNode, isAnswerNode, isCharacterInNode, isChoiceNode, isFirstRightNode, isForceNode, isInAnyRange, isMainPath, isMoveNode, isPreventMoveNode, isRightNode, isRootNode, isSetupNode, isTargetNode, isVariantNode, isWrongNode, matToListOfTuples, matToPosition, move, nFormatter, offsetA1Move, pathToAiMoves, pathToIndexes, pathToInitialStones, posToA1, posToSgf, reverseOffset, reverseOffsetA1Move, round2, round3, sgfOffset, sgfToA1, sgfToPos, showKi, zeros };
+export { A1_LETTERS, A1_LETTERS_WITH_I, A1_NUMBERS, AnalysisPointTheme, AnnotationProp, BASE_THEME_CONFIG, CUSTOM_PROP_LIST, Center, Cursor, CustomProp, DEFAULT_BOARD_SIZE, DEFAULT_OPTIONS, DOT_SIZE, EXPAND_H, EXPAND_V, Effect, GAME_INFO_PROP_LIST, GameInfoProp, GhostBan, Ki, LIGHT_GREEN_RGB, LIGHT_RED_RGB, LIGHT_YELLOW_RGB, LIST_OF_POINTS_PROP, MARKUP_PROP_LIST, MAX_BOARD_SIZE, MISCELLANEOUS_PROP_LIST, MOVE_ANNOTATION_PROP_LIST, MOVE_PROP_LIST, Markup$1 as Markup, MarkupProp, MiscellaneousProp, MoveAnnotationProp, MoveProp, NODE_ANNOTATION_PROP_LIST, NodeAnnotationProp, PathDetectionStrategy, ProblemAnswerType, RESPONSE_TIME, ROOT_PROP_LIST, RootProp, SETUP_PROP_LIST, SGF_LETTERS, SetupProp, Sgf, SgfPropBase, THEME_RESOURCES, TIMING_PROP_LIST, TNode, Theme, ThemePropertyKey, TimingProp, TreeModel, YELLOW_RGB, a1ToIndex, a1ToPos, a1ToSGF, addMoveToCurrentNode, addStoneToCurrentNode, buildMoveNode, buildPropertyValueRanges, calcAnalysisPointColor, calcAvoidMovesForPartialAnalysis, calcBoardSize, calcCenter, calcDoubtfulMovesThresholdRange, calcHash, calcMatAndMarkup, calcMost, calcOffset, calcPartialArea, calcPreventMoveMat, calcPreventMoveMatForDisplayOnly, calcScoreDiff, calcScoreDiffText, calcTsumegoFrame, calcVariationsMarkup, calcVisibleArea, calcWinrateDiff, calcWinrateDiffText, canMove, clearStoneFromCurrentNode, convertStepsForAI, convertStoneTypeToString, cutMoveNodes, detectST, empty, execCapture, extractAnswerType, extractBoardSize, extractPAI, extractPI, findProp, findProps, genMove, getDeduplicatedProps, getFirstToMoveColorFromRoot, getFirstToMoveColorFromSgf, getIndexFromAnalysis, getLastIndex, getMoveColor, getNodeNumber, getRoot, handleMove, inChoicePath, inFirstBranchRightPath, inFirstRightPath, inPath, inRightPath, inTargetPath, inVariantPath, inWrongPath, initNodeData, initialRootNode, isAnswerNode, isCharacterInNode, isChoiceNode, isFirstRightNode, isForceNode, isInAnyRange, isMainPath, isMoveNode, isPreventMoveNode, isRightNode, isRootNode, isSetupNode, isTargetNode, isVariantNode, isWrongNode, matToListOfTuples, matToPosition, move, nFormatter, offsetA1Move, pathToAiMoves, pathToIndexes, pathToInitialStones, posToA1, posToSgf, reverseOffset, reverseOffsetA1Move, round2, round3, sgfOffset, sgfToA1, sgfToPos, showA1Moves, showKi, zeros };
 //# sourceMappingURL=index.mjs.map

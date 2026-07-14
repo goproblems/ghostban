@@ -2,7 +2,7 @@
   /**
    * @license
    * author: BAI TIANLIANG
-   * ghostban.js v3.0.0-alpha.159
+   * ghostban.js v3.0.0-alpha.160
    * Released under the MIT license.
    */
 
@@ -2712,6 +2712,66 @@ function move(mat, i, j, ki) {
     var newMat = cloneMatrix(mat);
     newMat[i][j] = ki;
     return execCapture(newMat, i, j, -ki);
+}
+var a1MoveToPoint = function (move, boardSize) {
+    var normalizedMove = move.trim().toUpperCase();
+    if (normalizedMove === 'PASS')
+        return null;
+    var match = /^([A-Z])(\d{1,2})$/.exec(normalizedMove);
+    if (!match)
+        return null;
+    var x = A1_LETTERS.indexOf(match[1]);
+    var y = A1_NUMBERS.indexOf(Number(match[2]));
+    if (x < 0 || y < 0 || x >= boardSize || y >= boardSize)
+        return null;
+    return { move: "".concat(A1_LETTERS[x]).concat(A1_NUMBERS[y]), x: x, y: y };
+};
+function showA1Moves(mat, moves, isCaptured, firstMoveColor) {
+    if (isCaptured === void 0) { isCaptured = true; }
+    if (firstMoveColor === void 0) { firstMoveColor = exports.Ki.Black; }
+    var boardSize = mat.length;
+    var newMat = cloneMatrix(mat);
+    var hasMoved = false;
+    var lastMove = null;
+    var stonesByPoint = new Map();
+    moves.forEach(function (move, index) {
+        var _a;
+        var point = a1MoveToPoint(move, boardSize);
+        var ki = index % 2 === 0 ? firstMoveColor : -firstMoveColor;
+        if (point === null) {
+            if (move.trim().toUpperCase() === 'PASS') {
+                hasMoved = true;
+                lastMove = null;
+            }
+            return;
+        }
+        if (isCaptured && !canMove(newMat, point.x, point.y, ki)) {
+            return;
+        }
+        if (isCaptured) {
+            newMat[point.x][point.y] = ki;
+            newMat = execCapture(newMat, point.x, point.y, -ki);
+        }
+        else {
+            newMat[point.x][point.y] = ki;
+        }
+        hasMoved = true;
+        var stone = tslib.__assign(tslib.__assign({}, point), { ki: ki, index: index + 1 });
+        stonesByPoint.set("".concat(point.x, ",").concat(point.y), stone);
+        Array.from(stonesByPoint.entries()).forEach(function (_a) {
+            var _b = tslib.__read(_a, 2), key = _b[0], currentStone = _b[1];
+            if (newMat[currentStone.x][currentStone.y] !== currentStone.ki) {
+                stonesByPoint.delete(key);
+            }
+        });
+        lastMove = (_a = stonesByPoint.get("".concat(point.x, ",").concat(point.y))) !== null && _a !== void 0 ? _a : null;
+    });
+    return {
+        arrangement: newMat,
+        hasMoved: hasMoved,
+        stones: Array.from(stonesByPoint.values()).sort(function (left, right) { return left.index - right.index; }),
+        lastMove: lastMove,
+    };
 }
 function showKi(mat, steps, isCaptured) {
     if (isCaptured === void 0) { isCaptured = true; }
@@ -5828,6 +5888,7 @@ exports.round3 = round3;
 exports.sgfOffset = sgfOffset;
 exports.sgfToA1 = sgfToA1;
 exports.sgfToPos = sgfToPos;
+exports.showA1Moves = showA1Moves;
 exports.showKi = showKi;
 exports.zeros = zeros;
 //# sourceMappingURL=index.js.map

@@ -1241,6 +1241,99 @@ export function move(mat: number[][], i: number, j: number, ki: number) {
   return execCapture(newMat, i, j, -ki);
 }
 
+export type A1MoveReplayStone = {
+  move: string;
+  x: number;
+  y: number;
+  ki: Ki;
+  index: number;
+};
+
+export type A1MoveReplayResult = {
+  arrangement: number[][];
+  hasMoved: boolean;
+  stones: A1MoveReplayStone[];
+  lastMove: A1MoveReplayStone | null;
+};
+
+const a1MoveToPoint = (move: string, boardSize: number) => {
+  const normalizedMove = move.trim().toUpperCase();
+  if (normalizedMove === 'PASS') return null;
+
+  const match = /^([A-Z])(\d{1,2})$/.exec(normalizedMove);
+  if (!match) return null;
+
+  const x = A1_LETTERS.indexOf(match[1]);
+  const y = A1_NUMBERS.indexOf(Number(match[2]));
+
+  if (x < 0 || y < 0 || x >= boardSize || y >= boardSize) return null;
+
+  return {move: `${A1_LETTERS[x]}${A1_NUMBERS[y]}`, x, y};
+};
+
+export function showA1Moves(
+  mat: number[][],
+  moves: string[],
+  isCaptured = true,
+  firstMoveColor: Ki = Ki.Black
+): A1MoveReplayResult {
+  const boardSize = mat.length;
+  let newMat = cloneMatrix(mat);
+  let hasMoved = false;
+  let lastMove: A1MoveReplayStone | null = null;
+  const stonesByPoint = new Map<string, A1MoveReplayStone>();
+
+  moves.forEach((move, index) => {
+    const point = a1MoveToPoint(move, boardSize);
+    const ki = index % 2 === 0 ? firstMoveColor : -firstMoveColor;
+
+    if (point === null) {
+      if (move.trim().toUpperCase() === 'PASS') {
+        hasMoved = true;
+        lastMove = null;
+      }
+      return;
+    }
+
+    if (isCaptured && !canMove(newMat, point.x, point.y, ki)) {
+      return;
+    }
+
+    if (isCaptured) {
+      newMat[point.x][point.y] = ki;
+      newMat = execCapture(newMat, point.x, point.y, -ki);
+    } else {
+      newMat[point.x][point.y] = ki;
+    }
+
+    hasMoved = true;
+
+    const stone: A1MoveReplayStone = {
+      ...point,
+      ki,
+      index: index + 1,
+    };
+    stonesByPoint.set(`${point.x},${point.y}`, stone);
+
+    Array.from(stonesByPoint.entries()).forEach(([key, currentStone]) => {
+      if (newMat[currentStone.x][currentStone.y] !== currentStone.ki) {
+        stonesByPoint.delete(key);
+      }
+    });
+
+    lastMove = stonesByPoint.get(`${point.x},${point.y}`) ?? null;
+  });
+
+  return {
+    arrangement: newMat,
+    hasMoved,
+    stones: Array.from(stonesByPoint.values()).sort(
+      (left, right) => left.index - right.index
+    ),
+    lastMove,
+  };
+}
+
 export function showKi(mat: number[][], steps: string[], isCaptured = true) {
   let newMat = cloneMatrix(mat);
   let hasMoved = false;
